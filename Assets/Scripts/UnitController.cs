@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.GameLogic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,13 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    class UnitController : MonoBehaviour
+    public class UnitController : MonoBehaviour
     {
+        public Unit UnitRepresented;
+
+        private void Start()
+        {
+            UnitRepresented = new Unit();
+        }
     }
 }
