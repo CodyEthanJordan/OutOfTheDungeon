@@ -9,6 +9,11 @@ namespace Assets.Scripts.GameLogic
     public class Unit
     {
         public int Movement = 5;
-        public Vector2Int Position;
+        public Vector3Int Position;
+
+        public Unit()
+        {
+            Position = new Vector3Int(0,0,0);
+        }
     }
 }

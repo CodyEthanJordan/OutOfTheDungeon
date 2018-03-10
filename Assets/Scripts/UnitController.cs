@@ -15,5 +15,11 @@ namespace Assets.Scripts
         {
             UnitRepresented = new Unit();
         }
+
+        internal void moveTo(Vector3Int destination)
+        {
+            this.transform.position = destination;
+            UnitRepresented.Position = destination;
+        }
     }
 }

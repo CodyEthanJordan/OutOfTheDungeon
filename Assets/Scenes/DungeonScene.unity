@@ -390,9 +390,10 @@ GameObject:
   - component: {fileID: 1399422958}
   - component: {fileID: 1399422956}
   - component: {fileID: 1399422957}
+  - component: {fileID: 1399422959}
   m_Layer: 0
   m_Name: UIHighlights
-  m_TagString: Untagged
+  m_TagString: UI
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -512,6 +513,19 @@ Transform:
   m_Father: {fileID: 1551266433}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!19719996 &1399422959
+TilemapCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1399422955}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
 --- !u!1 &1551266431
 GameObject:
   m_ObjectHideFlags: 0
@@ -749,6 +763,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e408649e069bcdf469af0222c737854b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Dungeon: {fileID: 2077115550}
   UIHighlights: {fileID: 1399422956}
   MoveTile: {fileID: 11400000, guid: eb9c603373d492a40a3378d31864e1c7, type: 2}
   CurrentState: 0
@@ -791,6 +806,21 @@ Prefab:
       propertyPath: m_RootOrder
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 61403447814100406, guid: 91266f979d2ed8641bbef3575b84da3d,
+        type: 2}
+      propertyPath: m_AutoTiling
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 61403447814100406, guid: 91266f979d2ed8641bbef3575b84da3d,
+        type: 2}
+      propertyPath: m_Offset.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 61403447814100406, guid: 91266f979d2ed8641bbef3575b84da3d,
+        type: 2}
+      propertyPath: m_Offset.y
+      value: 0.5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 91266f979d2ed8641bbef3575b84da3d, type: 2}
   m_IsPrefabParent: 0
@@ -805,7 +835,7 @@ GameObject:
   - component: {fileID: 2077115550}
   - component: {fileID: 2077115549}
   m_Layer: 0
-  m_Name: Background
+  m_Name: Dungeon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1179,8 +1209,8 @@ Tilemap:
       m_ColliderType: 1
   - first: {x: 1, y: -1, z: 0}
     second:
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
+      m_TileIndex: 1
+      m_TileSpriteIndex: 1
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
@@ -1683,14 +1713,14 @@ Tilemap:
       m_ColliderType: 1
   m_AnimatedTiles: {}
   m_TileAssetArray:
-  - m_RefCount: 53
+  - m_RefCount: 52
     m_Data: {fileID: 11400000, guid: e67963e459013a54f897ea7f5f3e17e6, type: 2}
-  - m_RefCount: 37
+  - m_RefCount: 38
     m_Data: {fileID: 11400000, guid: d9fdfd5ab2c3c784e8c9497a37c44095, type: 2}
   m_TileSpriteArray:
-  - m_RefCount: 53
+  - m_RefCount: 52
     m_Data: {fileID: 21300000, guid: 4a9f8cbd17de36a40b5ff68dd765eabb, type: 3}
-  - m_RefCount: 37
+  - m_RefCount: 38
     m_Data: {fileID: 21300002, guid: 4a9f8cbd17de36a40b5ff68dd765eabb, type: 3}
   m_TileMatrixArray:
   - m_RefCount: 90
@@ -1739,6 +1769,6 @@ Tilemap:
     e33: 1
   m_TileRefreshArray:
   - serializedVersion: 1
-    m_DirtyIndex: 2
+    m_DirtyIndex: 0
   - serializedVersion: 1
     m_DirtyIndex: 0
