@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.GameLogic;
 using System;
 using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -51,7 +52,7 @@ namespace Assets.Scripts
                     case GameState.UnitSelected:
                         if (hit.collider != null)
                         {
-                            if(hit.collider.CompareTag("UI"))
+                            if (hit.collider.CompareTag("UI"))
                             {
                                 //move unit
                                 var destination = Dungeon.WorldToCell(hit.point);
@@ -93,51 +94,76 @@ namespace Assets.Scripts
 
         private List<Vector3Int> FindAllValidMoves(Unit unit)
         {
-            var validMoves = new List<Vector3Int>();
+            var validMoves = new List<List<Vector3Int>>();
+            var startingPath = new List<Vector3Int>() { unit.Position };
+            Queue<List<Vector3Int>> PlacesToVisit = new Queue<List<Vector3Int>>();
+            PlacesToVisit.Enqueue(new List<Vector3Int>() { unit.Position });
 
-            RecursiveFloodFillMovement(unit.Movement, unit.Position, Dungeon, validMoves);
-
-            return validMoves;
-        }
-
-        private void RecursiveFloodFillMovement(int movement, Vector3Int pos, Tilemap dungeon, List<Vector3Int> validMoves)
-        {
-            if(movement <= 0)
+            while (PlacesToVisit.Count > 0)
             {
-                return;
-            }
-            //check neighbors
-            var north = pos + Vector3Int.up;
-            var northTile = (DungeonTile)Dungeon.GetTile(north);
-            if(northTile.Passable && !validMoves.Contains(north))
-            {
-                validMoves.Add(north);
-                RecursiveFloodFillMovement(movement - 1, north, Dungeon, validMoves);
+                var path = PlacesToVisit.Dequeue();
+                var node = path.Last();
+                validMoves.Add(path);
+
+                if (path.Count >= unit.Movement)
+                {
+                    continue; //don't go more if out of movement
+                }
+
+                var north = node + Vector3Int.up;
+                var northTile = (DungeonTile)Dungeon.GetTile(north);
+                if (northTile.Passable)
+                {
+                    //make sure we haven't already been here
+                    if (!validMoves.Select(m => m.Last()).Contains(north))
+                    {
+                        var nextPlace = path.Select(m => new Vector3Int(m.x, m.y, m.z)).ToList();
+                        nextPlace.Add(north);
+                        PlacesToVisit.Enqueue(nextPlace);
+                    }
+                }
+
+                var east = node + Vector3Int.right;
+                var eastTile = (DungeonTile)Dungeon.GetTile(east);
+                if (eastTile.Passable)
+                {
+                    //make sure we haven't already been here
+                    if (!validMoves.Select(m => m.Last()).Contains(east))
+                    {
+                        var nextPlace = path.Select(m => new Vector3Int(m.x, m.y, m.z)).ToList();
+                        nextPlace.Add(east);
+                        PlacesToVisit.Enqueue(nextPlace);
+                    }
+                }
+
+                var west = node + Vector3Int.left;
+                var westTile = (DungeonTile)Dungeon.GetTile(west);
+                if (westTile.Passable)
+                {
+                    //make sure we haven't already been here
+                    if (!validMoves.Select(m => m.Last()).Contains(west))
+                    {
+                        var nextPlace = path.Select(m => new Vector3Int(m.x, m.y, m.z)).ToList();
+                        nextPlace.Add(west);
+                        PlacesToVisit.Enqueue(nextPlace);
+                    }
+                }
+
+                var south = node + Vector3Int.down;
+                var southTile = (DungeonTile)Dungeon.GetTile(south);
+                if (southTile.Passable)
+                {
+                    //make sure we haven't already been here
+                    if (!validMoves.Select(m => m.Last()).Contains(south))
+                    {
+                        var nextPlace = path.Select(m => new Vector3Int(m.x, m.y, m.z)).ToList();
+                        nextPlace.Add(south);
+                        PlacesToVisit.Enqueue(nextPlace);
+                    }
+                }
             }
 
-            var east = pos + Vector3Int.right;
-            var eastTile = (DungeonTile)Dungeon.GetTile(east);
-            if (eastTile.Passable && !validMoves.Contains(east))
-            {
-                validMoves.Add(east);
-                RecursiveFloodFillMovement(movement - 1, east, Dungeon, validMoves);
-            }
-
-            var west = pos + Vector3Int.left;
-            var westTile = (DungeonTile)Dungeon.GetTile(west);
-            if (westTile.Passable && !validMoves.Contains(west))
-            {
-                validMoves.Add(west);
-                RecursiveFloodFillMovement(movement - 1, west, Dungeon, validMoves);
-            }
-
-            var south = pos + Vector3Int.down;
-            var southTile = (DungeonTile)Dungeon.GetTile(south);
-            if (southTile.Passable && !validMoves.Contains(south))
-            {
-                validMoves.Add(south);
-                RecursiveFloodFillMovement(movement - 1, south, Dungeon, validMoves);
-            }
+            return validMoves.Select(m => m.Last()).ToList();
         }
     }
 }
