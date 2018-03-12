@@ -72,7 +72,6 @@ namespace Assets.Scripts
                                 var unitController = unitClicked.GetComponent<UnitController>();
                                 unitController.UnitRepresented.CurrentMovement -= DistanceTo(unitController.UnitRepresented.Position, destination);
                                 unitController.moveTo(destination);
-                                Debug.Log(unitController.UnitRepresented.CurrentMovement);
                                 CurrentState = GameState.BaseState;
                                 ClearOverlays();
                                 DeselectUnit();
@@ -80,9 +79,9 @@ namespace Assets.Scripts
                         }
                         else
                         {
-                            CurrentState = GameState.BaseState;
-                            ClearOverlays();
-                            DeselectUnit();
+                            //CurrentState = GameState.BaseState;
+                            //ClearOverlays();
+                            //DeselectUnit();
                         }
                         break;
                     default:
@@ -234,8 +233,8 @@ namespace Assets.Scripts
         public void Ability1()
         {
             CurrentState = GameState.Targeting;
-            UIHi
-
+            ClearOverlays();
+            UIHighlights.SetTile(unitClicked.GetComponent<UnitController>().UnitRepresented.Position, TargetingTile);
         }
     }
 }
