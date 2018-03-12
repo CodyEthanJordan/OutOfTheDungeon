@@ -5,6 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 namespace Assets.Scripts
 {
@@ -12,12 +13,15 @@ namespace Assets.Scripts
     {
         public Tilemap Dungeon;
         public Tilemap UIHighlights;
-        public TileBase MoveTile;
+        public Tile MoveTile;
+        public Tile TargetingTile;
 
         private GameObject unitClicked;
         public GameObject unitPrefab;
 
         public List<GameObject> PlayerUnits;
+
+        public GameObject Ability1Button;
 
         public GameState CurrentState = GameState.BaseState;
 
@@ -52,7 +56,9 @@ namespace Assets.Scripts
                             {
                                 CurrentState = GameState.UnitSelected;
                                 unitClicked = hit.collider.gameObject;
-                                RenderMovement(hit.collider.gameObject);
+                                var unit = unitClicked.GetComponent<UnitController>().UnitRepresented;
+                                RenderMovement(unit);
+                                ActivateButtons(unit);
                             }
                         }
                         break;
@@ -69,12 +75,14 @@ namespace Assets.Scripts
                                 Debug.Log(unitController.UnitRepresented.CurrentMovement);
                                 CurrentState = GameState.BaseState;
                                 ClearOverlays();
+                                DeselectUnit();
                             }
                         }
                         else
                         {
                             CurrentState = GameState.BaseState;
                             ClearOverlays();
+                            DeselectUnit();
                         }
                         break;
                     default:
@@ -86,12 +94,23 @@ namespace Assets.Scripts
 
         }
 
+        private void DeselectUnit()
+        {
+            Ability1Button.SetActive(false);
+        }
+
+        private void ActivateButtons(Unit unit)
+        {
+            Ability1Button.GetComponentInChildren<Text>().text = unit.Abilities[0].Name;
+            Ability1Button.SetActive(true);
+        }
+
         private int DistanceTo(Vector3Int position, Vector3Int destination)
         {
             //TODO horrible hack
             var moves = FindAllValidMoves(position, 20);
             var validPath = moves.FirstOrDefault(m => m.Last() == destination);
-            if(validPath != null)
+            if (validPath != null)
             {
                 return validPath.Count() - 1;
             }
@@ -181,9 +200,8 @@ namespace Assets.Scripts
             UIHighlights.ClearAllTiles();
         }
 
-        private void RenderMovement(GameObject clickedObject)
+        private void RenderMovement(Unit unit)
         {
-            var unit = clickedObject.GetComponent<UnitController>().UnitRepresented;
             var moves = FindAllValidMoves(unit).Select(m => m.Last());
 
             foreach (var move in moves)
@@ -211,6 +229,13 @@ namespace Assets.Scripts
             {
                 go.GetComponent<UnitController>().UnitRepresented.NewTurn();
             }
+        }
+
+        public void Ability1()
+        {
+            CurrentState = GameState.Targeting;
+            UIHi
+
         }
     }
 }

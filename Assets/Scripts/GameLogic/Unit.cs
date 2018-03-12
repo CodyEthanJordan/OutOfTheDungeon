@@ -12,10 +12,15 @@ namespace Assets.Scripts.GameLogic
         public int MaxMovement = 5;
         public Vector3Int Position;
         public bool HasActed = false;
+        public List<Ability> Abilities;
 
         public Unit()
         {
             Position = new Vector3Int(0,0,0);
+            Abilities = new List<Ability>();
+            var a = new Ability();
+            a.Name = "Slash";
+            Abilities.Add(a);
         }
 
         public void NewTurn()
