@@ -8,12 +8,20 @@ namespace Assets.Scripts.GameLogic
 {
     public class Unit
     {
-        public int Movement = 5;
+        public int CurrentMovement = 5;
+        public int MaxMovement = 5;
         public Vector3Int Position;
+        public bool HasActed = false;
 
         public Unit()
         {
             Position = new Vector3Int(0,0,0);
+        }
+
+        public void NewTurn()
+        {
+            HasActed = false;
+            CurrentMovement = MaxMovement;
         }
     }
 }

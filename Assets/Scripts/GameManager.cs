@@ -15,6 +15,9 @@ namespace Assets.Scripts
         public TileBase MoveTile;
 
         private GameObject unitClicked;
+        public GameObject unitPrefab;
+
+        public List<GameObject> PlayerUnits;
 
         public GameState CurrentState = GameState.BaseState;
 
@@ -28,6 +31,10 @@ namespace Assets.Scripts
         // Use this for initialization
         void Awake()
         {
+            PlayerUnits = new List<GameObject>();
+            var knight = Instantiate(unitPrefab, Vector3.zero, Quaternion.identity, this.transform);
+            knight.GetComponent<UnitController>().UnitRepresented.Position = new Vector3Int(0, 0, 0);
+            PlayerUnits.Add(knight);
         }
 
         // Update is called once per frame
@@ -56,7 +63,10 @@ namespace Assets.Scripts
                             {
                                 //move unit
                                 var destination = Dungeon.WorldToCell(hit.point);
-                                unitClicked.GetComponent<UnitController>().moveTo(destination);
+                                var unitController = unitClicked.GetComponent<UnitController>();
+                                unitController.UnitRepresented.CurrentMovement -= DistanceTo(unitController.UnitRepresented.Position, destination);
+                                unitController.moveTo(destination);
+                                Debug.Log(unitController.UnitRepresented.CurrentMovement);
                                 CurrentState = GameState.BaseState;
                                 ClearOverlays();
                             }
@@ -76,28 +86,28 @@ namespace Assets.Scripts
 
         }
 
-        private void ClearOverlays()
+        private int DistanceTo(Vector3Int position, Vector3Int destination)
         {
-            UIHighlights.ClearAllTiles();
-        }
-
-        private void RenderMovement(GameObject clickedObject)
-        {
-            var unit = clickedObject.GetComponent<UnitController>().UnitRepresented;
-            var moves = FindAllValidMoves(unit);
-
-            foreach (var move in moves)
+            //TODO horrible hack
+            var moves = FindAllValidMoves(position, 20);
+            var validPath = moves.FirstOrDefault(m => m.Last() == destination);
+            if(validPath != null)
             {
-                UIHighlights.SetTile(move, MoveTile);
+                return validPath.Count() - 1;
             }
+            else
+            {
+                return -1;
+            }
+
         }
 
-        private List<Vector3Int> FindAllValidMoves(Unit unit)
+        private List<List<Vector3Int>> FindAllValidMoves(Vector3Int Position, int moves)
         {
             var validMoves = new List<List<Vector3Int>>();
-            var startingPath = new List<Vector3Int>() { unit.Position };
+            var startingPath = new List<Vector3Int>() { Position };
             Queue<List<Vector3Int>> PlacesToVisit = new Queue<List<Vector3Int>>();
-            PlacesToVisit.Enqueue(new List<Vector3Int>() { unit.Position });
+            PlacesToVisit.Enqueue(new List<Vector3Int>() { Position });
 
             while (PlacesToVisit.Count > 0)
             {
@@ -105,7 +115,7 @@ namespace Assets.Scripts
                 var node = path.Last();
                 validMoves.Add(path);
 
-                if (path.Count >= unit.Movement)
+                if (path.Count >= moves)
                 {
                     continue; //don't go more if out of movement
                 }
@@ -163,7 +173,44 @@ namespace Assets.Scripts
                 }
             }
 
-            return validMoves.Select(m => m.Last()).ToList();
+            return validMoves;
+        }
+
+        private void ClearOverlays()
+        {
+            UIHighlights.ClearAllTiles();
+        }
+
+        private void RenderMovement(GameObject clickedObject)
+        {
+            var unit = clickedObject.GetComponent<UnitController>().UnitRepresented;
+            var moves = FindAllValidMoves(unit).Select(m => m.Last());
+
+            foreach (var move in moves)
+            {
+                UIHighlights.SetTile(move, MoveTile);
+            }
+        }
+
+        private List<List<Vector3Int>> FindAllValidMoves(Unit unit)
+        {
+            return FindAllValidMoves(unit.Position, unit.CurrentMovement);
+        }
+
+        public void EndTurn()
+        {
+            //bad guys do stuff
+
+            //new turn
+            NewTurn();
+        }
+
+        private void NewTurn()
+        {
+            foreach (var go in PlayerUnits)
+            {
+                go.GetComponent<UnitController>().UnitRepresented.NewTurn();
+            }
         }
     }
 }

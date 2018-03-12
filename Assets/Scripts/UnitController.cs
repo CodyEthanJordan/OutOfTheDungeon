@@ -11,7 +11,7 @@ namespace Assets.Scripts
     {
         public Unit UnitRepresented;
 
-        private void Start()
+        private void Awake()
         {
             UnitRepresented = new Unit();
         }
