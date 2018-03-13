@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Unit
   - UI
+  - UIHighlights
   layers:
   - Default
   - TransparentFX

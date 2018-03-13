@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
+using Assets.Scripts.Events;
 
 namespace Assets.Scripts
 {
@@ -16,14 +17,19 @@ namespace Assets.Scripts
         public Tile MoveTile;
         public Tile TargetingTile;
 
-        private GameObject unitClicked;
+        public GameObject UnitClicked;
         public GameObject unitPrefab;
 
         public List<GameObject> PlayerUnits;
 
         public GameObject Ability1Button;
 
+        private Animator TurnFSM;
+
         public GameState CurrentState = GameState.BaseState;
+
+        public UnitEvent UnitClickedEvent;
+
 
         public enum GameState
         {
@@ -35,10 +41,20 @@ namespace Assets.Scripts
         // Use this for initialization
         void Awake()
         {
+            TurnFSM = this.GetComponent<Animator>();
             PlayerUnits = new List<GameObject>();
             var knight = Instantiate(unitPrefab, Vector3.zero, Quaternion.identity, this.transform);
             knight.GetComponent<UnitController>().UnitRepresented.Position = new Vector3Int(0, 0, 0);
             PlayerUnits.Add(knight);
+            var knight2 = Instantiate(unitPrefab, new Vector3(0,1,0), Quaternion.identity, this.transform);
+            knight2.GetComponent<UnitController>().UnitRepresented.Position = new Vector3Int(0, 1, 0);
+            PlayerUnits.Add(knight2);
+            UnitClickedEvent = new UnitEvent();
+        }
+
+        public void TriggerTransition(string trigger)
+        {
+            TurnFSM.SetTrigger(trigger);
         }
 
         // Update is called once per frame
@@ -47,47 +63,59 @@ namespace Assets.Scripts
             if (Input.GetMouseButtonDown(0))
             {
                 RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-                switch (CurrentState)
+                if(hit.collider != null)
                 {
-                    case GameState.BaseState:
-                        if (hit.collider != null)
+                    if(hit.collider.CompareTag("Unit"))
+                    {
+                        if(UnitClickedEvent != null)
                         {
-                            if (hit.collider.CompareTag("Unit"))
-                            {
-                                CurrentState = GameState.UnitSelected;
-                                unitClicked = hit.collider.gameObject;
-                                var unit = unitClicked.GetComponent<UnitController>().UnitRepresented;
-                                RenderMovement(unit);
-                                ActivateButtons(unit);
-                            }
+                            UnitClickedEvent.Invoke(hit.collider.GetComponent<UnitController>());
                         }
-                        break;
-                    case GameState.UnitSelected:
-                        if (hit.collider != null)
-                        {
-                            if (hit.collider.CompareTag("UI"))
-                            {
-                                //move unit
-                                var destination = Dungeon.WorldToCell(hit.point);
-                                var unitController = unitClicked.GetComponent<UnitController>();
-                                unitController.UnitRepresented.CurrentMovement -= DistanceTo(unitController.UnitRepresented.Position, destination);
-                                unitController.moveTo(destination);
-                                CurrentState = GameState.BaseState;
-                                ClearOverlays();
-                                DeselectUnit();
-                            }
-                        }
-                        else
-                        {
-                            //CurrentState = GameState.BaseState;
-                            //ClearOverlays();
-                            //DeselectUnit();
-                        }
-                        break;
-                    default:
-                        break;
-
+                    }
                 }
+                //switch (CurrentState)
+                //{
+                //    case GameState.BaseState:
+                //        if (hit.collider != null)
+                //        {
+                //            if (hit.collider.CompareTag("Unit"))
+                //            {
+                //                CurrentState = GameState.UnitSelected;
+                //                TurnFSM.SetTrigger("UnitClicked");
+                //                unitClicked = hit.collider.gameObject;
+                //                var unit = unitClicked.GetComponent<UnitController>().UnitRepresented;
+                //                RenderMovement(unit);
+                //                ActivateButtons(unit);
+                //            }
+                //        }
+                //        break;
+                //    case GameState.UnitSelected:
+                //        if (hit.collider != null)
+                //        {
+                //            if (hit.collider.CompareTag("UI"))
+                //            {
+                //                //move unit
+                //                var destination = Dungeon.WorldToCell(hit.point);
+                //                var unitController = unitClicked.GetComponent<UnitController>();
+                //                unitController.UnitRepresented.CurrentMovement -= DistanceTo(unitController.UnitRepresented.Position, destination);
+                //                unitController.moveTo(destination);
+                //                CurrentState = GameState.BaseState;
+                //                TurnFSM.SetTrigger("Deselect");
+                //                ClearOverlays();
+                //                DeselectUnit();
+                //            }
+                //        }
+                //        else
+                //        {
+                //            //CurrentState = GameState.BaseState;
+                //            //ClearOverlays();
+                //            //DeselectUnit();
+                //        }
+                //        break;
+                //    default:
+                //        break;
+
+                //}
 
             }
 
@@ -199,6 +227,11 @@ namespace Assets.Scripts
             UIHighlights.ClearAllTiles();
         }
 
+        public void RenderMovement()
+        {
+            RenderMovement(UnitClicked.GetComponent<UnitController>().UnitRepresented);
+        }
+
         private void RenderMovement(Unit unit)
         {
             var moves = FindAllValidMoves(unit).Select(m => m.Last());
@@ -234,7 +267,7 @@ namespace Assets.Scripts
         {
             CurrentState = GameState.Targeting;
             ClearOverlays();
-            UIHighlights.SetTile(unitClicked.GetComponent<UnitController>().UnitRepresented.Position, TargetingTile);
+            UIHighlights.SetTile(UnitClicked.GetComponent<UnitController>().UnitRepresented.Position + Vector3Int.up, TargetingTile);
         }
     }
 }

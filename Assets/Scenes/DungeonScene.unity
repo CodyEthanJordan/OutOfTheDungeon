@@ -527,7 +527,7 @@ GameObject:
   - component: {fileID: 1399422959}
   m_Layer: 0
   m_Name: UIHighlights
-  m_TagString: UI
+  m_TagString: UIHighlights
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -940,6 +940,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1793703309}
   - component: {fileID: 1793703311}
+  - component: {fileID: 1793703310}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -960,6 +961,23 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &1793703310
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1793703308}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 95c860a76ebeac547946fcf39e89fe9d, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!114 &1793703311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -975,10 +993,16 @@ MonoBehaviour:
   UIHighlights: {fileID: 1399422956}
   MoveTile: {fileID: 11400000, guid: eb9c603373d492a40a3378d31864e1c7, type: 2}
   TargetingTile: {fileID: 11400000, guid: d28b9cd5da97b3c4a8e8f36d63a4a4a7, type: 2}
+  UnitClicked: {fileID: 0}
   unitPrefab: {fileID: 1577556145990536, guid: 91266f979d2ed8641bbef3575b84da3d, type: 2}
   PlayerUnits: []
   Ability1Button: {fileID: 1301907151}
   CurrentState: 0
+  UnitClickedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Assets.Scripts.Events.UnitEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!1 &2077115547
 GameObject:
   m_ObjectHideFlags: 0

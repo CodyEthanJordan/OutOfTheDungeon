@@ -13,6 +13,8 @@ namespace Assets.Scripts.GameLogic
         public Vector3Int Position;
         public bool HasActed = false;
         public List<Ability> Abilities;
+        public int MaxHP = 5;
+        public int HP;
 
         public Unit()
         {
@@ -21,7 +23,9 @@ namespace Assets.Scripts.GameLogic
             var a = new Ability();
             a.Name = "Slash";
             Abilities.Add(a);
+            HP = MaxHP;
         }
+
 
         public void NewTurn()
         {
