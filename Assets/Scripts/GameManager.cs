@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using Assets.Scripts.Events;
+using UnityEngine.Events;
 
 namespace Assets.Scripts
 {
@@ -21,35 +22,44 @@ namespace Assets.Scripts
         public GameObject unitPrefab;
 
         public List<GameObject> PlayerUnits;
+        public List<Unit> AllUnits;
 
         public GameObject Ability1Button;
 
         private Animator TurnFSM;
 
-        public GameState CurrentState = GameState.BaseState;
-
         public UnitEvent UnitClickedEvent;
 
-
-        public enum GameState
+        internal void MoveUnit(UnitController unitController, Vector3Int destination)
         {
-            BaseState,
-            UnitSelected,
-            Targeting
+            unitController.UnitRepresented.CurrentMovement -= DistanceTo(unitController.UnitRepresented.Position, destination);
+            unitController.moveTo(destination);
         }
+
+        public PositionEvent UIHighlightClickedEvent;
 
         // Use this for initialization
         void Awake()
         {
             TurnFSM = this.GetComponent<Animator>();
+
             PlayerUnits = new List<GameObject>();
+            AllUnits = new List<Unit>();
+
+
+            //TODO: horrible hack
             var knight = Instantiate(unitPrefab, Vector3.zero, Quaternion.identity, this.transform);
             knight.GetComponent<UnitController>().UnitRepresented.Position = new Vector3Int(0, 0, 0);
             PlayerUnits.Add(knight);
-            var knight2 = Instantiate(unitPrefab, new Vector3(0,1,0), Quaternion.identity, this.transform);
+            AllUnits.Add(knight.GetComponent<UnitController>().UnitRepresented);
+            var knight2 = Instantiate(unitPrefab, new Vector3(0, 1, 0), Quaternion.identity, this.transform);
             knight2.GetComponent<UnitController>().UnitRepresented.Position = new Vector3Int(0, 1, 0);
             PlayerUnits.Add(knight2);
+            AllUnits.Add(knight2.GetComponent<UnitController>().UnitRepresented);
+
+
             UnitClickedEvent = new UnitEvent();
+            UIHighlightClickedEvent = new PositionEvent();
         }
 
         public void TriggerTransition(string trigger)
@@ -63,14 +73,16 @@ namespace Assets.Scripts
             if (Input.GetMouseButtonDown(0))
             {
                 RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-                if(hit.collider != null)
+                if (hit.collider != null)
                 {
-                    if(hit.collider.CompareTag("Unit"))
+                    if (hit.collider.CompareTag("Unit"))
                     {
-                        if(UnitClickedEvent != null)
-                        {
-                            UnitClickedEvent.Invoke(hit.collider.GetComponent<UnitController>());
-                        }
+                        UnitClickedEvent.Invoke(hit.collider.GetComponent<UnitController>());
+                    }
+                    else if (hit.collider.CompareTag("UIHighlights"))
+                    {
+                        var destination = Dungeon.WorldToCell(hit.point);
+                        UIHighlightClickedEvent.Invoke(destination);
                     }
                 }
                 //switch (CurrentState)
@@ -121,7 +133,7 @@ namespace Assets.Scripts
 
         }
 
-        private void DeselectUnit()
+        public void DeselectUnit()
         {
             Ability1Button.SetActive(false);
         }
@@ -148,6 +160,23 @@ namespace Assets.Scripts
 
         }
 
+        public bool Passable(Vector3Int pos)
+        {
+            var wall = (DungeonTile)Dungeon.GetTile(pos);
+            if(!wall.Passable)
+            {
+                return false;
+            }
+
+            //TODO: pass through allies?
+            if(AllUnits.Where(u => u.Position == pos).Count() > 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         private List<List<Vector3Int>> FindAllValidMoves(Vector3Int Position, int moves)
         {
             var validMoves = new List<List<Vector3Int>>();
@@ -167,8 +196,7 @@ namespace Assets.Scripts
                 }
 
                 var north = node + Vector3Int.up;
-                var northTile = (DungeonTile)Dungeon.GetTile(north);
-                if (northTile.Passable)
+                if (Passable(north))
                 {
                     //make sure we haven't already been here
                     if (!validMoves.Select(m => m.Last()).Contains(north))
@@ -180,8 +208,7 @@ namespace Assets.Scripts
                 }
 
                 var east = node + Vector3Int.right;
-                var eastTile = (DungeonTile)Dungeon.GetTile(east);
-                if (eastTile.Passable)
+                if (Passable(east))
                 {
                     //make sure we haven't already been here
                     if (!validMoves.Select(m => m.Last()).Contains(east))
@@ -193,8 +220,7 @@ namespace Assets.Scripts
                 }
 
                 var west = node + Vector3Int.left;
-                var westTile = (DungeonTile)Dungeon.GetTile(west);
-                if (westTile.Passable)
+                if (Passable(west))
                 {
                     //make sure we haven't already been here
                     if (!validMoves.Select(m => m.Last()).Contains(west))
@@ -206,8 +232,7 @@ namespace Assets.Scripts
                 }
 
                 var south = node + Vector3Int.down;
-                var southTile = (DungeonTile)Dungeon.GetTile(south);
-                if (southTile.Passable)
+                if (Passable(south))
                 {
                     //make sure we haven't already been here
                     if (!validMoves.Select(m => m.Last()).Contains(south))
@@ -222,7 +247,7 @@ namespace Assets.Scripts
             return validMoves;
         }
 
-        private void ClearOverlays()
+        public void ClearOverlays()
         {
             UIHighlights.ClearAllTiles();
         }
@@ -265,7 +290,6 @@ namespace Assets.Scripts
 
         public void Ability1()
         {
-            CurrentState = GameState.Targeting;
             ClearOverlays();
             UIHighlights.SetTile(UnitClicked.GetComponent<UnitController>().UnitRepresented.Position + Vector3Int.up, TargetingTile);
         }

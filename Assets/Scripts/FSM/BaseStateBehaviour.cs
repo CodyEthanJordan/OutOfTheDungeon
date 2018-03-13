@@ -11,8 +11,8 @@ namespace Assets.Scripts.FSM
         override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             base.OnStateEnter(animator, stateInfo, layerIndex);
-            Debug.Log("setting up that event");
             gm.UnitClickedEvent.AddListener(OnUnitClick);
+            gm.DeselectUnit();
         }
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)

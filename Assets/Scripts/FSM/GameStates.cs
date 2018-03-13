@@ -8,5 +8,6 @@ namespace Assets.Scripts.FSM
     public static class GameStates
     {
         public const string UnitClicked = "UnitClicked";
+        public const string Deselect = "Deselect";
     }
 }
