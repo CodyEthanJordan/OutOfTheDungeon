@@ -34,15 +34,17 @@ namespace Assets.Scripts
 
         internal void MoveUnit(UnitController unitController, Vector3Int destination)
         {
-            unitController.CurrentMovement -= DistanceTo(unitController.Position, destination);
+            unitController.CurrentMovement -= DistanceTo(Vector3Int.FloorToInt(unitController.transform.position), destination);
             unitController.moveTo(destination);
         }
+
+     
 
         internal void ActivateAbility(GameObject unitClicked, Vector3Int target)
         {
             //is the target a unit?
             var unit = unitClicked.GetComponent<UnitController>();
-            var guyHit = AllUnits.Find(u => u.Position == target);
+            var guyHit = AllUnits.Find(u => u.transform.position == target);
             if(guyHit != null)
             {
                 guyHit.TakeDamage(1);
@@ -68,12 +70,10 @@ namespace Assets.Scripts
             //TODO: horrible hack
             var knightObject = Instantiate(unitPrefab, Vector3.zero, Quaternion.identity, this.transform);
             var knight = knightObject.GetComponent<UnitController>();
-            knight.Position = new Vector3Int(0, 0, 0);
             PlayerUnits.Add(knight.GetComponent<UnitController>());
             AllUnits.Add(knight);
             var knightObject2 = Instantiate(unitPrefab, Vector3.zero, Quaternion.identity, this.transform);
             var knight2 = knightObject2.GetComponent<UnitController>();
-            knight2.Position = new Vector3Int(0, 0, 0);
             PlayerUnits.Add(knight2.GetComponent<UnitController>());
             AllUnits.Add(knight2);
 
@@ -186,7 +186,7 @@ namespace Assets.Scripts
             }
 
             //TODO: pass through allies?
-            if(AllUnits.Where(u => u.Position == pos).Count() > 0)
+            if(AllUnits.Where(u => u.transform.position == pos).Count() > 0)
             {
                 return false;
             }
@@ -286,7 +286,7 @@ namespace Assets.Scripts
 
         private List<List<Vector3Int>> FindAllValidMoves(UnitController unit)
         {
-            return FindAllValidMoves(unit.Position, unit.CurrentMovement);
+            return FindAllValidMoves(Vector3Int.FloorToInt(unit.transform.position), unit.CurrentMovement);
         }
 
         public void EndTurn()
@@ -312,7 +312,7 @@ namespace Assets.Scripts
 
         internal void RenderAbility()
         {
-            UIHighlights.SetTile(UnitClicked.GetComponent<UnitController>().Position + Vector3Int.up, TargetingTile);
+            UIHighlights.SetTile(Vector3Int.FloorToInt(UnitClicked.GetComponent<UnitController>().transform.position) + Vector3Int.up, TargetingTile);
         }
 
         public void Ability1()

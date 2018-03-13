@@ -11,7 +11,6 @@ namespace Assets.Scripts
     {
         public int CurrentMovement = 5;
         public int MaxMovement = 5;
-        public Vector3Int Position;
         public bool HasActed = false;
         public List<Ability> Abilities;
         public int MaxHP = 5;
@@ -37,7 +36,6 @@ namespace Assets.Scripts
 
         private void Awake()
         {
-            Position = new Vector3Int(0, 0, 0);
             Abilities = new List<Ability>();
             var a = new Ability
             {
