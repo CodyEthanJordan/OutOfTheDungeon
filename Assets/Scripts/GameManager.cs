@@ -8,6 +8,7 @@ using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using Assets.Scripts.Events;
 using UnityEngine.Events;
+using Assets.Scripts.FSM;
 
 namespace Assets.Scripts
 {
@@ -21,41 +22,61 @@ namespace Assets.Scripts
         public GameObject UnitClicked;
         public GameObject unitPrefab;
 
-        public List<GameObject> PlayerUnits;
-        public List<Unit> AllUnits;
+        public List<UnitController> PlayerUnits;
+        public List<UnitController> AllUnits;
 
-        public GameObject Ability1Button;
+        public UIManager UI;
 
         private Animator TurnFSM;
 
         public UnitEvent UnitClickedEvent;
+        public PositionEvent UIHighlightClickedEvent;
 
         internal void MoveUnit(UnitController unitController, Vector3Int destination)
         {
-            unitController.UnitRepresented.CurrentMovement -= DistanceTo(unitController.UnitRepresented.Position, destination);
+            unitController.CurrentMovement -= DistanceTo(unitController.Position, destination);
             unitController.moveTo(destination);
         }
 
-        public PositionEvent UIHighlightClickedEvent;
+        internal void ActivateAbility(GameObject unitClicked, Vector3Int target)
+        {
+            //is the target a unit?
+            var unit = unitClicked.GetComponent<UnitController>();
+            var guyHit = AllUnits.Find(u => u.Position == target);
+            if(guyHit != null)
+            {
+                guyHit.TakeDamage(1);
+                KnockBack(guyHit);
+            }
+        }
+
+        private void KnockBack(UnitController guyHit)
+        {
+            throw new NotImplementedException();
+        }
+
 
         // Use this for initialization
         void Awake()
         {
             TurnFSM = this.GetComponent<Animator>();
 
-            PlayerUnits = new List<GameObject>();
-            AllUnits = new List<Unit>();
+            PlayerUnits = new List<UnitController>();
+            AllUnits = new List<UnitController>();
 
 
             //TODO: horrible hack
-            var knight = Instantiate(unitPrefab, Vector3.zero, Quaternion.identity, this.transform);
-            knight.GetComponent<UnitController>().UnitRepresented.Position = new Vector3Int(0, 0, 0);
-            PlayerUnits.Add(knight);
-            AllUnits.Add(knight.GetComponent<UnitController>().UnitRepresented);
-            var knight2 = Instantiate(unitPrefab, new Vector3(0, 1, 0), Quaternion.identity, this.transform);
-            knight2.GetComponent<UnitController>().UnitRepresented.Position = new Vector3Int(0, 1, 0);
-            PlayerUnits.Add(knight2);
-            AllUnits.Add(knight2.GetComponent<UnitController>().UnitRepresented);
+            var knightObject = Instantiate(unitPrefab, Vector3.zero, Quaternion.identity, this.transform);
+            var knight = knightObject.GetComponent<UnitController>();
+            knight.Position = new Vector3Int(0, 0, 0);
+            PlayerUnits.Add(knight.GetComponent<UnitController>());
+            AllUnits.Add(knight);
+            var knightObject2 = Instantiate(unitPrefab, Vector3.zero, Quaternion.identity, this.transform);
+            var knight2 = knightObject2.GetComponent<UnitController>();
+            knight2.Position = new Vector3Int(0, 0, 0);
+            PlayerUnits.Add(knight2.GetComponent<UnitController>());
+            AllUnits.Add(knight2);
+
 
 
             UnitClickedEvent = new UnitEvent();
@@ -77,6 +98,7 @@ namespace Assets.Scripts
                 {
                     if (hit.collider.CompareTag("Unit"))
                     {
+                        UnitClicked = hit.collider.gameObject;
                         UnitClickedEvent.Invoke(hit.collider.GetComponent<UnitController>());
                     }
                     else if (hit.collider.CompareTag("UIHighlights"))
@@ -135,13 +157,8 @@ namespace Assets.Scripts
 
         public void DeselectUnit()
         {
-            Ability1Button.SetActive(false);
-        }
-
-        private void ActivateButtons(Unit unit)
-        {
-            Ability1Button.GetComponentInChildren<Text>().text = unit.Abilities[0].Name;
-            Ability1Button.SetActive(true);
+            UnitClicked = null;
+            UI.HideUnitInfo();
         }
 
         private int DistanceTo(Vector3Int position, Vector3Int destination)
@@ -254,10 +271,10 @@ namespace Assets.Scripts
 
         public void RenderMovement()
         {
-            RenderMovement(UnitClicked.GetComponent<UnitController>().UnitRepresented);
+            RenderMovement(UnitClicked.GetComponent<UnitController>());
         }
 
-        private void RenderMovement(Unit unit)
+        private void RenderMovement(UnitController unit)
         {
             var moves = FindAllValidMoves(unit).Select(m => m.Last());
 
@@ -267,7 +284,7 @@ namespace Assets.Scripts
             }
         }
 
-        private List<List<Vector3Int>> FindAllValidMoves(Unit unit)
+        private List<List<Vector3Int>> FindAllValidMoves(UnitController unit)
         {
             return FindAllValidMoves(unit.Position, unit.CurrentMovement);
         }
@@ -282,16 +299,25 @@ namespace Assets.Scripts
 
         private void NewTurn()
         {
-            foreach (var go in PlayerUnits)
+            foreach (var unit in PlayerUnits)
             {
-                go.GetComponent<UnitController>().UnitRepresented.NewTurn();
+                unit.NewTurn();
             }
+        }
+
+        public void DisplaySelectedUnitData()
+        {
+            UI.DisplayUnitInfo(UnitClicked.GetComponent<UnitController>());
+        }
+
+        internal void RenderAbility()
+        {
+            UIHighlights.SetTile(UnitClicked.GetComponent<UnitController>().Position + Vector3Int.up, TargetingTile);
         }
 
         public void Ability1()
         {
-            ClearOverlays();
-            UIHighlights.SetTile(UnitClicked.GetComponent<UnitController>().UnitRepresented.Position + Vector3Int.up, TargetingTile);
+            TriggerTransition(GameStateTransitions.TargetAbility);
         }
     }
 }
