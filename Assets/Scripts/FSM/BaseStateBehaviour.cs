@@ -22,7 +22,7 @@ namespace Assets.Scripts.FSM
 
         private void OnUnitClick(UnitController u)
         {
-            gm.UnitClicked = u.gameObject;
+            gm.UnitClicked = u;
             gm.TriggerTransition(GameStateTransitions.UnitClicked);
         }
     }

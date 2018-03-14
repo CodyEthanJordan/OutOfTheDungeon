@@ -11,8 +11,11 @@ namespace Assets.Scripts.FSM
         override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             base.OnStateEnter(animator, stateInfo, layerIndex);
-            gm.RenderMovement();
-            gm.UIHighlightClickedEvent.AddListener(MovementClick);
+            if (gm.UnitClicked.Side == "Player")
+            {
+                gm.RenderMovement();
+                gm.UIHighlightClickedEvent.AddListener(MovementClick);
+            }
             gm.DisplaySelectedUnitData();
         }
 
@@ -24,7 +27,7 @@ namespace Assets.Scripts.FSM
 
         private void MovementClick(Vector3Int destination)
         {
-            gm.MoveUnit(gm.UnitClicked.GetComponent<UnitController>(), destination);
+            gm.MoveUnit(gm.UnitClicked, destination);
             gm.TriggerTransition(GameStateTransitions.Deselect);
         }
     }

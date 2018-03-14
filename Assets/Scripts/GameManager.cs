@@ -19,7 +19,7 @@ namespace Assets.Scripts
         public Tile MoveTile;
         public Tile TargetingTile;
 
-        public GameObject UnitClicked;
+        public UnitController UnitClicked;
         public GameObject unitPrefab;
 
         public List<UnitController> AllUnits;
@@ -37,10 +37,9 @@ namespace Assets.Scripts
             unitController.moveTo(destination);
         }
 
-        internal void ActivateAbility(GameObject unitClicked, Vector3Int target)
+        internal void ActivateAbility(UnitController unit, Vector3Int target)
         {
             //is the target a unit?
-            var unit = unitClicked.GetComponent<UnitController>();
             var guyHit = AllUnits.Find(u => u.transform.position == target);
             if(guyHit != null)
             {
@@ -103,9 +102,12 @@ namespace Assets.Scripts
             TurnFSM.SetTrigger(trigger);
         }
 
-        // Update is called once per frame
         void Update()
         {
+            if(Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
+            {
+                TriggerTransition(GameStateTransitions.Deselect);
+            }
             if (Input.GetMouseButtonDown(0))
             {
                 RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
@@ -285,7 +287,7 @@ namespace Assets.Scripts
 
         public void RenderMovement()
         {
-            RenderMovement(UnitClicked.GetComponent<UnitController>());
+            RenderMovement(UnitClicked);
         }
 
         private void RenderMovement(UnitController unit)
@@ -322,12 +324,12 @@ namespace Assets.Scripts
 
         public void DisplaySelectedUnitData()
         {
-            UI.DisplayUnitInfo(UnitClicked.GetComponent<UnitController>());
+            UI.DisplayUnitInfo(UnitClicked);
         }
 
         internal void RenderAbility()
         {
-            UIHighlights.SetTile(Vector3Int.FloorToInt(UnitClicked.GetComponent<UnitController>().transform.position) + Vector3Int.up, TargetingTile);
+            UIHighlights.SetTile(Vector3Int.FloorToInt(UnitClicked.transform.position) + Vector3Int.up, TargetingTile);
         }
 
         public void Ability1()
