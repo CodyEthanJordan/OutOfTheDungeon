@@ -12,22 +12,26 @@ namespace Assets.Scripts
     public class UIManager : MonoBehaviour
     {
         public GameObject Ability1Button;
-        public Text UnitMovement;
+        public Text UnitMovementText;
+        public Text HPText;
 
         public void DisplayUnitInfo(UnitController unit)
         {
             Ability1Button.SetActive(true);
-            UnitMovement.gameObject.SetActive(true);
+            UnitMovementText.gameObject.SetActive(true);
+            HPText.gameObject.SetActive(true);
 
             Ability1Button.GetComponentInChildren<Text>().text = unit.Abilities[0].Name;
             //TODO make event listener in Unit to automatically update this info
-            UnitMovement.text = "Move: " + unit.CurrentMovement + " / " + unit.MaxMovement;
+            UnitMovementText.text = "Move: " + unit.CurrentMovement + " / " + unit.MaxMovement;
+            HPText.text = "HP: " + unit.HP + " / " + unit.MaxHP;
         }
 
         public void HideUnitInfo()
         {
             Ability1Button.SetActive(false);
-            UnitMovement.gameObject.SetActive(false);
+            UnitMovementText.gameObject.SetActive(false);
+            HPText.gameObject.SetActive(false);
         }
     }
 }

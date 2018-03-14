@@ -22,7 +22,6 @@ namespace Assets.Scripts
         public GameObject UnitClicked;
         public GameObject unitPrefab;
 
-        public List<UnitController> PlayerUnits;
         public List<UnitController> AllUnits;
 
         public UIManager UI;
@@ -38,8 +37,6 @@ namespace Assets.Scripts
             unitController.moveTo(destination);
         }
 
-     
-
         internal void ActivateAbility(GameObject unitClicked, Vector3Int target)
         {
             //is the target a unit?
@@ -48,13 +45,32 @@ namespace Assets.Scripts
             if(guyHit != null)
             {
                 guyHit.TakeDamage(1);
-                KnockBack(guyHit);
+                var knockbackDirection = guyHit.transform.position - unit.transform.position;
+                KnockBack(guyHit, Vector3Int.FloorToInt(knockbackDirection.normalized));
             }
         }
 
-        private void KnockBack(UnitController guyHit)
+        private void KnockBack(UnitController guyHit, Vector3Int direction)
         {
-            throw new NotImplementedException();
+            var destination = Vector3Int.FloorToInt(guyHit.transform.position) + direction;
+            if (Passable(destination))
+            {
+                guyHit.transform.position = destination;
+            }
+            else
+            {
+                var unitInWay = AllUnits.Find(u => u.transform.position == destination);
+                if(unitInWay != null)
+                {
+                    unitInWay.TakeDamage(1);
+                    guyHit.TakeDamage(1);
+                }
+                else
+                {
+                    guyHit.TakeDamage(1);
+                    //TODO: destroying tiles
+                }
+            }
         }
 
 
@@ -63,18 +79,17 @@ namespace Assets.Scripts
         {
             TurnFSM = this.GetComponent<Animator>();
 
-            PlayerUnits = new List<UnitController>();
             AllUnits = new List<UnitController>();
-
 
             //TODO: horrible hack
             var knightObject = Instantiate(unitPrefab, Vector3.zero, Quaternion.identity, this.transform);
             var knight = knightObject.GetComponent<UnitController>();
-            PlayerUnits.Add(knight.GetComponent<UnitController>());
+            knight.Side = "Player";
             AllUnits.Add(knight);
-            var knightObject2 = Instantiate(unitPrefab, Vector3.zero, Quaternion.identity, this.transform);
+            var knightObject2 = Instantiate(unitPrefab, Vector3.up, Quaternion.identity, this.transform);
+            knightObject2.GetComponent<SpriteRenderer>().color = Color.red;
             var knight2 = knightObject2.GetComponent<UnitController>();
-            PlayerUnits.Add(knight2.GetComponent<UnitController>());
+            knight2.Side = "BadGuys";
             AllUnits.Add(knight2);
 
 
@@ -98,7 +113,6 @@ namespace Assets.Scripts
                 {
                     if (hit.collider.CompareTag("Unit"))
                     {
-                        UnitClicked = hit.collider.gameObject;
                         UnitClickedEvent.Invoke(hit.collider.GetComponent<UnitController>());
                     }
                     else if (hit.collider.CompareTag("UIHighlights"))
@@ -291,6 +305,7 @@ namespace Assets.Scripts
 
         public void EndTurn()
         {
+            TriggerTransition(GameStateTransitions.Deselect);
             //bad guys do stuff
 
             //new turn
@@ -299,7 +314,7 @@ namespace Assets.Scripts
 
         private void NewTurn()
         {
-            foreach (var unit in PlayerUnits)
+            foreach (var unit in AllUnits.FindAll(u => u.Side == "Player"))
             {
                 unit.NewTurn();
             }

@@ -15,6 +15,7 @@ namespace Assets.Scripts
         public List<Ability> Abilities;
         public int MaxHP = 5;
         public int HP;
+        public string Side;
 
 
 
