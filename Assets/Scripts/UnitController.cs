@@ -15,6 +15,17 @@ namespace Assets.Scripts
             BadGuy
         }
 
+        private string _name;
+        public string Name
+        {
+            get { return _name; }
+            set
+            {
+                _name = value;
+                this.gameObject.name = _name;
+            }
+        }
+
         public int CurrentMovement = 5;
         public int MaxMovement = 5;
         public bool HasActed = false;
@@ -26,7 +37,6 @@ namespace Assets.Scripts
         public List<Vector3Int> fak;
 
         private Canvas MouseoverUI;
-
 
         public void NewTurn()
         {
