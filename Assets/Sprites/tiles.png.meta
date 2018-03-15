@@ -6,6 +6,8 @@ TextureImporter:
   fileIDToRecycleName:
     21300000: tiles_0
     21300002: tiles_1
+    21300004: tiles_2
+    21300006: tiles_3
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -100,6 +102,34 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 16
+        y: 112
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: tiles_2
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 112
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: tiles_3
+      rect:
+        serializedVersion: 2
+        x: 48
         y: 112
         width: 16
         height: 16

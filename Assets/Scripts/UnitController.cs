@@ -9,14 +9,21 @@ namespace Assets.Scripts
 {
     public class UnitController : MonoBehaviour
     {
+        public enum SideEnum
+        {
+            Player,
+            BadGuy
+        }
+
         public int CurrentMovement = 5;
         public int MaxMovement = 5;
         public bool HasActed = false;
         public List<Ability> Abilities;
         public int MaxHP = 5;
         public int HP;
-        public string Side;
+        public SideEnum Side;
 
+        public List<Vector3Int> fak;
 
 
         public void NewTurn()

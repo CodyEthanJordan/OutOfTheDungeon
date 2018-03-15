@@ -11,7 +11,7 @@ namespace Assets.Scripts.FSM
         override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             base.OnStateEnter(animator, stateInfo, layerIndex);
-            if (gm.UnitClicked.Side == "Player")
+            if (gm.UnitClicked.Side == UnitController.SideEnum.Player)
             {
                 gm.RenderMovement();
                 gm.UIHighlightClickedEvent.AddListener(MovementClick);

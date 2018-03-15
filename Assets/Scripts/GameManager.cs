@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using Assets.Scripts.Events;
 using UnityEngine.Events;
 using Assets.Scripts.FSM;
+using System.Collections.ObjectModel;
 
 namespace Assets.Scripts
 {
@@ -16,8 +17,10 @@ namespace Assets.Scripts
     {
         public Tilemap Dungeon;
         public Tilemap UIHighlights;
+        public Tilemap Dangerzones;
         public Tile MoveTile;
         public Tile TargetingTile;
+        public Tile ThreatenedTile;
 
         public UnitController UnitClicked;
         public GameObject unitPrefab;
@@ -41,7 +44,7 @@ namespace Assets.Scripts
         {
             //is the target a unit?
             var guyHit = AllUnits.Find(u => u.transform.position == target);
-            if(guyHit != null)
+            if (guyHit != null)
             {
                 guyHit.TakeDamage(1);
                 var knockbackDirection = guyHit.transform.position - unit.transform.position;
@@ -59,7 +62,7 @@ namespace Assets.Scripts
             else
             {
                 var unitInWay = AllUnits.Find(u => u.transform.position == destination);
-                if(unitInWay != null)
+                if (unitInWay != null)
                 {
                     unitInWay.TakeDamage(1);
                     guyHit.TakeDamage(1);
@@ -81,20 +84,25 @@ namespace Assets.Scripts
             AllUnits = new List<UnitController>();
 
             //TODO: horrible hack
-            var knightObject = Instantiate(unitPrefab, Vector3.zero, Quaternion.identity, this.transform);
+            var knightObject = Instantiate(unitPrefab, 2 * Vector3.down, Quaternion.identity, this.transform);
             var knight = knightObject.GetComponent<UnitController>();
-            knight.Side = "Player";
+            knight.Side = UnitController.SideEnum.Player;
             AllUnits.Add(knight);
             var knightObject2 = Instantiate(unitPrefab, Vector3.up, Quaternion.identity, this.transform);
             knightObject2.GetComponent<SpriteRenderer>().color = Color.red;
             var knight2 = knightObject2.GetComponent<UnitController>();
-            knight2.Side = "BadGuys";
+            knight2.Side = UnitController.SideEnum.BadGuy;
             AllUnits.Add(knight2);
 
 
 
             UnitClickedEvent = new UnitEvent();
             UIHighlightClickedEvent = new PositionEvent();
+        }
+
+        private void Start()
+        {
+            NewTurn();
         }
 
         public void TriggerTransition(string trigger)
@@ -104,7 +112,7 @@ namespace Assets.Scripts
 
         void Update()
         {
-            if(Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
             {
                 TriggerTransition(GameStateTransitions.Deselect);
             }
@@ -196,13 +204,13 @@ namespace Assets.Scripts
         public bool Passable(Vector3Int pos)
         {
             var wall = (DungeonTile)Dungeon.GetTile(pos);
-            if(!wall.Passable)
+            if (!wall.Passable)
             {
                 return false;
             }
 
             //TODO: pass through allies?
-            if(AllUnits.Where(u => u.transform.position == pos).Count() > 0)
+            if (AllUnits.Where(u => u.transform.position == pos).Count() > 0)
             {
                 return false;
             }
@@ -316,10 +324,61 @@ namespace Assets.Scripts
 
         private void NewTurn()
         {
-            foreach (var unit in AllUnits.FindAll(u => u.Side == "Player"))
+            foreach (var unit in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.Player))
             {
                 unit.NewTurn();
             }
+
+            //set up bad guy moves
+            foreach (var bg in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.BadGuy))
+            {
+                var destinations = FindAllValidMoves(bg);
+                List<Vector3Int> path = FindPathAdjacentToTarget(destinations);
+                bg.moveTo(path.Last());
+                var target = FindAdjacentTarget(path.Last());
+                Dangerzones.SetTile(target, ThreatenedTile);
+            }
+        }
+
+        public static readonly ReadOnlyCollection<Vector3Int> CardinalDirections = new ReadOnlyCollection<Vector3Int>(new[] {Vector3Int.up, Vector3Int.right, Vector3Int.left, Vector3Int.down });
+
+        Vector3Int FindAdjacentTarget(Vector3Int position)
+        {
+            var targetUnits = AllUnits.FindAll(u => u.Side == UnitController.SideEnum.Player);
+            List<Vector3Int> targets = new List<Vector3Int>();
+            foreach (var direction in CardinalDirections)
+            {
+                var adjacentSquare = position + direction;
+                if (targetUnits.Any(u => u.transform.position == adjacentSquare))
+                {
+                    targets.Add(adjacentSquare);
+                }
+            }
+
+            int i = UnityEngine.Random.Range(0, targets.Count);
+            return targets[i];
+        }
+
+        private List<Vector3Int> FindPathAdjacentToTarget(List<List<Vector3Int>> destinations)
+        {
+            var ends = destinations.Select(p => p.Last());
+            List<Vector3Int> validEndpoints = new List<Vector3Int>();
+            var targets = AllUnits.FindAll(u => u.Side == UnitController.SideEnum.Player);
+            foreach (var destination in ends)
+            {
+                foreach (var direction in CardinalDirections)
+                {
+                    var adjacentSquare = destination + direction;
+                    if(targets.Any(u => u.transform.position == adjacentSquare))
+                    {
+                        validEndpoints.Add(destination);
+                    }
+                }
+            }
+
+            int i = UnityEngine.Random.Range(0, validEndpoints.Count);
+            var path = destinations.Find(p => p.Last() == validEndpoints[i]);
+            return path;
         }
 
         public void DisplaySelectedUnitData()

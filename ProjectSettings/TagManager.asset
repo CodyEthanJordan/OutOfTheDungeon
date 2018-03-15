@@ -47,6 +47,9 @@ TagManager:
   - name: Units
     uniqueID: 2195779437
     locked: 0
+  - name: InfoOverlay
+    uniqueID: 3936447815
+    locked: 0
   - name: Highlight
     uniqueID: 326892891
     locked: 0
