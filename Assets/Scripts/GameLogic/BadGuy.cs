@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Assets.Scripts.GameLogic
 {
-    public class BadGuy : UnitController
+    public  class BadGuy : UnitController
     {
     }
 }
