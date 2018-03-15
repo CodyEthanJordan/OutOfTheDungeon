@@ -34,3 +34,5 @@ MonoBehaviour:
   m_Flags: 1
   m_ColliderType: 1
   Passable: 1
+  Name: Floor
+  Description: Basic dungeon floor.

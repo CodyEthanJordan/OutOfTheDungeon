@@ -25,6 +25,8 @@ namespace Assets.Scripts
 
         public List<Vector3Int> fak;
 
+        private Canvas MouseoverUI;
+
 
         public void NewTurn()
         {
@@ -51,6 +53,17 @@ namespace Assets.Scripts
             };
             Abilities.Add(a);
             HP = MaxHP;
+            MouseoverUI = transform.GetChild(0).GetComponent<Canvas>();
+        }
+
+        public void EnableUI()
+        {
+            MouseoverUI.gameObject.SetActive(true);
+        }
+
+        public void DisableUI()
+        {
+            MouseoverUI.gameObject.SetActive(false);
         }
 
         private void Start()

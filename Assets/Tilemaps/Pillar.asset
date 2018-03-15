@@ -34,3 +34,5 @@ MonoBehaviour:
   m_Flags: 1
   m_ColliderType: 1
   Passable: 0
+  Name: Pillar
+  Description: Impasible, and don't knock it over.

@@ -29,6 +29,23 @@ namespace Assets.Scripts
 
         public UIManager UI;
 
+        private int _turnCounter = 0;
+        private int turnCounter
+        {
+            get { return _turnCounter; }
+            set
+            {
+                _turnCounter = value;
+                if(UI != null)
+                {
+                    UI.UpdateTurn(_turnCounter);
+                }
+            }
+        }
+
+        private Vector3Int MouseoverPoint;
+        private Vector3Int PreviousMouseoverPoint;
+
         private Animator TurnFSM;
 
         public UnitEvent UnitClickedEvent;
@@ -102,6 +119,7 @@ namespace Assets.Scripts
 
         private void Start()
         {
+            turnCounter = -1;
             NewTurn();
         }
 
@@ -112,6 +130,22 @@ namespace Assets.Scripts
 
         void Update()
         {
+            //sort out mouseover stuff
+            MouseoverPoint = Dungeon.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            if(MouseoverPoint != PreviousMouseoverPoint)
+            {
+                PreviousMouseoverPoint = MouseoverPoint;
+                foreach (var unit in AllUnits)
+                {
+                    unit.DisableUI();
+                }
+                var unitUnderMouse = AllUnits.Find(u => u.transform.position == MouseoverPoint);
+                var dungeonTileUnderMouse = (DungeonTile)Dungeon.GetTile(MouseoverPoint);
+
+                UI.ShowMouseOverInfo(dungeonTileUnderMouse, unitUnderMouse);
+            }
+
+
             if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
             {
                 TriggerTransition(GameStateTransitions.Deselect);
@@ -324,6 +358,8 @@ namespace Assets.Scripts
 
         private void NewTurn()
         {
+            turnCounter = turnCounter + 1;
+
             foreach (var unit in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.Player))
             {
                 unit.NewTurn();

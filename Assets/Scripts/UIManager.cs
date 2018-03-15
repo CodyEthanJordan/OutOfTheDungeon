@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
 namespace Assets.Scripts
@@ -14,6 +15,9 @@ namespace Assets.Scripts
         public GameObject Ability1Button;
         public Text UnitMovementText;
         public Text HPText;
+        public Text TurnCounterText;
+        public Text TileName;
+        public Text TileDescription;
 
         public void DisplayUnitInfo(UnitController unit)
         {
@@ -32,6 +36,30 @@ namespace Assets.Scripts
             Ability1Button.SetActive(false);
             UnitMovementText.gameObject.SetActive(false);
             HPText.gameObject.SetActive(false);
+        }
+
+        internal void UpdateTurn(int turnCounter)
+        {
+            TurnCounterText.text = "Turn: " + turnCounter.ToString();
+        }
+
+        internal void ShowMouseOverInfo(DungeonTile dungeonTileUnderMouse, UnitController unitUnderMouse)
+        {
+            if(unitUnderMouse != null)
+            {
+                unitUnderMouse.EnableUI();
+            }
+
+            if(dungeonTileUnderMouse != null)
+            {
+                TileName.text = dungeonTileUnderMouse.Name;
+                TileDescription.text = dungeonTileUnderMouse.Description;
+            }
+            else
+            {
+                TileName.text = "";
+                TileDescription.text = "";
+            }
         }
     }
 }
