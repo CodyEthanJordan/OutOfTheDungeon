@@ -31,13 +31,36 @@ namespace Assets.Scripts
         public bool HasActed = false;
         public List<Ability> Abilities;
         public int MaxHP = 5;
-        public int HP;
+        private int _hp;
+        public int HP
+        {
+            get { return _hp; }
+            set
+            {
+                _hp = value;
+                MouseoverUI.UpdateHPText(_hp, MaxHP);
+            }
+        }
         public SideEnum Side;
         public int Damage = 1;
 
         public List<Vector3Int> TargetedTiles;
 
-        private Canvas MouseoverUI;
+        private MouseoverUIManager MouseoverUI;
+
+        private void Awake()
+        {
+            MouseoverUI = transform.GetChild(0).GetComponent<MouseoverUIManager>();
+            Abilities = new List<Ability>();
+            var a = new Ability
+            {
+                Name = "Slash"
+            };
+            Abilities.Add(a);
+            HP = MaxHP;
+            TargetedTiles = new List<Vector3Int>();
+        }
+
 
         public void NewTurn()
         {
@@ -54,33 +77,15 @@ namespace Assets.Scripts
                 Debug.Log("I'm ded");
             }
         }
-
-        private void Awake()
-        {
-            Abilities = new List<Ability>();
-            var a = new Ability
-            {
-                Name = "Slash"
-            };
-            Abilities.Add(a);
-            HP = MaxHP;
-            MouseoverUI = transform.GetChild(0).GetComponent<Canvas>();
-            TargetedTiles = new List<Vector3Int>();
-        }
-
+       
         public void EnableUI()
         {
-            MouseoverUI.gameObject.SetActive(true);
+            MouseoverUI.EnableUI();
         }
 
         public void DisableUI()
         {
-            MouseoverUI.gameObject.SetActive(false);
-        }
-
-        private void Start()
-        {
-           
+            MouseoverUI.DisableUI();
         }
 
         internal void moveTo(Vector3Int destination)

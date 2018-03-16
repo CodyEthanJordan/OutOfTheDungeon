@@ -12,7 +12,6 @@ namespace Assets.Scripts.FSM
         {
             base.OnStateEnter(animator, animatorStateInfo, layerIndex);
             gm.UIHighlightClickedEvent.AddListener(UseAbility);
-            Debug.Log("welcome to the target zone");
             gm.RenderAbility();
         }
 
