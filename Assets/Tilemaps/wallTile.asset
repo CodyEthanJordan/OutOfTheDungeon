@@ -7,9 +7,9 @@ MonoBehaviour:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b79177e9e8ab3ac4aa263dc97a2dbc1b, type: 3}
-  m_Name: Wall
+  m_EditorHideFlags: 1
+  m_Script: {fileID: 13312, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: wallTile
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: 21300018, guid: 4a9f8cbd17de36a40b5ff68dd765eabb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -33,7 +33,3 @@ MonoBehaviour:
   m_InstancedGameObject: {fileID: 0}
   m_Flags: 1
   m_ColliderType: 1
-  Passable: 0
-  Name: Wall
-  Description: Impassible
-  Slippery: 0

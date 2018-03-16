@@ -11,7 +11,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b79177e9e8ab3ac4aa263dc97a2dbc1b, type: 3}
   m_Name: Floor
   m_EditorClassIdentifier: 
-  m_Sprite: {fileID: 21300000, guid: 4a9f8cbd17de36a40b5ff68dd765eabb, type: 3}
+  m_Sprite: {fileID: 21300016, guid: 4a9f8cbd17de36a40b5ff68dd765eabb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Transform:
     e00: 1
@@ -36,3 +36,4 @@ MonoBehaviour:
   Passable: 1
   Name: Floor
   Description: Basic dungeon floor.
+  Slippery: 0
