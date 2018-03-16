@@ -1507,7 +1507,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Dungeon: {fileID: 2077115550}
   UIHighlights: {fileID: 1399422956}
-  Dangerzones: {fileID: 165601719}
   MoveTile: {fileID: 11400000, guid: eb9c603373d492a40a3378d31864e1c7, type: 2}
   TargetingTile: {fileID: 11400000, guid: d28b9cd5da97b3c4a8e8f36d63a4a4a7, type: 2}
   ThreatenedTile: {fileID: 11400000, guid: d702fb395964dc1409da3e38145ade63, type: 2}

@@ -17,7 +17,7 @@ namespace Assets.Scripts
     {
         public Tilemap Dungeon;
         public Tilemap UIHighlights;
-        public Tilemap Dangerzones;
+        //public Tilemap Dangerzones;
         public Tile MoveTile;
         public Tile TargetingTile;
         public Tile ThreatenedTile;
@@ -36,7 +36,7 @@ namespace Assets.Scripts
             set
             {
                 _turnCounter = value;
-                if(UI != null)
+                if (UI != null)
                 {
                     UI.UpdateTurn(_turnCounter);
                 }
@@ -74,7 +74,8 @@ namespace Assets.Scripts
             var destination = Vector3Int.FloorToInt(guyHit.transform.position) + direction;
             if (Passable(destination))
             {
-                guyHit.transform.position = destination;
+                guyHit.moveTo(destination);
+                //TODO: oil slick, recursive call
             }
             else
             {
@@ -132,7 +133,7 @@ namespace Assets.Scripts
         {
             //sort out mouseover stuff
             MouseoverPoint = Dungeon.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-            if(MouseoverPoint != PreviousMouseoverPoint)
+            if (MouseoverPoint != PreviousMouseoverPoint)
             {
                 PreviousMouseoverPoint = MouseoverPoint;
                 foreach (var unit in AllUnits)
@@ -356,14 +357,14 @@ namespace Assets.Scripts
                 foreach (var target in badGuy.TargetedTiles)
                 {
                     var targetedUnit = AllUnits.Find(u => u.transform.position == target);
-                    if(targetedUnit != null)
+                    if (targetedUnit != null)
                     {
                         targetedUnit.TakeDamage(badGuy.Damage);
                     }
                 }
-                badGuy.TargetedTiles.Clear();
+                badGuy.ClearTargetOverlays();
             }
-            Dangerzones.ClearAllTiles();
+            //Dangerzones.ClearAllTiles();
 
             //new turn
             NewTurn();
@@ -385,12 +386,12 @@ namespace Assets.Scripts
                 List<Vector3Int> path = FindPathAdjacentToTarget(destinations);
                 bg.moveTo(path.Last());
                 var target = FindAdjacentTarget(path.Last());
-                Dangerzones.SetTile(target, ThreatenedTile);
-                bg.TargetedTiles.Add(target);
+                //Dangerzones.SetTile(target, ThreatenedTile);
+                bg.TargetTile(target);
             }
         }
 
-        public static readonly ReadOnlyCollection<Vector3Int> CardinalDirections = new ReadOnlyCollection<Vector3Int>(new[] {Vector3Int.up, Vector3Int.right, Vector3Int.left, Vector3Int.down });
+        public static readonly ReadOnlyCollection<Vector3Int> CardinalDirections = new ReadOnlyCollection<Vector3Int>(new[] { Vector3Int.up, Vector3Int.right, Vector3Int.left, Vector3Int.down });
 
         Vector3Int FindAdjacentTarget(Vector3Int position)
         {
@@ -419,7 +420,7 @@ namespace Assets.Scripts
                 foreach (var direction in CardinalDirections)
                 {
                     var adjacentSquare = destination + direction;
-                    if(targets.Any(u => u.transform.position == adjacentSquare))
+                    if (targets.Any(u => u.transform.position == adjacentSquare))
                     {
                         validEndpoints.Add(destination);
                     }
@@ -436,9 +437,23 @@ namespace Assets.Scripts
             UI.DisplayUnitInfo(UnitClicked);
         }
 
-        internal void RenderAbility()
+        internal void RenderAbility(Ability ability)
         {
-            UIHighlights.SetTile(Vector3Int.FloorToInt(UnitClicked.transform.position) + Vector3Int.up, TargetingTile);
+            //TODO: generalize, melee only
+            switch (ability.Type)
+            {
+                case Ability.AbilityType.Melee:
+                    foreach (var dir in GameManager.CardinalDirections)
+                    {
+                        UIHighlights.SetTile(Vector3Int.FloorToInt(UnitClicked.transform.position) + dir, TargetingTile);
+                    }
+                    break;
+
+                default:
+                    Debug.LogError("not implemented, TODO");
+                    break;
+            }
+
         }
 
         public void Ability1()

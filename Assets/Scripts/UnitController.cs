@@ -9,11 +9,8 @@ namespace Assets.Scripts
 {
     public class UnitController : MonoBehaviour
     {
-        public enum SideEnum
-        {
-            Player,
-            BadGuy
-        }
+        public GameObject DangerzoneUI;
+        private List<GameObject> TargetedTileOverlays = new List<GameObject>();
 
         private string _name;
         public string Name
@@ -61,7 +58,6 @@ namespace Assets.Scripts
             TargetedTiles = new List<Vector3Int>();
         }
 
-
         public void NewTurn()
         {
             HasActed = false;
@@ -90,7 +86,35 @@ namespace Assets.Scripts
 
         internal void moveTo(Vector3Int destination)
         {
+            var offset = destination - Vector3Int.FloorToInt(this.transform.position);
+            for (int i = 0; i < TargetedTiles.Count; i++)
+            {
+                TargetedTiles[i] = TargetedTiles[i] + offset;
+            }
             this.transform.position = destination;
+        }
+
+        internal void TargetTile(Vector3Int target)
+        {
+            TargetedTiles.Add(target);
+            var overlay = Instantiate(DangerzoneUI, target, Quaternion.identity, this.transform);
+            TargetedTileOverlays.Add(overlay);
+        }
+
+        public void ClearTargetOverlays()
+        {
+            foreach (var overlay in TargetedTileOverlays)
+            {
+                Destroy(overlay);
+            }
+            TargetedTileOverlays.Clear();
+            TargetedTiles.Clear();
+        }
+
+        public enum SideEnum
+        {
+            Player,
+            BadGuy
         }
     }
 }

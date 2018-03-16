@@ -197,6 +197,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15486aac93a5a554fb7b28529411a272, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DangerzoneUI: {fileID: 1587006342558576, guid: 354a04f010f74ae4e9c282ec97b6f703,
+    type: 2}
   CurrentMovement: 5
   MaxMovement: 5
   HasActed: 0
