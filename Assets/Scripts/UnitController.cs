@@ -40,10 +40,12 @@ namespace Assets.Scripts
         }
         public SideEnum Side;
         public int Damage = 1;
+        public Sprite[] Graphics;
 
         public List<Vector3Int> TargetedTiles;
 
         private MouseoverUIManager MouseoverUI;
+        private SpriteRenderer sr;
 
         private void Awake()
         {
@@ -56,6 +58,7 @@ namespace Assets.Scripts
             Abilities.Add(a);
             HP = MaxHP;
             TargetedTiles = new List<Vector3Int>();
+            sr = this.GetComponent<SpriteRenderer>();
         }
 
         public void NewTurn()
@@ -116,10 +119,40 @@ namespace Assets.Scripts
             TargetedTiles.Clear();
         }
 
+        public void SetupUnit(string name, SideEnum side, Vector3Int position)
+        {
+            //TODO: pass in data about unit class, probably scriptable object
+            Name = name;
+            this.transform.position = position;
+
+            Side = side;
+            switch(side)
+            {
+                case SideEnum.Player:
+                    break;
+
+                case SideEnum.BadGuy:
+                    sr.sprite = Graphics[1];
+                    sr.color = Color.red;
+                    break;
+
+                case SideEnum.Hireling:
+                    sr.sprite = Graphics[2];
+                    sr.color = Color.green;
+                    break;
+
+                default:
+                    break;
+            }
+
+            DisableUI();
+        }
+
         public enum SideEnum
         {
             Player,
-            BadGuy
+            BadGuy,
+            Hireling,
         }
     }
 }

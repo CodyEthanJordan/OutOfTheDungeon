@@ -108,15 +108,20 @@ namespace Assets.Scripts
             AllUnits = new List<UnitController>();
 
             //TODO: horrible hack
-            var knightObject = Instantiate(unitPrefab, 2 * Vector3.down, Quaternion.identity, this.transform);
-            var knight = knightObject.GetComponent<UnitController>();
-            knight.Side = UnitController.SideEnum.Player;
-            AllUnits.Add(knight);
-            var knightObject2 = Instantiate(unitPrefab, Vector3.up, Quaternion.identity, this.transform);
-            knightObject2.GetComponent<SpriteRenderer>().color = Color.red;
-            var knight2 = knightObject2.GetComponent<UnitController>();
-            knight2.Side = UnitController.SideEnum.BadGuy;
-            AllUnits.Add(knight2);
+
+            GameObject spawn = Instantiate(unitPrefab, this.transform);
+            spawn.GetComponent<UnitController>().SetupUnit("Knight", UnitController.SideEnum.Player, new Vector3Int(-4, -1, 0));
+            spawn = Instantiate(unitPrefab, this.transform);
+            spawn.GetComponent<UnitController>().SetupUnit("Knight", UnitController.SideEnum.Player, new Vector3Int(-4, 0, 0));
+            spawn = Instantiate(unitPrefab, this.transform);
+            spawn.GetComponent<UnitController>().SetupUnit("Hireling", UnitController.SideEnum.Hireling, new Vector3Int(-5, 1, 0));
+            spawn = Instantiate(unitPrefab, this.transform);
+            spawn.GetComponent<UnitController>().SetupUnit("Hireling", UnitController.SideEnum.Hireling, new Vector3Int(-5, -3, 0));
+            spawn = Instantiate(unitPrefab, this.transform);
+            spawn.GetComponent<UnitController>().SetupUnit("Ooze", UnitController.SideEnum.BadGuy, new Vector3Int(-1, 1, 0));
+            spawn = Instantiate(unitPrefab, this.transform);
+            spawn.GetComponent<UnitController>().SetupUnit("Ooze", UnitController.SideEnum.BadGuy, new Vector3Int(1, 3, 0));
+
 
 
 
@@ -148,7 +153,7 @@ namespace Assets.Scripts
                 }
                 var unitUnderMouse = AllUnits.Find(u => u.transform.position == MouseoverPoint);
                 var dungeonTileUnderMouse = (DungeonTile)Dungeon.GetTile(MouseoverPoint);
-
+                unitUnderMouse.EnableUI();
                 UI.ShowMouseOverInfo(dungeonTileUnderMouse, unitUnderMouse);
             }
 
@@ -342,7 +347,7 @@ namespace Assets.Scripts
             }
 
             //set up bad guy moves
-            //TODO: different kinds of bad guy UI
+            //TODO: different kinds of bad guy AI
             foreach (var bg in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.BadGuy))
             {
                 var destinations = FindAllValidMoves(bg);
