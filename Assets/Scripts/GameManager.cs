@@ -51,11 +51,8 @@ namespace Assets.Scripts
         public UnitEvent UnitClickedEvent;
         public PositionEvent UIHighlightClickedEvent;
 
-        internal void MoveUnit(UnitController unitController, Vector3Int destination)
-        {
-            unitController.CurrentMovement -= DistanceTo(Vector3Int.FloorToInt(unitController.transform.position), destination);
-            unitController.moveTo(destination);
-        }
+        private bool blockInputs = false;
+        private float MOVEMENT_SPEED = 0.1f;
 
         internal void ActivateAbility(UnitController unit, Vector3Int target)
         {
@@ -82,6 +79,10 @@ namespace Assets.Scripts
                     //recursive call as it keeps sliding
                     KnockBack(guyHit, direction);
                 }
+                else
+                {
+                    ApplyTileEffects(guyHit, Vector3Int.FloorToInt(guyHit.transform.position));
+                }
             }
             else
             {
@@ -99,20 +100,12 @@ namespace Assets.Scripts
             }
         }
 
-
-        // Use this for initialization
         void Awake()
         {
             TurnFSM = this.GetComponent<Animator>();
 
             AllUnits = new List<UnitController>();
 
-            //TODO: horrible hack
-            UnitController spawnedUnit;
-            GameObject spawn = Instantiate(unitPrefab, this.transform);
-            spawnedUnit = spawn.GetComponent<UnitController>();
-            spawnedUnit.SetupUnit("Knight", UnitController.SideEnum.Player, new Vector3Int(-4, -1, 0));
-            AllUnits.Add(spawnedUnit);
 
 
             UnitClickedEvent = new UnitEvent();
@@ -121,8 +114,20 @@ namespace Assets.Scripts
 
         private void Start()
         {
+            //TODO: horrible hack
+            SpawnUnit(new Vector3Int(-4, 0, 0), "Knight", UnitController.SideEnum.Player);
+            SpawnUnit(new Vector3Int(0, 0, 0), "Ooze", UnitController.SideEnum.BadGuy);
             turnCounter = -1;
             NewTurn();
+        }
+
+        private void SpawnUnit(Vector3Int position, string name, UnitController.SideEnum side)
+        {
+            UnitController spawnedUnit;
+            GameObject spawn = Instantiate(unitPrefab, this.transform);
+            spawnedUnit = spawn.GetComponent<UnitController>();
+            spawnedUnit.SetupUnit(name, side, position);
+            AllUnits.Add(spawnedUnit);
         }
 
         public void TriggerTransition(string trigger)
@@ -150,24 +155,27 @@ namespace Assets.Scripts
                 UI.ShowMouseOverInfo(dungeonTileUnderMouse, unitUnderMouse);
             }
 
+            if (!blockInputs)
+            {
 
-            if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
-            {
-                TriggerTransition(GameStateTransitions.Deselect);
-            }
-            if (Input.GetMouseButtonDown(0))
-            {
-                RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-                if (hit.collider != null)
+                if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
                 {
-                    if (hit.collider.CompareTag("Unit"))
+                    TriggerTransition(GameStateTransitions.Deselect);
+                }
+                if (Input.GetMouseButtonDown(0))
+                {
+                    RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+                    if (hit.collider != null)
                     {
-                        UnitClickedEvent.Invoke(hit.collider.GetComponent<UnitController>());
-                    }
-                    else if (hit.collider.CompareTag("UIHighlights"))
-                    {
-                        var destination = Dungeon.WorldToCell(hit.point);
-                        UIHighlightClickedEvent.Invoke(destination);
+                        if (hit.collider.CompareTag("Unit"))
+                        {
+                            UnitClickedEvent.Invoke(hit.collider.GetComponent<UnitController>());
+                        }
+                        else if (hit.collider.CompareTag("UIHighlights"))
+                        {
+                            var destination = Dungeon.WorldToCell(hit.point);
+                            UIHighlightClickedEvent.Invoke(destination);
+                        }
                     }
                 }
             }
@@ -214,7 +222,6 @@ namespace Assets.Scripts
         private List<List<Vector3Int>> FindAllValidMoves(Vector3Int Position, int moves)
         {
             var validMoves = new List<List<Vector3Int>>();
-            var startingPath = new List<Vector3Int>() { Position };
             Queue<List<Vector3Int>> PlacesToVisit = new Queue<List<Vector3Int>>();
             PlacesToVisit.Enqueue(new List<Vector3Int>() { Position });
 
@@ -330,6 +337,41 @@ namespace Assets.Scripts
             NewTurn();
         }
 
+        public void MoveUnit(UnitController unit, Vector3Int destination)
+        {
+            //TODO: animate?, also unify with other one
+            unit.CurrentMovement -= DistanceTo(Vector3Int.FloorToInt(unit.transform.position), destination);
+            unit.moveTo(destination);
+            ApplyTileEffects(unit, destination);
+        }
+
+        private void MoveUnit(UnitController unit, List<Vector3Int> path, float animationSpeed)
+        {
+            blockInputs = true;
+            unit.Move(path, animationSpeed, () => blockInputs=false);
+            // apply tile effects
+            var destination = path.Last();
+            ApplyTileEffects(unit, destination);
+            blockInputs = false;
+        }
+
+        private void ApplyTileEffects(UnitController unit, Vector3Int positon)
+        {
+            var tileLandedOn = (DungeonTile)Dungeon.GetTile(positon);
+
+            if(tileLandedOn.Deadly)
+            {
+                Kill(unit);
+            }
+        }
+
+        private void Kill(UnitController unit)
+        {
+            AllUnits.Remove(unit);
+            unit.Die();
+            //TODO: victory/loss conditions if no Players exist
+        }
+
         private void NewTurn()
         {
             turnCounter = turnCounter + 1;
@@ -347,7 +389,7 @@ namespace Assets.Scripts
                 List<Vector3Int> path = FindPathAdjacentToTarget(destinations);
                 if (path != null)
                 {
-                    bg.moveTo(path.Last());
+                    MoveUnit(bg, path, MOVEMENT_SPEED);
                     var target = FindAdjacentTarget(path.Last());
                     bg.TargetTile(target);
                 }
@@ -356,7 +398,8 @@ namespace Assets.Scripts
                     // move to random location I guess
                     int i = UnityEngine.Random.Range(0, destinations.Count);
                     var move = destinations[i].Last();
-                    bg.moveTo(move);
+                    MoveUnit(bg, destinations[i], MOVEMENT_SPEED);
+                    //bg.moveTo(move);
                 }
             }
         }

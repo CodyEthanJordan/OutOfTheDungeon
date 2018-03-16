@@ -76,7 +76,7 @@ namespace Assets.Scripts
                 Debug.Log("I'm ded");
             }
         }
-       
+
         public void EnableUI()
         {
             MouseoverUI.EnableUI();
@@ -93,19 +93,15 @@ namespace Assets.Scripts
             for (int i = 0; i < TargetedTiles.Count; i++)
             {
                 TargetedTiles[i] = TargetedTiles[i] + offset;
+                TargetedTileOverlays[i].transform.position = TargetedTileOverlays[i].transform.position + offset;
             }
             this.transform.position = destination;
         }
 
         internal void TargetTile(Vector3Int target)
         {
-            if(target == null)
-            {
-                return;
-            }
-
             TargetedTiles.Add(target);
-            var overlay = Instantiate(DangerzoneUI, target, Quaternion.identity, this.transform);
+            var overlay = Instantiate(DangerzoneUI, target, Quaternion.identity);
             TargetedTileOverlays.Add(overlay);
         }
 
@@ -126,7 +122,7 @@ namespace Assets.Scripts
             this.transform.position = position;
 
             Side = side;
-            switch(side)
+            switch (side)
             {
                 case SideEnum.Player:
                     break;
@@ -153,6 +149,36 @@ namespace Assets.Scripts
             Player,
             BadGuy,
             Hireling,
+        }
+
+        internal void Die()
+        {
+            Destroy(this.gameObject);
+        }
+
+        internal void Move(List<Vector3Int> path, float animationSpeed, Func<bool> completionCallback)
+        {
+            StartCoroutine(LerpMove(path, animationSpeed, completionCallback));
+        }
+
+        private System.Collections.IEnumerator LerpMove(List<Vector3Int> path, float animationSpeed, Func<bool> completionCallback)
+        {
+            float l = 0;
+            Vector3 previousPosition = this.transform.position;
+            foreach (var step in path)
+            {
+                while (l < 1)
+                {
+                    this.transform.position = Vector3.Lerp(previousPosition, step, l);
+                    l += 1 / animationSpeed;
+                    yield return new WaitForSeconds(animationSpeed);
+                }
+                l = 0;
+                previousPosition = step;
+            }
+            //TODO: unify with moveTo logic
+            this.transform.position = path.Last();
+            completionCallback();
         }
     }
 }
