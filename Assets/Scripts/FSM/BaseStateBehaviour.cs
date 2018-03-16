@@ -12,6 +12,7 @@ namespace Assets.Scripts.FSM
         {
             base.OnStateEnter(animator, stateInfo, layerIndex);
             gm.UnitClickedEvent.AddListener(OnUnitClick);
+            gm.ClearOverlays();
             gm.DeselectUnit();
         }
 

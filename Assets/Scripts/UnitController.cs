@@ -33,8 +33,9 @@ namespace Assets.Scripts
         public int MaxHP = 5;
         public int HP;
         public SideEnum Side;
+        public int Damage = 1;
 
-        public List<Vector3Int> fak;
+        public List<Vector3Int> TargetedTiles;
 
         private Canvas MouseoverUI;
 
@@ -64,6 +65,7 @@ namespace Assets.Scripts
             Abilities.Add(a);
             HP = MaxHP;
             MouseoverUI = transform.GetChild(0).GetComponent<Canvas>();
+            TargetedTiles = new List<Vector3Int>();
         }
 
         public void EnableUI()

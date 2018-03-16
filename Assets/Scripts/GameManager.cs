@@ -351,6 +351,19 @@ namespace Assets.Scripts
         {
             TriggerTransition(GameStateTransitions.Deselect);
             //bad guys do stuff
+            foreach (var badGuy in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.BadGuy))
+            {
+                foreach (var target in badGuy.TargetedTiles)
+                {
+                    var targetedUnit = AllUnits.Find(u => u.transform.position == target);
+                    if(targetedUnit != null)
+                    {
+                        targetedUnit.TakeDamage(badGuy.Damage);
+                    }
+                }
+                badGuy.TargetedTiles.Clear();
+            }
+            Dangerzones.ClearAllTiles();
 
             //new turn
             NewTurn();
@@ -373,6 +386,7 @@ namespace Assets.Scripts
                 bg.moveTo(path.Last());
                 var target = FindAdjacentTarget(path.Last());
                 Dangerzones.SetTile(target, ThreatenedTile);
+                bg.TargetedTiles.Add(target);
             }
         }
 
