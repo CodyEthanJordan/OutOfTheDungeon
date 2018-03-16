@@ -153,6 +153,10 @@ namespace Assets.Scripts
 
         internal void Die()
         {
+            foreach (var tile in TargetedTileOverlays)
+            {
+                Destroy(tile);
+            }
             Destroy(this.gameObject);
         }
 

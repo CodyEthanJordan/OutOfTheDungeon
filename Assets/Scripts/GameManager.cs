@@ -117,6 +117,8 @@ namespace Assets.Scripts
             //TODO: horrible hack
             SpawnUnit(new Vector3Int(-4, 0, 0), "Knight", UnitController.SideEnum.Player);
             SpawnUnit(new Vector3Int(0, 0, 0), "Ooze", UnitController.SideEnum.BadGuy);
+            SpawnUnit(new Vector3Int(0, -2, 0), "Ooze", UnitController.SideEnum.BadGuy);
+            SpawnUnit(new Vector3Int(-5, 1, 0), "Hireling", UnitController.SideEnum.Hireling);
             turnCounter = -1;
             NewTurn();
         }
@@ -386,11 +388,11 @@ namespace Assets.Scripts
             foreach (var bg in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.BadGuy))
             {
                 var destinations = FindAllValidMoves(bg);
-                List<Vector3Int> path = FindPathAdjacentToTarget(destinations);
+                List<Vector3Int> path = FindPathAdjacentToTarget(destinations, (UnitController u) => u.Side == UnitController.SideEnum.Hireling || u.Side == UnitController.SideEnum.Player );
                 if (path != null)
                 {
                     MoveUnit(bg, path, MOVEMENT_SPEED);
-                    var target = FindAdjacentTarget(path.Last());
+                    var target = FindAdjacentTarget(path.Last(), (UnitController u) => u.Side == UnitController.SideEnum.Hireling || u.Side == UnitController.SideEnum.Player);
                     bg.TargetTile(target);
                 }
                 else
@@ -406,14 +408,14 @@ namespace Assets.Scripts
 
         public static readonly ReadOnlyCollection<Vector3Int> CardinalDirections = new ReadOnlyCollection<Vector3Int>(new[] { Vector3Int.up, Vector3Int.right, Vector3Int.left, Vector3Int.down });
 
-        Vector3Int FindAdjacentTarget(Vector3Int position)
+        Vector3Int FindAdjacentTarget(Vector3Int position, Func<UnitController, bool> targetPredicate)
         {
             var targetUnits = AllUnits.FindAll(u => u.Side == UnitController.SideEnum.Player);
             List<Vector3Int> targets = new List<Vector3Int>();
             foreach (var direction in CardinalDirections)
             {
                 var adjacentSquare = position + direction;
-                if (targetUnits.Any(u => u.transform.position == adjacentSquare))
+                if (targetUnits.Any(targetPredicate))
                 {
                     targets.Add(adjacentSquare);
                 }
@@ -428,11 +430,11 @@ namespace Assets.Scripts
             return targets[i];
         }
 
-        private List<Vector3Int> FindPathAdjacentToTarget(List<List<Vector3Int>> destinations)
+        private List<Vector3Int> FindPathAdjacentToTarget(List<List<Vector3Int>> destinations, Predicate<UnitController> targetPredicate)
         {
             var ends = destinations.Select(p => p.Last());
             List<Vector3Int> validEndpoints = new List<Vector3Int>();
-            var targets = AllUnits.FindAll(u => u.Side == UnitController.SideEnum.Player);
+            var targets = AllUnits.FindAll(targetPredicate);
             foreach (var destination in ends)
             {
                 foreach (var direction in CardinalDirections)
