@@ -71,11 +71,17 @@ namespace Assets.Scripts
 
         private void KnockBack(UnitController guyHit, Vector3Int direction)
         {
+            //push units who are hit in direction
             var destination = Vector3Int.FloorToInt(guyHit.transform.position) + direction;
             if (Passable(destination))
             {
                 guyHit.moveTo(destination);
-                //TODO: oil slick, recursive call
+                var standingOnTile = (DungeonTile)Dungeon.GetTile(destination);
+                if (standingOnTile.Slippery)
+                {
+                    //recursive call as it keeps sliding
+                    KnockBack(guyHit, direction);
+                }
             }
             else
             {
@@ -166,52 +172,7 @@ namespace Assets.Scripts
                         UIHighlightClickedEvent.Invoke(destination);
                     }
                 }
-                //switch (CurrentState)
-                //{
-                //    case GameState.BaseState:
-                //        if (hit.collider != null)
-                //        {
-                //            if (hit.collider.CompareTag("Unit"))
-                //            {
-                //                CurrentState = GameState.UnitSelected;
-                //                TurnFSM.SetTrigger("UnitClicked");
-                //                unitClicked = hit.collider.gameObject;
-                //                var unit = unitClicked.GetComponent<UnitController>().UnitRepresented;
-                //                RenderMovement(unit);
-                //                ActivateButtons(unit);
-                //            }
-                //        }
-                //        break;
-                //    case GameState.UnitSelected:
-                //        if (hit.collider != null)
-                //        {
-                //            if (hit.collider.CompareTag("UI"))
-                //            {
-                //                //move unit
-                //                var destination = Dungeon.WorldToCell(hit.point);
-                //                var unitController = unitClicked.GetComponent<UnitController>();
-                //                unitController.UnitRepresented.CurrentMovement -= DistanceTo(unitController.UnitRepresented.Position, destination);
-                //                unitController.moveTo(destination);
-                //                CurrentState = GameState.BaseState;
-                //                TurnFSM.SetTrigger("Deselect");
-                //                ClearOverlays();
-                //                DeselectUnit();
-                //            }
-                //        }
-                //        else
-                //        {
-                //            //CurrentState = GameState.BaseState;
-                //            //ClearOverlays();
-                //            //DeselectUnit();
-                //        }
-                //        break;
-                //    default:
-                //        break;
-
-                //}
-
             }
-
         }
 
         public void DeselectUnit()
@@ -233,7 +194,6 @@ namespace Assets.Scripts
             {
                 return -1;
             }
-
         }
 
         public bool Passable(Vector3Int pos)
@@ -271,6 +231,7 @@ namespace Assets.Scripts
                     continue; //don't go more if out of movement
                 }
 
+                //TODO: refactor to use cardinal directions
                 var north = node + Vector3Int.up;
                 if (Passable(north))
                 {
@@ -352,6 +313,7 @@ namespace Assets.Scripts
         {
             TriggerTransition(GameStateTransitions.Deselect);
             //bad guys do stuff
+            //TODO: different kinds of bad guy UI
             foreach (var badGuy in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.BadGuy))
             {
                 foreach (var target in badGuy.TargetedTiles)
@@ -380,14 +342,24 @@ namespace Assets.Scripts
             }
 
             //set up bad guy moves
+            //TODO: different kinds of bad guy UI
             foreach (var bg in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.BadGuy))
             {
                 var destinations = FindAllValidMoves(bg);
                 List<Vector3Int> path = FindPathAdjacentToTarget(destinations);
-                bg.moveTo(path.Last());
-                var target = FindAdjacentTarget(path.Last());
-                //Dangerzones.SetTile(target, ThreatenedTile);
-                bg.TargetTile(target);
+                if (path != null)
+                {
+                    bg.moveTo(path.Last());
+                    var target = FindAdjacentTarget(path.Last());
+                    bg.TargetTile(target);
+                }
+                else
+                {
+                    // move to random location I guess
+                    int i = UnityEngine.Random.Range(0, destinations.Count);
+                    var move = destinations[i].Last();
+                    bg.moveTo(move);
+                }
             }
         }
 
@@ -404,6 +376,11 @@ namespace Assets.Scripts
                 {
                     targets.Add(adjacentSquare);
                 }
+            }
+
+            if (targets.Count == 0)
+            {
+                return new Vector3Int(100, 100, 100);
             }
 
             int i = UnityEngine.Random.Range(0, targets.Count);
@@ -425,6 +402,11 @@ namespace Assets.Scripts
                         validEndpoints.Add(destination);
                     }
                 }
+            }
+
+            if (validEndpoints.Count == 0)
+            {
+                return null;
             }
 
             int i = UnityEngine.Random.Range(0, validEndpoints.Count);

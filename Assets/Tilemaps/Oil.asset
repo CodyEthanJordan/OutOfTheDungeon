@@ -33,6 +33,7 @@ MonoBehaviour:
   m_InstancedGameObject: {fileID: 0}
   m_Flags: 1
   m_ColliderType: 1
-  Passable: 0
+  Passable: 1
   Name: Oil Spill
   Description: Unit pushed into this will keep sliding. Lights on fire.
+  Slippery: 1

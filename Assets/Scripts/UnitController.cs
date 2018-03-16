@@ -96,6 +96,11 @@ namespace Assets.Scripts
 
         internal void TargetTile(Vector3Int target)
         {
+            if(target == null)
+            {
+                return;
+            }
+
             TargetedTiles.Add(target);
             var overlay = Instantiate(DangerzoneUI, target, Quaternion.identity, this.transform);
             TargetedTileOverlays.Add(overlay);
