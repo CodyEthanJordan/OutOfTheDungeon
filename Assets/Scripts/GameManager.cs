@@ -108,21 +108,11 @@ namespace Assets.Scripts
             AllUnits = new List<UnitController>();
 
             //TODO: horrible hack
-
+            UnitController spawnedUnit;
             GameObject spawn = Instantiate(unitPrefab, this.transform);
-            spawn.GetComponent<UnitController>().SetupUnit("Knight", UnitController.SideEnum.Player, new Vector3Int(-4, -1, 0));
-            spawn = Instantiate(unitPrefab, this.transform);
-            spawn.GetComponent<UnitController>().SetupUnit("Knight", UnitController.SideEnum.Player, new Vector3Int(-4, 0, 0));
-            spawn = Instantiate(unitPrefab, this.transform);
-            spawn.GetComponent<UnitController>().SetupUnit("Hireling", UnitController.SideEnum.Hireling, new Vector3Int(-5, 1, 0));
-            spawn = Instantiate(unitPrefab, this.transform);
-            spawn.GetComponent<UnitController>().SetupUnit("Hireling", UnitController.SideEnum.Hireling, new Vector3Int(-5, -3, 0));
-            spawn = Instantiate(unitPrefab, this.transform);
-            spawn.GetComponent<UnitController>().SetupUnit("Ooze", UnitController.SideEnum.BadGuy, new Vector3Int(-1, 1, 0));
-            spawn = Instantiate(unitPrefab, this.transform);
-            spawn.GetComponent<UnitController>().SetupUnit("Ooze", UnitController.SideEnum.BadGuy, new Vector3Int(1, 3, 0));
-
-
+            spawnedUnit = spawn.GetComponent<UnitController>();
+            spawnedUnit.SetupUnit("Knight", UnitController.SideEnum.Player, new Vector3Int(-4, -1, 0));
+            AllUnits.Add(spawnedUnit);
 
 
             UnitClickedEvent = new UnitEvent();
@@ -153,7 +143,10 @@ namespace Assets.Scripts
                 }
                 var unitUnderMouse = AllUnits.Find(u => u.transform.position == MouseoverPoint);
                 var dungeonTileUnderMouse = (DungeonTile)Dungeon.GetTile(MouseoverPoint);
-                unitUnderMouse.EnableUI();
+                if (unitUnderMouse != null)
+                {
+                    unitUnderMouse.EnableUI();
+                }
                 UI.ShowMouseOverInfo(dungeonTileUnderMouse, unitUnderMouse);
             }
 
