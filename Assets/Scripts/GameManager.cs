@@ -26,8 +26,28 @@ namespace Assets.Scripts
         public UnitController UnitClicked;
         public GameObject unitPrefab;
 
-        public int RemainingHirelings;
-        public int SavedHirelings = 0;
+        private int _remainingHirelings;
+        private int remainingHirelings
+        {
+            get { return _remainingHirelings; }
+            set
+            {
+                _remainingHirelings = value;
+                HirelingSpawned.Invoke(_remainingHirelings);
+            }
+        }
+        public IntEvent HirelingSpawned = new IntEvent();
+        private int _savedHirelings = 0;
+        private int savedHirelings
+        {
+            get { return _savedHirelings; }
+            set
+            {
+                _savedHirelings = value;
+                HirelingSaved.Invoke(_savedHirelings);
+            }
+        }
+        public IntEvent HirelingSaved = new IntEvent();
 
         public List<UnitController> AllUnits;
 
@@ -118,7 +138,8 @@ namespace Assets.Scripts
 
         private void Start()
         {
-            RemainingHirelings = 6;
+            savedHirelings = 0;
+            remainingHirelings = 6;
             entranceLocations = new List<Vector3Int>();
             for (int i = Dungeon.cellBounds.xMin; i < Dungeon.cellBounds.xMax; i++)
             {
@@ -176,7 +197,7 @@ namespace Assets.Scripts
             SpawnUnit(new Vector3Int(-5, 1, 0), "Hireling", UnitController.SideEnum.Hireling);
             turnCounter = -1;
             NewTurn();
-            RemainingHirelings = 6;
+            remainingHirelings = 6;
         }
 
         private void SpawnUnit(Vector3Int position, string name, UnitController.SideEnum side)
@@ -453,7 +474,7 @@ namespace Assets.Scripts
                         if(nextTile.Name == "Level Exit")
                         {
                             Kill(hireling);
-                            SavedHirelings++;
+                            savedHirelings++;
                             break;
                             //TODO: register as having made it
                         }

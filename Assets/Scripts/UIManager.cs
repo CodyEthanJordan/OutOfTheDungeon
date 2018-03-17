@@ -18,6 +18,8 @@ namespace Assets.Scripts
         public Text TurnCounterText;
         public Text TileName;
         public Text TileDescription;
+        public Text HirelingsSavedText;
+        public Text HirelingsRemainingText;
 
         public void DisplayUnitInfo(UnitController unit)
         {
@@ -45,12 +47,12 @@ namespace Assets.Scripts
 
         internal void ShowMouseOverInfo(DungeonTile dungeonTileUnderMouse, UnitController unitUnderMouse)
         {
-            if(unitUnderMouse != null)
+            if (unitUnderMouse != null)
             {
                 unitUnderMouse.EnableUI();
             }
 
-            if(dungeonTileUnderMouse != null)
+            if (dungeonTileUnderMouse != null)
             {
                 TileName.text = dungeonTileUnderMouse.Name;
                 TileDescription.text = dungeonTileUnderMouse.Description;
@@ -60,6 +62,16 @@ namespace Assets.Scripts
                 TileName.text = "";
                 TileDescription.text = "";
             }
+        }
+
+        public void UpdateHirelingsSaved(int h)
+        {
+            HirelingsSavedText.text = "Hirelings Saved: " + h;
+        }
+
+        public void UpdateHirelingsReamining(int h)
+        {
+            HirelingsRemainingText.text = "Hirelings Remaining: " + h;
         }
     }
 }
