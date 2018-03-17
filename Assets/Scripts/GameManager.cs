@@ -118,6 +118,7 @@ namespace Assets.Scripts
 
         private void Start()
         {
+            RemainingHirelings = 6;
             entranceLocations = new List<Vector3Int>();
             for (int i = Dungeon.cellBounds.xMin; i < Dungeon.cellBounds.xMax; i++)
             {
@@ -452,15 +453,16 @@ namespace Assets.Scripts
                         if(nextTile.Name == "Level Exit")
                         {
                             Kill(hireling);
+                            SavedHirelings++;
                             break;
                             //TODO: register as having made it
                         }
                         MoveUnit(hireling, nextPosition);
                     }
                 }
-              
-                //find path along road
             }
+
+
 
             //set up bad guy moves
             //TODO: different kinds of bad guy AI
@@ -470,7 +472,8 @@ namespace Assets.Scripts
                 List<Vector3Int> path = FindPathAdjacentToTarget(destinations, (UnitController u) => u.Side == UnitController.SideEnum.Hireling || u.Side == UnitController.SideEnum.Player);
                 if (path != null)
                 {
-                    MoveUnit(bg, path, MOVEMENT_SPEED);
+                    //MoveUnit(bg, path, MOVEMENT_SPEED);
+                    MoveUnit(bg, path.Last());
                     var target = FindAdjacentTarget(path.Last(), (UnitController u) => u.Side == UnitController.SideEnum.Hireling || u.Side == UnitController.SideEnum.Player);
                     bg.TargetTile(target);
                 }
@@ -479,8 +482,9 @@ namespace Assets.Scripts
                     // move to random location I guess
                     int i = UnityEngine.Random.Range(0, destinations.Count);
                     var move = destinations[i].Last();
-                    MoveUnit(bg, destinations[i], MOVEMENT_SPEED);
+                    //MoveUnit(bg, destinations[i], MOVEMENT_SPEED);
                     //bg.moveTo(move);
+                    MoveUnit(bg, move);
                 }
             }
         }
