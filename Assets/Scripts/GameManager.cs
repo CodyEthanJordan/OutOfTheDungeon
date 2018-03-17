@@ -504,6 +504,11 @@ namespace Assets.Scripts
                             break;
                         }
                     }
+                    else
+                    {
+                        //got knocke off path, stand still and panic
+                        break;
+                    }
                 }
             }
 
