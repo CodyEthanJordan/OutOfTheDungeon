@@ -16,6 +16,7 @@ namespace Assets.Scripts
     public class GameManager : MonoBehaviour
     {
         public Tilemap Dungeon;
+        private GridInformation dungeonInfo;
         public Tilemap UIHighlights;
         //public Tilemap Dangerzones;
         public Tile MoveTile;
@@ -25,7 +26,12 @@ namespace Assets.Scripts
         public UnitController UnitClicked;
         public GameObject unitPrefab;
 
+        public int RemainingHirelings;
+        public int SavedHirelings = 0;
+
         public List<UnitController> AllUnits;
+
+        private List<Vector3Int> entranceLocations;
 
         public UIManager UI;
 
@@ -103,17 +109,65 @@ namespace Assets.Scripts
         void Awake()
         {
             TurnFSM = this.GetComponent<Animator>();
-
+            dungeonInfo = Dungeon.gameObject.GetComponent<GridInformation>();
             AllUnits = new List<UnitController>();
-
-
-
             UnitClickedEvent = new UnitEvent();
             UIHighlightClickedEvent = new PositionEvent();
+
         }
 
         private void Start()
         {
+            entranceLocations = new List<Vector3Int>();
+            for (int i = Dungeon.cellBounds.xMin; i < Dungeon.cellBounds.xMax; i++)
+            {
+                for (int j = Dungeon.cellBounds.yMin; j < Dungeon.cellBounds.yMax; j++)
+                {
+                    Vector3Int pos = new Vector3Int(i, j, (int)Dungeon.transform.position.z);
+                    if (Dungeon.HasTile(pos))
+                    {
+                        var tile = Dungeon.GetTile<DungeonTile>(pos);
+                        if (tile.Name == "Entrance")
+                        {
+                            entranceLocations.Add(pos);
+                        }
+                    }
+                }
+            }
+
+            foreach (var entrance in entranceLocations)
+            {
+                var pathToExit = new List<Vector3Int>();
+                pathToExit.Add(entrance);
+                bool found = false;
+                while (!found)
+                {
+                    foreach (var dir in GameManager.CardinalDirections)
+                    {
+                        var newLocation = pathToExit.Last() + dir;
+                        if(pathToExit.Contains(newLocation))
+                        {
+                            //already been here
+                            continue;
+                        }
+
+                        var nextTile = Dungeon.GetTile<DungeonTile>(newLocation);
+                        if(nextTile.Name == "Level Exit")
+                        {
+                            found = true;
+                            dungeonInfo.SetPositionProperty(pathToExit.Last(), "RoadDirection", GameManager.CardinalDirections.IndexOf(dir));
+                            break;
+                        }
+                        else if(nextTile.Name == "Road")
+                        {
+                            dungeonInfo.SetPositionProperty(pathToExit.Last(), "RoadDirection", GameManager.CardinalDirections.IndexOf(dir));
+                            pathToExit.Add(newLocation); //found the next road segment
+                            break;
+                        }
+                    }
+
+                }
+            }
             //TODO: horrible hack
             SpawnUnit(new Vector3Int(-4, 0, 0), "Knight", UnitController.SideEnum.Player);
             SpawnUnit(new Vector3Int(0, 0, 0), "Ooze", UnitController.SideEnum.BadGuy);
@@ -121,6 +175,7 @@ namespace Assets.Scripts
             SpawnUnit(new Vector3Int(-5, 1, 0), "Hireling", UnitController.SideEnum.Hireling);
             turnCounter = -1;
             NewTurn();
+            RemainingHirelings = 6;
         }
 
         private void SpawnUnit(Vector3Int position, string name, UnitController.SideEnum side)
@@ -350,7 +405,7 @@ namespace Assets.Scripts
         private void MoveUnit(UnitController unit, List<Vector3Int> path, float animationSpeed)
         {
             blockInputs = true;
-            unit.Move(path, animationSpeed, () => blockInputs=false);
+            unit.Move(path, animationSpeed, () => blockInputs = false);
             // apply tile effects
             var destination = path.Last();
             ApplyTileEffects(unit, destination);
@@ -361,7 +416,7 @@ namespace Assets.Scripts
         {
             var tileLandedOn = (DungeonTile)Dungeon.GetTile(positon);
 
-            if(tileLandedOn.Deadly)
+            if (tileLandedOn.Deadly)
             {
                 Kill(unit);
             }
@@ -378,9 +433,33 @@ namespace Assets.Scripts
         {
             turnCounter = turnCounter + 1;
 
-            foreach (var unit in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.Player))
+            foreach (var unit in AllUnits)
             {
                 unit.NewTurn();
+            }
+
+            //move hirlings
+            foreach (var hireling in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.Hireling))
+            {
+                while(hireling.CurrentMovement > 0)
+                {
+                    Vector3Int startingPos = Vector3Int.FloorToInt(hireling.transform.position);
+                    var tile = Dungeon.GetTile<DungeonTile>(startingPos);
+                    if (tile.Name == "Road")
+                    {
+                        var nextPosition = startingPos + GameManager.CardinalDirections[dungeonInfo.GetPositionProperty(startingPos, "RoadDirection", -1)];
+                        var nextTile = Dungeon.GetTile<DungeonTile>(nextPosition);
+                        if(nextTile.Name == "Level Exit")
+                        {
+                            Kill(hireling);
+                            break;
+                            //TODO: register as having made it
+                        }
+                        MoveUnit(hireling, nextPosition);
+                    }
+                }
+              
+                //find path along road
             }
 
             //set up bad guy moves
@@ -388,7 +467,7 @@ namespace Assets.Scripts
             foreach (var bg in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.BadGuy))
             {
                 var destinations = FindAllValidMoves(bg);
-                List<Vector3Int> path = FindPathAdjacentToTarget(destinations, (UnitController u) => u.Side == UnitController.SideEnum.Hireling || u.Side == UnitController.SideEnum.Player );
+                List<Vector3Int> path = FindPathAdjacentToTarget(destinations, (UnitController u) => u.Side == UnitController.SideEnum.Hireling || u.Side == UnitController.SideEnum.Player);
                 if (path != null)
                 {
                     MoveUnit(bg, path, MOVEMENT_SPEED);
@@ -408,14 +487,14 @@ namespace Assets.Scripts
 
         public static readonly ReadOnlyCollection<Vector3Int> CardinalDirections = new ReadOnlyCollection<Vector3Int>(new[] { Vector3Int.up, Vector3Int.right, Vector3Int.left, Vector3Int.down });
 
-        Vector3Int FindAdjacentTarget(Vector3Int position, Func<UnitController, bool> targetPredicate)
+        Vector3Int FindAdjacentTarget(Vector3Int position, Predicate<UnitController> targetPredicate)
         {
-            var targetUnits = AllUnits.FindAll(u => u.Side == UnitController.SideEnum.Player);
+            var targetUnits = AllUnits.FindAll(targetPredicate);
             List<Vector3Int> targets = new List<Vector3Int>();
             foreach (var direction in CardinalDirections)
             {
                 var adjacentSquare = position + direction;
-                if (targetUnits.Any(targetPredicate))
+                if (targetUnits.Any(u => u.transform.position == adjacentSquare))
                 {
                     targets.Add(adjacentSquare);
                 }

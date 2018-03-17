@@ -740,7 +740,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1144316360}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.54, y: 2.45, z: 0}
+  m_LocalPosition: {x: -4.89, y: 1.16, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1730,6 +1730,7 @@ GameObject:
   - component: {fileID: 2077115548}
   - component: {fileID: 2077115550}
   - component: {fileID: 2077115549}
+  - component: {fileID: 2077115551}
   m_Layer: 0
   m_Name: Dungeon
   m_TagString: Untagged
@@ -2249,8 +2250,8 @@ Tilemap:
       m_ColliderType: 1
   - first: {x: -6, y: -3, z: 0}
     second:
-      m_TileIndex: 4
-      m_TileSpriteIndex: 6
+      m_TileIndex: 7
+      m_TileSpriteIndex: 9
       m_TileMatrixIndex: 3
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
@@ -2492,8 +2493,8 @@ Tilemap:
       m_ColliderType: 1
   - first: {x: 5, y: -2, z: 0}
     second:
-      m_TileIndex: 4
-      m_TileSpriteIndex: 6
+      m_TileIndex: 6
+      m_TileSpriteIndex: 8
       m_TileMatrixIndex: 3
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
@@ -2771,8 +2772,8 @@ Tilemap:
       m_ColliderType: 1
   - first: {x: 5, y: 0, z: 0}
     second:
-      m_TileIndex: 4
-      m_TileSpriteIndex: 6
+      m_TileIndex: 6
+      m_TileSpriteIndex: 8
       m_TileMatrixIndex: 3
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
@@ -2816,8 +2817,8 @@ Tilemap:
       m_ColliderType: 1
   - first: {x: -6, y: 1, z: 0}
     second:
-      m_TileIndex: 4
-      m_TileSpriteIndex: 6
+      m_TileIndex: 7
+      m_TileSpriteIndex: 9
       m_TileMatrixIndex: 3
       m_TileColorIndex: 0
       m_ObjectToInstantiate: {fileID: 0}
@@ -3481,10 +3482,14 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: e67963e459013a54f897ea7f5f3e17e6, type: 2}
   - m_RefCount: 3
     m_Data: {fileID: 11400000, guid: 722b8bc7c653cbb46963fe5237fec037, type: 2}
-  - m_RefCount: 117
+  - m_RefCount: 113
     m_Data: {fileID: 11400000, guid: d9fdfd5ab2c3c784e8c9497a37c44095, type: 2}
   - m_RefCount: 4
     m_Data: {fileID: 11400000, guid: c7cff18a7cfbcee488d713ea916de2db, type: 2}
+  - m_RefCount: 2
+    m_Data: {fileID: 11400000, guid: c954bc5de155ac044961ef39c1412624, type: 2}
+  - m_RefCount: 2
+    m_Data: {fileID: 11400000, guid: 0fe29df4c4d252a48b064a674ca7d6f9, type: 2}
   m_TileSpriteArray:
   - m_RefCount: 7
     m_Data: {fileID: 21300004, guid: 4a9f8cbd17de36a40b5ff68dd765eabb, type: 3}
@@ -3498,10 +3503,14 @@ Tilemap:
     m_Data: {fileID: 21300016, guid: 4a9f8cbd17de36a40b5ff68dd765eabb, type: 3}
   - m_RefCount: 3
     m_Data: {fileID: 21300006, guid: 4a9f8cbd17de36a40b5ff68dd765eabb, type: 3}
-  - m_RefCount: 117
+  - m_RefCount: 113
     m_Data: {fileID: 21300018, guid: 4a9f8cbd17de36a40b5ff68dd765eabb, type: 3}
   - m_RefCount: 4
     m_Data: {fileID: 21300008, guid: 4a9f8cbd17de36a40b5ff68dd765eabb, type: 3}
+  - m_RefCount: 2
+    m_Data: {fileID: 21300020, guid: 4a9f8cbd17de36a40b5ff68dd765eabb, type: 3}
+  - m_RefCount: 2
+    m_Data: {fileID: 21300022, guid: 4a9f8cbd17de36a40b5ff68dd765eabb, type: 3}
   m_TileMatrixArray:
   - m_RefCount: 2
     m_Data:
@@ -3614,3 +3623,30 @@ Tilemap:
     m_DirtyIndex: 0
   - serializedVersion: 1
     m_DirtyIndex: 0
+  - serializedVersion: 1
+    m_DirtyIndex: 0
+  - serializedVersion: 1
+    m_DirtyIndex: 0
+--- !u!114 &2077115551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2077115547}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7bb9acb2cffc5f45abddc238a0ad9b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PositionIntKeys: []
+  m_PositionIntValues: 
+  m_PositionStringKeys: []
+  m_PositionStringValues: []
+  m_PositionFloatKeys: []
+  m_PositionFloatValues: []
+  m_PositionDoubleKeys: []
+  m_PositionDoubleValues: []
+  m_PositionObjectKeys: []
+  m_PositionObjectValues: []
+  m_PositionColorKeys: []
+  m_PositionColorValues: []

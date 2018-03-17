@@ -16,6 +16,7 @@ namespace Assets.Scripts.GameLogic
         public bool Slippery; //makes units pushed keep sliding
         public bool Deadly;
 
+
         // Use this for initialization
         void Start()
         {
