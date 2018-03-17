@@ -167,20 +167,20 @@ namespace Assets.Scripts
                     foreach (var dir in GameManager.CardinalDirections)
                     {
                         var newLocation = pathToExit.Last() + dir;
-                        if(pathToExit.Contains(newLocation))
+                        if (pathToExit.Contains(newLocation))
                         {
                             //already been here
                             continue;
                         }
 
                         var nextTile = Dungeon.GetTile<DungeonTile>(newLocation);
-                        if(nextTile.Name == "Level Exit")
+                        if (nextTile.Name == "Level Exit")
                         {
                             found = true;
                             dungeonInfo.SetPositionProperty(pathToExit.Last(), "RoadDirection", GameManager.CardinalDirections.IndexOf(dir));
                             break;
                         }
-                        else if(nextTile.Name == "Road")
+                        else if (nextTile.Name == "Road")
                         {
                             dungeonInfo.SetPositionProperty(pathToExit.Last(), "RoadDirection", GameManager.CardinalDirections.IndexOf(dir));
                             pathToExit.Add(newLocation); //found the next road segment
@@ -463,7 +463,7 @@ namespace Assets.Scripts
             //move hirlings
             foreach (var hireling in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.Hireling))
             {
-                while(hireling.CurrentMovement > 0)
+                while (hireling.CurrentMovement > 0)
                 {
                     Vector3Int startingPos = Vector3Int.FloorToInt(hireling.transform.position);
                     var tile = Dungeon.GetTile<DungeonTile>(startingPos);
@@ -471,15 +471,45 @@ namespace Assets.Scripts
                     {
                         var nextPosition = startingPos + GameManager.CardinalDirections[dungeonInfo.GetPositionProperty(startingPos, "RoadDirection", -1)];
                         var nextTile = Dungeon.GetTile<DungeonTile>(nextPosition);
-                        if(nextTile.Name == "Level Exit")
+                        if (nextTile.Name == "Level Exit")
                         {
                             Kill(hireling);
                             savedHirelings++;
                             break;
                             //TODO: register as having made it
                         }
-                        MoveUnit(hireling, nextPosition);
+
+                        if (Passable(nextPosition))
+                        {
+                            MoveUnit(hireling, nextPosition);
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
+                }
+            }
+
+            //spawn more hirelings
+            foreach (var entrance in entranceLocations)
+            {
+                Vector3Int spawnLocation = Vector3Int.zero;
+                bool validSpawnFound = false;
+                foreach (var dir in GameManager.CardinalDirections)
+                {
+                    spawnLocation = entrance + dir;
+                    if (Passable(spawnLocation))
+                    {
+                        validSpawnFound = true;
+                        break;
+                    }
+                }
+
+                if (validSpawnFound && remainingHirelings > 0)
+                {
+                    SpawnUnit(spawnLocation, "Hireling", UnitController.SideEnum.Hireling);
+                    remainingHirelings = remainingHirelings - 1;
                 }
             }
 
