@@ -1,9 +1,11 @@
-﻿using Assets.Scripts.GameLogic;
+﻿using Assets.Scripts.Events;
+using Assets.Scripts.GameLogic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Assets.Scripts
 {
@@ -43,6 +45,7 @@ namespace Assets.Scripts
         public Sprite[] Graphics;
 
         public List<Vector3Int> TargetedTiles;
+        public UnitEvent DeathEvent = new UnitEvent();
 
         private MouseoverUIManager MouseoverUI;
         private SpriteRenderer sr;
@@ -72,19 +75,26 @@ namespace Assets.Scripts
             HP -= dmg;
             if (HP <= 0)
             {
-                //TODO: make event handler, turn HP into field instead of property, make not suck
-                Debug.Log("I'm ded");
+                Die();
             }
         }
 
         public void EnableUI()
         {
             MouseoverUI.EnableUI();
+            foreach (var dangerzone in TargetedTileOverlays)
+            {
+                dangerzone.GetComponent<SpriteRenderer>().color = Color.yellow;
+            }
         }
 
         public void DisableUI()
         {
             MouseoverUI.DisableUI();
+            foreach (var dangerzone in TargetedTileOverlays)
+            {
+                dangerzone.GetComponent<SpriteRenderer>().color = Color.red;
+            }
         }
 
         internal void moveTo(Vector3Int destination)
@@ -102,6 +112,7 @@ namespace Assets.Scripts
         {
             TargetedTiles.Add(target);
             var overlay = Instantiate(DangerzoneUI, target, Quaternion.identity);
+            overlay.GetComponent<SpriteRenderer>().color = Color.red;
             TargetedTileOverlays.Add(overlay);
         }
 
@@ -153,6 +164,7 @@ namespace Assets.Scripts
 
         internal void Die()
         {
+            DeathEvent.Invoke(this);
             foreach (var tile in TargetedTileOverlays)
             {
                 Destroy(tile);

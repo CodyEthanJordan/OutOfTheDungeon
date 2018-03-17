@@ -82,6 +82,17 @@ namespace Assets.Scripts
 
         internal void ActivateAbility(UnitController unit, Vector3Int target)
         {
+            if(unit.HasActed)
+            {
+                //already acted, ignore this
+                Debug.LogWarning(unit.Name + "has already acted");
+                return;
+            }
+            else
+            {
+                unit.HasActed = true;
+                unit.CurrentMovement = 0;
+            }
             //is the target a unit?
             var guyHit = AllUnits.Find(u => u.transform.position == target);
             if (guyHit != null)
@@ -192,6 +203,7 @@ namespace Assets.Scripts
             }
             //TODO: horrible hack
             SpawnUnit(new Vector3Int(-4, 0, 0), "Knight", UnitController.SideEnum.Player);
+            SpawnUnit(new Vector3Int(-4, -1, 0), "Knight", UnitController.SideEnum.Player);
             SpawnUnit(new Vector3Int(0, 0, 0), "Ooze", UnitController.SideEnum.BadGuy);
             SpawnUnit(new Vector3Int(0, -2, 0), "Ooze", UnitController.SideEnum.BadGuy);
             turnCounter = -1;
@@ -205,7 +217,13 @@ namespace Assets.Scripts
             GameObject spawn = Instantiate(unitPrefab, this.transform);
             spawnedUnit = spawn.GetComponent<UnitController>();
             spawnedUnit.SetupUnit(name, side, position);
+            spawnedUnit.DeathEvent.AddListener(OnUnitDie);
             AllUnits.Add(spawnedUnit);
+        }
+
+        private void OnUnitDie(UnitController unit)
+        {
+            AllUnits.Remove(unit);
         }
 
         public void TriggerTransition(string trigger)
@@ -445,9 +463,8 @@ namespace Assets.Scripts
 
         private void Kill(UnitController unit)
         {
-            AllUnits.Remove(unit);
             unit.Die();
-            //TODO: victory/loss conditions if no Players exist
+            //TODO: victory/loss conditions if no Players exist, mostly subsumed by death event
         }
 
         private void NewTurn()
