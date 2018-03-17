@@ -126,8 +126,12 @@ namespace Assets.Scripts
             TargetedTiles.Clear();
         }
 
-        public void SetupUnit(string name, SideEnum side, Vector3Int position)
+        public void SetupUnit(string name, SideEnum side, Vector3Int position, int hp, int move)
         {
+            MaxHP = hp;
+            MaxMovement = move;
+            HP = MaxHP;
+            CurrentMovement = MaxMovement;
             //TODO: pass in data about unit class, probably scriptable object
             Name = name;
             this.transform.position = position;

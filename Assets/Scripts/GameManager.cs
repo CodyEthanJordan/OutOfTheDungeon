@@ -202,21 +202,21 @@ namespace Assets.Scripts
                 }
             }
             //TODO: horrible hack
-            SpawnUnit(new Vector3Int(-4, 0, 0), "Knight", UnitController.SideEnum.Player);
-            SpawnUnit(new Vector3Int(-4, -1, 0), "Knight", UnitController.SideEnum.Player);
-            SpawnUnit(new Vector3Int(0, 0, 0), "Ooze", UnitController.SideEnum.BadGuy);
-            SpawnUnit(new Vector3Int(0, -2, 0), "Ooze", UnitController.SideEnum.BadGuy);
+            SpawnUnit(new Vector3Int(-4, 0, 0), "Knight", UnitController.SideEnum.Player, 3, 4);
+            SpawnUnit(new Vector3Int(-4, -1, 0), "Knight", UnitController.SideEnum.Player,3,4);
+            SpawnUnit(new Vector3Int(0, 0, 0), "Ooze", UnitController.SideEnum.BadGuy,2,3);
+            SpawnUnit(new Vector3Int(0, -2, 0), "Ooze", UnitController.SideEnum.BadGuy,2,3);
             turnCounter = -1;
             NewTurn();
             remainingHirelings = 6;
         }
 
-        private void SpawnUnit(Vector3Int position, string name, UnitController.SideEnum side)
+        private void SpawnUnit(Vector3Int position, string name, UnitController.SideEnum side, int hp, int move)
         {
             UnitController spawnedUnit;
             GameObject spawn = Instantiate(unitPrefab, this.transform);
             spawnedUnit = spawn.GetComponent<UnitController>();
-            spawnedUnit.SetupUnit(name, side, position);
+            spawnedUnit.SetupUnit(name, side, position, hp, move);
             spawnedUnit.DeathEvent.AddListener(OnUnitDie);
             AllUnits.Add(spawnedUnit);
         }
@@ -529,7 +529,7 @@ namespace Assets.Scripts
 
                 if (validSpawnFound && remainingHirelings > 0)
                 {
-                    SpawnUnit(spawnLocation, "Hireling", UnitController.SideEnum.Hireling);
+                    SpawnUnit(spawnLocation, "Hireling", UnitController.SideEnum.Hireling,1,3);
                     remainingHirelings = remainingHirelings - 1;
                 }
             }
@@ -559,6 +559,9 @@ namespace Assets.Scripts
                     MoveUnit(bg, move);
                 }
             }
+
+            //spawn more oozes
+
         }
 
         public static readonly ReadOnlyCollection<Vector3Int> CardinalDirections = new ReadOnlyCollection<Vector3Int>(new[] { Vector3Int.up, Vector3Int.right, Vector3Int.left, Vector3Int.down });
