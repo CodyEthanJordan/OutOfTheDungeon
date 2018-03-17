@@ -194,7 +194,6 @@ namespace Assets.Scripts
             SpawnUnit(new Vector3Int(-4, 0, 0), "Knight", UnitController.SideEnum.Player);
             SpawnUnit(new Vector3Int(0, 0, 0), "Ooze", UnitController.SideEnum.BadGuy);
             SpawnUnit(new Vector3Int(0, -2, 0), "Ooze", UnitController.SideEnum.BadGuy);
-            SpawnUnit(new Vector3Int(-5, 1, 0), "Hireling", UnitController.SideEnum.Hireling);
             turnCounter = -1;
             NewTurn();
             remainingHirelings = 6;
