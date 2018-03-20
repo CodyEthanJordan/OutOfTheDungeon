@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.Events;
 using Assets.Scripts.GameLogic;
+using Assets.Scripts.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -189,10 +190,6 @@ namespace Assets.Scripts
         {
             Debug.Log(Name + " is slain!");
             DeathEvent.Invoke(this);
-            foreach (var tile in TargetedTileOverlays)
-            {
-                Destroy(tile);
-            }
             Destroy(this.gameObject);
         }
 
@@ -219,6 +216,14 @@ namespace Assets.Scripts
             //TODO: unify with moveTo logic
             this.transform.position = path.Last();
             completionCallback();
+        }
+
+        private void OnDestroy()
+        {
+            foreach (var tile in TargetedTileOverlays)
+            {
+                Destroy(tile);
+            }
         }
     }
 }

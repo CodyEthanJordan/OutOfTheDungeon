@@ -10,6 +10,7 @@ using Assets.Scripts.Events;
 using UnityEngine.Events;
 using Assets.Scripts.FSM;
 using System.Collections.ObjectModel;
+using Assets.Scripts.UI;
 
 namespace Assets.Scripts
 {
@@ -177,15 +178,22 @@ namespace Assets.Scripts
 
         private void SetupMap(int hirelings)
         {
+            TurnFSM.SetTrigger(GameStateTransitions.Deselect);
             UI.InitializeUI();
             savedHirelings = 0;
             remainingHirelings = hirelings;
 
             foreach (var unit in AllUnits)
             {
-                Destroy(unit);
+                Destroy(unit.gameObject);
             }
             AllUnits.Clear();
+
+            foreach (var summoningCircle in summoningCircles)
+            {
+                Destroy(summoningCircle.gameObject);
+            }
+            summoningCircles.Clear();
 
             ClearOverlays();
 
@@ -195,6 +203,7 @@ namespace Assets.Scripts
             SpawnUnit(new Vector3Int(0, 0, 0), "Ooze", UnitController.SideEnum.BadGuy, "Ooze");
             SpawnUnit(new Vector3Int(0, -2, 0), "Ooze", UnitController.SideEnum.BadGuy, "Ooze");
             turnCounter = 0;
+            blockInputs = false;
             NewTurn();
         }
 
@@ -289,9 +298,8 @@ namespace Assets.Scripts
         {
             blockInputs = true;
             UI.GameOver(victory, savedHirelings);
-            StartCoroutine(RestartGame(1));
+            StartCoroutine(RestartGame(3));
         }
-
 
         IEnumerator RestartGame(int secondsTillRestart)
         {
@@ -778,11 +786,6 @@ namespace Assets.Scripts
                 pos = pos + dir;
             }
             UIHighlights.SetTile(pos, TargetingTile);
-        }
-
-        public void Ability1()
-        {
-            TriggerTransition(GameStateTransitions.TargetAbility);
         }
     }
 }

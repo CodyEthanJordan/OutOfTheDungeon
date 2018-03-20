@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.UI
 {
     public class UIManager : MonoBehaviour
     {
