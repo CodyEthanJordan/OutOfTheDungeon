@@ -529,24 +529,28 @@ namespace Assets.Scripts
             StartCoroutine(NewTurn());
         }
 
-        public IEnumerator MoveUnit(UnitController unit, List<Vector3Int> path)
+        public IEnumerator MoveUnit(UnitController unit, List<Vector3Int> path, bool costsMovement)
         {
             blockInputs = true;
             yield return unit.Move(path, MovementAnimationSpeed);
-            unit.CurrentMovement -= path.Count() - 1;
+            if (costsMovement)
+            {
+                unit.CurrentMovement -= path.Count() - 1;
+            }
             var destination = path.Last();
             ApplyTileEffects(unit, destination);
             blockInputs = false;
         }
 
-        public void MoveUnit(UnitController unit, Vector3Int destination)
+        public void MoveUnit(UnitController unit, Vector3Int destination, bool costsMovement)
         {
             var allPaths = FindAllValidMoves(Vector3Int.FloorToInt(unit.transform.position), 20, true,
                 (UnitController u) => u.Side != unit.Side,
                 destination);
             var path = allPaths.Find(p => p.Last() == destination);
-            StartCoroutine(MoveUnit(unit, path));
+            StartCoroutine(MoveUnit(unit, path, costsMovement));
         }
+
 
 
         private void ApplyTileEffects(UnitController unit, Vector3Int positon)
@@ -603,7 +607,7 @@ namespace Assets.Scripts
                                 Vector3Int.FloorToInt(hireling.transform.position),
                                 nextPosition
                             };
-                            yield return MoveUnit(hireling, path);
+                            yield return MoveUnit(hireling, path, true);
                         }
                         else
                         {
@@ -650,26 +654,38 @@ namespace Assets.Scripts
                 if (attackRange == Ability.RangeType.Melee)
                 {
                     path = FindPathAdjacentToTarget(destinations, (UnitController u) => u.Side == UnitController.SideEnum.Hireling || u.Side == UnitController.SideEnum.Player);
-
+                    if (path != null)
+                    {
+                        yield return MoveUnit(bg, path, true);
+                        var target = FindAdjacentTarget(path.Last(), (UnitController u) => u.Side == UnitController.SideEnum.Hireling || u.Side == UnitController.SideEnum.Player);
+                        bg.TargetTile(target);
+                    }
+                    else
+                    {
+                        // move to random location I guess
+                        int i = UnityEngine.Random.Range(0, destinations.Count);
+                        yield return MoveUnit(bg, destinations[i], true);
+                    }
                 }
                 else if (attackRange == Ability.RangeType.Ray)
                 {
                     path = FindPathToCriteria(destinations, p => HasCleanShotFromPositionOnTarget(p, u => u.Side != UnitController.SideEnum.BadGuy));
+                    if (path != null)
+                    {
+                        yield return MoveUnit(bg, path, true);
+                        var target = FindAdjacentTarget(path.Last(), (UnitController u) => u.Side == UnitController.SideEnum.Hireling || u.Side == UnitController.SideEnum.Player);
+                        bg.TargetDirection(Vector3Int.left);
+                    }
+                    else
+                    {
+                        // move to random location I guess
+                        int i = UnityEngine.Random.Range(0, destinations.Count);
+                        yield return MoveUnit(bg, destinations[i], true);
+                    }
                 }
 
                 //execute move
-                if (path != null)
-                {
-                    yield return MoveUnit(bg, path);
-                    var target = FindAdjacentTarget(path.Last(), (UnitController u) => u.Side == UnitController.SideEnum.Hireling || u.Side == UnitController.SideEnum.Player);
-                    bg.TargetTile(target);
-                }
-                else
-                {
-                    // move to random location I guess
-                    int i = UnityEngine.Random.Range(0, destinations.Count);
-                    yield return MoveUnit(bg, destinations[i]);
-                }
+
             }
 
             //spawn more bad guys
@@ -729,7 +745,7 @@ namespace Assets.Scripts
         {
             foreach (var dir in GameManager.CardinalDirections)
             {
-                if (RecursiveSearchFor(position, dir, unitPredicate))
+                if (RecursiveSearchFor(position, dir, unitPredicate) != null)
                 {
                     return true;
                 }
@@ -738,17 +754,24 @@ namespace Assets.Scripts
             return false;
         }
 
-        private bool RecursiveSearchFor(Vector3Int position, Vector3Int dir, Func<UnitController, bool> unitPredicate)
+        private UnitController RecursiveSearchFor(Vector3Int position, Vector3Int dir, Func<UnitController, bool> unitPredicate)
         {
-            if(!Passable(position, false))
+            if (!Passable(position, false))
             {
                 //hit a wall, nothing here
-                return false;
+                return null;
             }
             var unit = AllUnits.Find(u => u.transform.position == position);
-            if(unit != null)
+            if (unit != null)
             {
-                return unitPredicate(unit);
+                if (unitPredicate(unit))
+                {
+                    return unit;
+                }
+                else
+                {
+                    return null;
+                }
             }
             else
             {

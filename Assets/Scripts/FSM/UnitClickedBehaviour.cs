@@ -27,7 +27,7 @@ namespace Assets.Scripts.FSM
 
         private void MovementClick(Vector3Int destination)
         {
-            gm.MoveUnit(gm.UnitClicked, destination);
+            gm.MoveUnit(gm.UnitClicked, destination, true);
             gm.TriggerTransition(GameStateTransitions.Deselect);
         }
     }

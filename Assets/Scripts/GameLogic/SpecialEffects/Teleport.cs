@@ -16,7 +16,7 @@ namespace Assets.Scripts.GameLogic.SpecialEffects
             base.ApplyEffect(gm, user, guyHit, targetLocation);
             if(gm.Passable(targetLocation, blockedByUnits:true))
             {
-                guyHit.moveTo(targetLocation);
+                gm.MoveUnit(guyHit, targetLocation, false);
             }
         }
     }

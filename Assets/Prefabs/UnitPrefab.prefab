@@ -204,10 +204,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8acc193a933d7c8468d48c0383ed6069, type: 2}
   - {fileID: 11400000, guid: b04ff0dfc60bded46b693a1ff2b6640d, type: 2}
   - {fileID: 11400000, guid: 2f43cb3a93e83d348b247f5e49204225, type: 2}
+  - {fileID: 11400000, guid: ed50325b9d96586438f3902d4e95737d, type: 2}
   MyLoadout: {fileID: 0}
   CurrentMovement: 5
   MaxMovement: 5
-  HasActed: 0
   MaxHP: 5
   Side: 0
   TargetedTiles: []

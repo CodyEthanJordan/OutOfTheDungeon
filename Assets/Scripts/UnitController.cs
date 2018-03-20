@@ -14,7 +14,9 @@ namespace Assets.Scripts
     public class UnitController : MonoBehaviour
     {
         public GameObject DangerzoneUI;
+        public GameObject RangedAttackIndicatorUI;
         private List<GameObject> TargetedTileOverlays = new List<GameObject>();
+        private List<GameObject> RangedAttackIndicatorOverlays = new List<GameObject>();
 
         private string _name;
         public string Name
@@ -63,6 +65,7 @@ namespace Assets.Scripts
         public SideEnum Side;
 
         public List<Vector3Int> TargetedTiles;
+        public Vector3Int TargetedDirection = Vector3Int.zero; //used for ranged badguys
         public UnitEvent DeathEvent = new UnitEvent();
 
         private MouseoverUIManager MouseoverUI;
@@ -114,6 +117,10 @@ namespace Assets.Scripts
             {
                 dangerzone.GetComponent<SpriteRenderer>().color = Color.yellow;
             }
+            foreach (var indicator in RangedAttackIndicatorOverlays)
+            {
+                indicator.GetComponent<SpriteRenderer>().color = Color.yellow;
+            }
         }
 
         public void DisableUI()
@@ -122,6 +129,10 @@ namespace Assets.Scripts
             foreach (var dangerzone in TargetedTileOverlays)
             {
                 dangerzone.GetComponent<SpriteRenderer>().color = Color.red;
+            }
+            foreach (var indicator in RangedAttackIndicatorOverlays)
+            {
+                indicator.GetComponent<SpriteRenderer>().color = Color.red;
             }
         }
 
@@ -133,6 +144,7 @@ namespace Assets.Scripts
                 TargetedTiles[i] = TargetedTiles[i] + offset;
                 TargetedTileOverlays[i].transform.position = TargetedTileOverlays[i].transform.position + offset;
             }
+            
             this.transform.position = destination;
         }
 
@@ -234,10 +246,53 @@ namespace Assets.Scripts
 
         private void OnDestroy()
         {
+            
+            
+        }
+
+        internal void TargetDirection(GameManager gm, Vector3Int dir)
+        {
+            TargetedDirection = dir;
+            UpdateRangedAttack(gm);
+        }
+
+        public void UpdateRangedAttack(GameManager gm)
+        {
+            ClearRangedAttackIndicators();
+            if(TargetedDirection == Vector3Int.zero)
+            {
+                //not currently targeting
+                return;
+            }
+
+            Vector3Int pos = Vector3Int.FloorToInt(this.transform.position) + TargetedDirection;
+            while(gm.Passable(pos, true))
+            {
+                var indicator = Instantiate(RangedAttackIndicatorUI, pos, Quaternion.identity);
+                RangedAttackIndicatorOverlays.Add(indicator);
+            }
+            TargetTile(pos);
+        }
+
+        private void ClearRangedAttackIndicators()
+        {
+            // note: can't be both ranged and melee
+            ClearThreatenedTiles();
+            foreach (var indicator in RangedAttackIndicatorOverlays)
+            {
+                Destroy(indicator);
+            }
+            RangedAttackIndicatorOverlays.Clear();
+        }
+
+        private void ClearThreatenedTiles()
+        {
             foreach (var tile in TargetedTileOverlays)
             {
                 Destroy(tile);
             }
+            TargetedTileOverlays.Clear();
+            TargetedTiles.Clear();
         }
     }
 }
