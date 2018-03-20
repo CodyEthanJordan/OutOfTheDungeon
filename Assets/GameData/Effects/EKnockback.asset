@@ -8,10 +8,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22d19b894cb04374eabd8fbfbb4a6db9, type: 3}
-  m_Name: MagicMissile
+  m_Script: {fileID: 11500000, guid: f528baf8a8fb28d4fb7e8ca727105256, type: 3}
+  m_Name: EKnockback
   m_EditorClassIdentifier: 
-  Name: Magic Missile
-  Description: 1 damage to target and knockback adjacent tiles
-  Range: 1
-  Effects: []
+  TileAffected: {x: 0, y: 0, z: 0}
+  Damage: 0
+  Knockback: 0

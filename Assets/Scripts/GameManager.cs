@@ -99,17 +99,21 @@ namespace Assets.Scripts
             foreach (var effect in ability.Effects)
             {
                 var affectedPosition = target + effect.TileAffected;
-                var guyHit = AllUnits.Find(u => u.transform.position == target);
+                var guyHit = AllUnits.Find(u => u.transform.position == affectedPosition);
                 if (guyHit != null)
                 {
-                    guyHit.TakeDamage(1);
-                    var knockbackDirection = guyHit.transform.position - unit.transform.position;
-                    KnockBack(guyHit, Vector3Int.FloorToInt(knockbackDirection.normalized));
+                    //TODO: delegate pattern?
+                    guyHit.TakeDamage(effect.Damage);
+                    if (effect.Knockback)
+                    {
+                        var knockbackDirection = guyHit.transform.position - unit.transform.position;
+                        KnockBack(guyHit, Vector3Int.FloorToInt(knockbackDirection.normalized));
+                    }
                 }
             }
+            //TODO: damage to tiles
 
-            //is the target a unit?
-           
+
         }
 
         public void KnockBack(UnitController guyHit, Vector3Int direction)
