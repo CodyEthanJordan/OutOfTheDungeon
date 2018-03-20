@@ -24,6 +24,7 @@ namespace Assets.Scripts
         public Tile MoveTile;
         public Tile TargetingTile;
         public Tile ThreatenedTile;
+        public Loadout[] BadGuyLoadouts;
 
         public UnitController UnitClicked;
         public GameObject UnitPrefab;
@@ -189,7 +190,7 @@ namespace Assets.Scripts
             SpawnUnit(new Vector3Int(-4, 0, 0), "Knight", UnitController.SideEnum.Player, "Knight");
             SpawnUnit(new Vector3Int(-3, 0, 0), "Gandalf", UnitController.SideEnum.Player, "Wizard");
             SpawnUnit(new Vector3Int(-4, -1, 0), "Knight", UnitController.SideEnum.Player, "Knight");
-            SpawnUnit(new Vector3Int(0, 0, 0), "Ooze", UnitController.SideEnum.BadGuy, "Ooze");
+            SpawnUnit(new Vector3Int(0, 0, 0), "Goblin Archer", UnitController.SideEnum.BadGuy, "Goblin Archer");
             SpawnUnit(new Vector3Int(0, -2, 0), "Ooze", UnitController.SideEnum.BadGuy, "Ooze");
             turnCounter = 0;
             blockInputs = false;
@@ -346,6 +347,13 @@ namespace Assets.Scripts
                     if (UnitClicked != null && UnitClicked.MyLoadout.Abilities.Length > 1)
                     {
                         AbilityButtonClick(1);
+                    }
+                }
+                else if (Input.GetKeyDown(KeyCode.Alpha3))
+                {
+                    if (UnitClicked != null && UnitClicked.MyLoadout.Abilities.Length > 2)
+                    {
+                        AbilityButtonClick(2);
                     }
                 }
 
@@ -533,7 +541,7 @@ namespace Assets.Scripts
 
         public void MoveUnit(UnitController unit, Vector3Int destination)
         {
-            var allPaths = FindAllValidMoves(Vector3Int.FloorToInt(unit.transform.position), 20, true, 
+            var allPaths = FindAllValidMoves(Vector3Int.FloorToInt(unit.transform.position), 20, true,
                 (UnitController u) => u.Side != unit.Side,
                 destination);
             var path = allPaths.Find(p => p.Last() == destination);
@@ -636,8 +644,20 @@ namespace Assets.Scripts
             //TODO: different kinds of bad guy AI
             foreach (var bg in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.BadGuy))
             {
+                List<Vector3Int> path = new List<Vector3Int>();
                 var destinations = FindAllValidSteps(bg);
-                List<Vector3Int> path = FindPathAdjacentToTarget(destinations, (UnitController u) => u.Side == UnitController.SideEnum.Hireling || u.Side == UnitController.SideEnum.Player);
+                var attackRange = bg.MyLoadout.Abilities[0].Range;
+                if (attackRange == Ability.RangeType.Melee)
+                {
+                    path = FindPathAdjacentToTarget(destinations, (UnitController u) => u.Side == UnitController.SideEnum.Hireling || u.Side == UnitController.SideEnum.Player);
+
+                }
+                else if (attackRange == Ability.RangeType.Ray)
+                {
+                    path = FindPathToCriteria(destinations, p => HasCleanShotFromPositionOnTarget(p, u => u.Side != UnitController.SideEnum.BadGuy));
+                }
+
+                //execute move
                 if (path != null)
                 {
                     yield return MoveUnit(bg, path);
@@ -660,10 +680,12 @@ namespace Assets.Scripts
                 if (unitOnCircle == null)
                 {
                     circlesToDestroy.Add(summoningCircle);
+                    int r = UnityEngine.Random.Range(0, BadGuyLoadouts.Length);
+                    var guyToSpawn = BadGuyLoadouts[r];
                     SpawnUnit(Vector3Int.FloorToInt(summoningCircle.transform.position),
-                        "Ooze",
+                        guyToSpawn.LoadoutName,
                         UnitController.SideEnum.BadGuy,
-                        "Ooze");
+                        guyToSpawn.LoadoutName);
                 }
                 else
                 {
@@ -694,6 +716,44 @@ namespace Assets.Scripts
             }
 
             blockInputs = false;
+        }
+
+        private List<Vector3Int> FindPathToCriteria(List<List<Vector3Int>> options, Func<Vector3Int, bool> criteria)
+        {
+            var x = options.Where(p => criteria(p.Last())).ToList();
+            //TODO: add heuristics
+            return x.FirstOrDefault();
+        }
+
+        private bool HasCleanShotFromPositionOnTarget(Vector3Int position, Func<UnitController, bool> unitPredicate)
+        {
+            foreach (var dir in GameManager.CardinalDirections)
+            {
+                if (RecursiveSearchFor(position, dir, unitPredicate))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool RecursiveSearchFor(Vector3Int position, Vector3Int dir, Func<UnitController, bool> unitPredicate)
+        {
+            if(!Passable(position, false))
+            {
+                //hit a wall, nothing here
+                return false;
+            }
+            var unit = AllUnits.Find(u => u.transform.position == position);
+            if(unit != null)
+            {
+                return unitPredicate(unit);
+            }
+            else
+            {
+                return RecursiveSearchFor(position + dir, dir, unitPredicate);
+            }
         }
 
         public static readonly ReadOnlyCollection<Vector3Int> CardinalDirections = new ReadOnlyCollection<Vector3Int>(new[] { Vector3Int.up, Vector3Int.right, Vector3Int.left, Vector3Int.down });
@@ -769,7 +829,7 @@ namespace Assets.Scripts
                         UIHighlights.SetTile(Vector3Int.FloorToInt(UnitClicked.transform.position) + dir, TargetingTile);
                     }
                     break;
-                case Ability.RangeType.Ray:
+                case Ability.RangeType.DirectLOS:
                     basePosition = Vector3Int.FloorToInt(UnitClicked.transform.position);
                     foreach (var dir in GameManager.CardinalDirections)
                     {

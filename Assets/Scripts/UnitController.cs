@@ -96,7 +96,7 @@ namespace Assets.Scripts
                     }
                     break;
                 default:
-                    Debug.Log(Name + " takes " + dmg + " of " + damageType);
+                    Debug.Log(Name + " takes " + dmg + "damage of type " + damageType);
                     HP -= dmg;
                     if (HP <= 0)
                     {
