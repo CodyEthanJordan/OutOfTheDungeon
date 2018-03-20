@@ -120,7 +120,9 @@ namespace Assets.Scripts
             var destination = Vector3Int.FloorToInt(guyHit.transform.position) + direction;
             if (Passable(destination, true))
             {
-                MoveUnit(guyHit, destination, costsMovement: false);
+                //MoveUnit(guyHit, destination, costsMovement: false);
+                guyHit.moveTo(this, destination); //TODO: unify with animated movement system
+                UpdateAllRangedIndicators();
                 var standingOnTile = (DungeonTile)Dungeon.GetTile(destination);
                 if (standingOnTile.Slippery)
                 {
@@ -367,18 +369,21 @@ namespace Assets.Scripts
                 }
                 if (Input.GetMouseButtonDown(0))
                 {
-                    RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-                    if (hit.collider != null)
+                    RaycastHit2D[] hits = Physics2D.RaycastAll(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+                    foreach (var hit in hits)
                     {
-                        if (hit.collider.CompareTag("Unit"))
+                        if (hit.collider != null)
                         {
-                            UnitClickedEvent.Invoke(hit.collider.GetComponent<UnitController>());
-                        }
-                        else if (hit.collider.CompareTag("UIHighlights"))
-                        {
-                            var destination = Dungeon.WorldToCell(hit.point);
-                            //TODO: don't hardcode to first ability
-                            UIHighlightClickedEvent.Invoke(destination);
+                            if (hit.collider.CompareTag("Unit"))
+                            {
+                                UnitClickedEvent.Invoke(hit.collider.GetComponent<UnitController>());
+                            }
+                            else if (hit.collider.CompareTag("UIHighlights"))
+                            {
+                                var destination = Dungeon.WorldToCell(hit.point);
+                                //TODO: don't hardcode to first ability
+                                UIHighlightClickedEvent.Invoke(destination);
+                            }
                         }
                     }
                 }
