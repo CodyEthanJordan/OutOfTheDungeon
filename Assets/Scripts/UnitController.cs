@@ -83,6 +83,7 @@ namespace Assets.Scripts
 
         internal void TakeDamage(int dmg)
         {
+            Debug.Log(Name + " takes " + dmg + " damage");
             HP -= dmg;
             if (HP <= 0)
             {
@@ -186,6 +187,7 @@ namespace Assets.Scripts
 
         internal void Die()
         {
+            Debug.Log(Name + " is slain!");
             DeathEvent.Invoke(this);
             foreach (var tile in TargetedTileOverlays)
             {

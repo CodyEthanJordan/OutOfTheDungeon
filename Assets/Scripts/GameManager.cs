@@ -24,7 +24,8 @@ namespace Assets.Scripts
         public Tile ThreatenedTile;
 
         public UnitController UnitClicked;
-        public GameObject unitPrefab;
+        public GameObject UnitPrefab;
+        public GameObject SummoningPortalPrefab;
 
         private int _remainingHirelings;
         private int remainingHirelings
@@ -44,6 +45,7 @@ namespace Assets.Scripts
             set
             {
                 _savedHirelings = value;
+                Debug.Log("Hireling reached the exit");
                 HirelingSaved.Invoke(_savedHirelings);
             }
         }
@@ -51,7 +53,9 @@ namespace Assets.Scripts
 
         public List<UnitController> AllUnits;
 
-        private List<Vector3Int> entranceLocations;
+        private List<Vector3Int> entranceLocations = new List<Vector3Int>();
+        private List<Vector3Int> validSpawnLocations = new List<Vector3Int>();
+        private List<GameObject> summoningCircles = new List<GameObject>();
 
         public UIManager UI;
 
@@ -82,6 +86,7 @@ namespace Assets.Scripts
 
         internal void ActivateAbility(UnitController unit, Ability ability, Vector3Int target)
         {
+            Debug.Log(unit.Name + " uses " + ability.Name + " at " + target);
             if (unit.HasActed)
             {
                 //already acted, ignore this
@@ -137,6 +142,7 @@ namespace Assets.Scripts
                 if (standingOnTile.Slippery)
                 {
                     //recursive call as it keeps sliding
+                    Debug.Log(guyHit.Name + " keeps sliding along " + standingOnTile.Name);
                     KnockBack(guyHit, direction);
                 }
                 else
@@ -149,11 +155,13 @@ namespace Assets.Scripts
                 var unitInWay = AllUnits.Find(u => u.transform.position == destination);
                 if (unitInWay != null)
                 {
+                    Debug.Log(guyHit.Name + " crashes into " + unitInWay.Name);
                     unitInWay.TakeDamage(1);
                     guyHit.TakeDamage(1);
                 }
                 else
                 {
+                    Debug.Log(guyHit.Name + " hits something solid");
                     guyHit.TakeDamage(1);
                     //TODO: destroying tiles
                 }
@@ -171,7 +179,7 @@ namespace Assets.Scripts
         {
             savedHirelings = 0;
             remainingHirelings = 6;
-            entranceLocations = new List<Vector3Int>();
+
             for (int i = Dungeon.cellBounds.xMin; i < Dungeon.cellBounds.xMax; i++)
             {
                 for (int j = Dungeon.cellBounds.yMin; j < Dungeon.cellBounds.yMax; j++)
@@ -183,6 +191,10 @@ namespace Assets.Scripts
                         if (tile.Name == "Entrance")
                         {
                             entranceLocations.Add(pos);
+                        }
+                        else if (tile.Name == "Floor")
+                        {
+                            validSpawnLocations.Add(pos);
                         }
                     }
                 }
@@ -234,8 +246,9 @@ namespace Assets.Scripts
 
         private void SpawnUnit(Vector3Int position, string name, UnitController.SideEnum side, string loadoutName)
         {
+            Debug.Log(name + "the " + loadoutName + " spawned at " + position + ", fighting for" + side);
             UnitController spawnedUnit;
-            GameObject spawn = Instantiate(unitPrefab, this.transform);
+            GameObject spawn = Instantiate(UnitPrefab, this.transform);
             spawnedUnit = spawn.GetComponent<UnitController>();
             spawnedUnit.SetupUnit(name, side, position, loadoutName);
             spawnedUnit.DeathEvent.AddListener(OnUnitDie);
@@ -458,6 +471,7 @@ namespace Assets.Scripts
 
         public void MoveUnit(UnitController unit, Vector3Int destination)
         {
+            Debug.Log(unit.Name + " moves from " + unit.transform.position + " to " + destination);
             //TODO: animate?, also unify with other one
             unit.CurrentMovement -= DistanceTo(Vector3Int.FloorToInt(unit.transform.position), destination);
             unit.moveTo(destination);
@@ -480,6 +494,7 @@ namespace Assets.Scripts
 
             if (tileLandedOn.Deadly)
             {
+                Debug.Log(unit.Name + " stepped on a deadly " + tileLandedOn.Name);
                 Kill(unit);
             }
         }
@@ -493,6 +508,7 @@ namespace Assets.Scripts
         private void NewTurn()
         {
             turnCounter = turnCounter + 1;
+            Debug.Log("Turn: " + turnCounter);
 
             foreach (var unit in AllUnits)
             {
@@ -557,8 +573,6 @@ namespace Assets.Scripts
                 }
             }
 
-
-
             //set up bad guy moves
             //TODO: different kinds of bad guy AI
             foreach (var bg in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.BadGuy))
@@ -583,8 +597,46 @@ namespace Assets.Scripts
                 }
             }
 
-            //spawn more oozes
+            //spawn more bad guys
+            List<GameObject> circlesToDestroy = new List<GameObject>();
+            foreach (var summoningCircle in summoningCircles)
+            {
+                var unitOnCircle = AllUnits.Find(u => u.transform.position == summoningCircle.transform.position);
+                if (unitOnCircle == null)
+                {
+                    circlesToDestroy.Add(summoningCircle);
+                    SpawnUnit(Vector3Int.FloorToInt(summoningCircle.transform.position),
+                        "Ooze",
+                        UnitController.SideEnum.BadGuy,
+                        "Ooze");
+                }
+                else
+                {
+                    Debug.Log("Summoning circle at " + summoningCircle.transform.position + " blocked by " + unitOnCircle.Name);
+                    unitOnCircle.TakeDamage(1);
+                }
+            }
+            for (int i = 0; i < circlesToDestroy.Count; i++)
+            {
+                summoningCircles.Remove(circlesToDestroy[i]);
+                Destroy(circlesToDestroy[i]);
+            }
 
+            //create new summoning circles
+            int numberToSpawn = 2;
+            for (int i = 0; i < numberToSpawn; i++)
+            {
+                int r = UnityEngine.Random.Range(0, validSpawnLocations.Count);
+                var spawnPosition = validSpawnLocations[r];
+                while (summoningCircles.Where(s => s.transform.position == spawnPosition).Count() > 0)
+                {
+                    //don't put summoning circles on top of each other
+                    r = UnityEngine.Random.Range(0, validSpawnLocations.Count);
+                    spawnPosition = validSpawnLocations[r];
+                }
+                var newCircle = Instantiate(SummoningPortalPrefab, spawnPosition, Quaternion.identity, this.transform);
+                summoningCircles.Add(newCircle);
+            }
 
 
         }
