@@ -14,4 +14,9 @@ MonoBehaviour:
   Name: Magic Missile
   Description: 1 damage to target and knockback adjacent tiles
   Range: 1
-  Effects: []
+  Effects:
+  - {fileID: 11400000, guid: e47decf97c72aaa44ac6628c6aa07399, type: 2}
+  - {fileID: 11400000, guid: 748da5bbb0e855b4fa931d94398f9740, type: 2}
+  - {fileID: 11400000, guid: 3f48cfef1c5b077478f70e4355d3e9d7, type: 2}
+  - {fileID: 11400000, guid: 6c453e7e0e28d064cbd405236cb4aeab, type: 2}
+  - {fileID: 11400000, guid: b41968c48b3c10d4894b0242594425cd, type: 2}

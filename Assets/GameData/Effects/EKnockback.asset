@@ -11,6 +11,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f528baf8a8fb28d4fb7e8ca727105256, type: 3}
   m_Name: EKnockback
   m_EditorClassIdentifier: 
-  TileAffected: {x: 0, y: 0, z: 0}
+  TileAffected: {x: 1, y: 0, z: 0}
   Damage: 0
-  Knockback: 0
+  Knockback: 1

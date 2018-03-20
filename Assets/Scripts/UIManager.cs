@@ -12,7 +12,7 @@ namespace Assets.Scripts
 {
     public class UIManager : MonoBehaviour
     {
-        public GameObject Ability1Button;
+        public Button Ability1Button;
         public Text UnitMovementText;
         public Text HPText;
         public Text TurnCounterText;
@@ -25,8 +25,17 @@ namespace Assets.Scripts
         {
             if (unit.Side == UnitController.SideEnum.Player)
             {
-                Ability1Button.SetActive(true);
+                Ability1Button.gameObject.SetActive(true);
                 Ability1Button.GetComponentInChildren<Text>().text = unit.MyLoadout.Abilities[0].Name;
+
+                if(unit.HasActed)
+                {
+                    Ability1Button.interactable = false;
+                }
+                else
+                {
+                    Ability1Button.interactable = true;
+                }
             }
             UnitMovementText.gameObject.SetActive(true);
             HPText.gameObject.SetActive(true);
@@ -38,7 +47,7 @@ namespace Assets.Scripts
 
         public void HideUnitInfo()
         {
-            Ability1Button.SetActive(false);
+            Ability1Button.gameObject.SetActive(false);
             UnitMovementText.gameObject.SetActive(false);
             HPText.gameObject.SetActive(false);
         }
