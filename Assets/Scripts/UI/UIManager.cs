@@ -15,6 +15,7 @@ namespace Assets.Scripts.UI
         public GameObject UnitDetailsPanel;
         public GameObject AbilityButtonPrefab;
         public Text UnitMovementText;
+        public Text UnitNameText;
         public Text HPText;
         public Text TurnCounterText;
         public Text TileName;
@@ -49,16 +50,19 @@ namespace Assets.Scripts.UI
             }
             UnitMovementText.gameObject.SetActive(true);
             HPText.gameObject.SetActive(true);
+            UnitNameText.gameObject.SetActive(true);
 
             //TODO make event listener in Unit to automatically update this info
             UnitMovementText.text = "Move: " + unit.CurrentMovement + " / " + unit.MaxMovement;
             HPText.text = "HP: " + unit.HP + " / " + unit.MaxHP;
+            UnitNameText.text = unit.Name;
         }
 
         public void HideUnitInfo()
         {
             UnitMovementText.gameObject.SetActive(false);
             HPText.gameObject.SetActive(false);
+            UnitNameText.gameObject.SetActive(false);
             foreach (var button in abilityButtons)
             {
                 Destroy(button);

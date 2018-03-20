@@ -101,33 +101,9 @@ namespace Assets.Scripts
                 unit.CurrentMovement = 0;
             }
 
-            //find everyone affected
-            //TODO: be able to rotate to different facing directions
-            foreach (var effect in ability.Effects)
-            {
-                var affectedPosition = target + effect.TileAffected;
-                var guyHit = AllUnits.Find(u => u.transform.position == affectedPosition);
-                if (guyHit != null)
-                {
-                    //TODO: delegate pattern?
-                    guyHit.TakeDamage(effect.Damage);
-                    if (effect.Knockback)
-                    {
-                        Vector3Int knockbackDirection;
-                        if (effect.TileAffected == Vector3Int.zero)
-                        {
-                            knockbackDirection = Vector3Int.FloorToInt(Vector3.Normalize(guyHit.transform.position - unit.transform.position));
-                        }
-                        else
-                        {
-                            //knock back away from origin point
-                            knockbackDirection = Vector3Int.FloorToInt(Vector3.Normalize(effect.TileAffected));
-                        }
+            ability.ApplyEffects(this, unit, target);
 
-                        KnockBack(guyHit, knockbackDirection);
-                    }
-                }
-            }
+           
             //TODO: damage to tiles
 
 
@@ -158,13 +134,25 @@ namespace Assets.Scripts
                 if (unitInWay != null)
                 {
                     Debug.Log(guyHit.Name + " crashes into " + unitInWay.Name);
-                    unitInWay.TakeDamage(1);
-                    guyHit.TakeDamage(1);
+                    unitInWay.TakeDamage(1, Effect.DamageTypes.KnockbackImpact);
+                    guyHit.TakeDamage(1, Effect.DamageTypes.KnockbackImpact);
                 }
                 else
                 {
-                    Debug.Log(guyHit.Name + " hits something solid");
-                    guyHit.TakeDamage(1);
+                    var tile = Dungeon.GetTile<DungeonTile>(destination);
+
+                    if (tile.Name == "Level Exit" && guyHit.Side == UnitController.SideEnum.Hireling)
+                    {
+                        Debug.Log(guyHit.Name + " knocked onto the stairs!");
+                        savedHirelings++;
+                        guyHit.Die();
+                    }
+                    else
+                    {
+                        Debug.Log(guyHit.Name + " hits something solid");
+                        guyHit.TakeDamage(1, Effect.DamageTypes.KnockbackImpact);
+                    }
+
                     //TODO: destroying tiles
                 }
             }
@@ -199,7 +187,7 @@ namespace Assets.Scripts
             ClearOverlays();
 
             SpawnUnit(new Vector3Int(-4, 0, 0), "Knight", UnitController.SideEnum.Player, "Knight");
-            SpawnUnit(new Vector3Int(-3, 0, 0), "Knight", UnitController.SideEnum.Player, "Wizard");
+            SpawnUnit(new Vector3Int(-3, 0, 0), "Gandalf", UnitController.SideEnum.Player, "Wizard");
             SpawnUnit(new Vector3Int(-4, -1, 0), "Knight", UnitController.SideEnum.Player, "Knight");
             SpawnUnit(new Vector3Int(0, 0, 0), "Ooze", UnitController.SideEnum.BadGuy, "Ooze");
             SpawnUnit(new Vector3Int(0, -2, 0), "Ooze", UnitController.SideEnum.BadGuy, "Ooze");
@@ -283,12 +271,12 @@ namespace Assets.Scripts
 
         private void CheckVictoryConditions()
         {
-            if(AllUnits.Where(u => u.Side == UnitController.SideEnum.Player).Count() == 0)
+            if (AllUnits.Where(u => u.Side == UnitController.SideEnum.Player).Count() == 0)
             {
                 //everyone dead
                 EndGame(victory: false);
             }
-            else if(AllUnits.Where(u => u.Side == UnitController.SideEnum.Hireling).Count() == 0 && remainingHirelings == 0)
+            else if (AllUnits.Where(u => u.Side == UnitController.SideEnum.Hireling).Count() == 0 && remainingHirelings == 0)
             {
                 //all hirelings made it
                 EndGame(victory: true);
@@ -342,13 +330,13 @@ namespace Assets.Scripts
             if (!blockInputs)
             {
                 //hot keyboard shortcuts
-                if(Input.GetKeyDown(KeyCode.Escape))
+                if (Input.GetKeyDown(KeyCode.Escape))
                 {
                     TurnFSM.SetTrigger(GameStateTransitions.Deselect);
                 }
-                else if(Input.GetKeyDown(KeyCode.Alpha1))
+                else if (Input.GetKeyDown(KeyCode.Alpha1))
                 {
-                    if(UnitClicked != null && UnitClicked.MyLoadout.Abilities.Length > 0)
+                    if (UnitClicked != null && UnitClicked.MyLoadout.Abilities.Length > 0)
                     {
                         AbilityButtonClick(0);
                     }
@@ -440,7 +428,7 @@ namespace Assets.Scripts
                 var node = path.Last();
                 validMoves.Add(path);
 
-                if(node == shortCircuitGoalDesination)
+                if (node == shortCircuitGoalDesination)
                 {
                     //found shortest target path, need no others
                     return new List<List<Vector3Int>>() { path };
@@ -454,9 +442,9 @@ namespace Assets.Scripts
                 foreach (var dir in GameManager.CardinalDirections)
                 {
                     var nextPlace = node + dir;
-                    if(Passable(nextPlace))
+                    if (Passable(nextPlace))
                     {
-                        if(! validMoves.Select(m => m.Last()).Contains(nextPlace))
+                        if (!validMoves.Select(m => m.Last()).Contains(nextPlace))
                         {
                             var copyPath = path.Select(m => new Vector3Int(m.x, m.y, m.z)).ToList();
                             copyPath.Add(nextPlace);
@@ -481,6 +469,7 @@ namespace Assets.Scripts
 
         private void RenderMovement(UnitController unit)
         {
+            ClearOverlays();
             var moves = FindAllValidMoves(unit).Select(m => m.Last());
 
             foreach (var move in moves)
@@ -507,7 +496,7 @@ namespace Assets.Scripts
                     if (targetedUnit != null)
                     {
                         //TODO: horrible hack, make delegate pattern
-                        targetedUnit.TakeDamage(badGuy.MyLoadout.Abilities[0].Effects[0].Damage);
+                        targetedUnit.TakeDamage(badGuy.MyLoadout.Abilities[0].Effects[0].Damage, Effect.DamageTypes.Iron);
                     }
                 }
                 badGuy.ClearTargetOverlays();
@@ -661,7 +650,7 @@ namespace Assets.Scripts
                 else
                 {
                     Debug.Log("Summoning circle at " + summoningCircle.transform.position + " blocked by " + unitOnCircle.Name);
-                    unitOnCircle.TakeDamage(1);
+                    unitOnCircle.TakeDamage(1, Effect.DamageTypes.SummoningBlocked);
                 }
             }
             for (int i = 0; i < circlesToDestroy.Count; i++)
@@ -744,7 +733,7 @@ namespace Assets.Scripts
         {
             UI.DisplayUnitInfo(this, UnitClicked);
         }
-        
+
         public void AbilityButtonClick(int abilityIndex)
         {
             SelectedAbilityIndex = abilityIndex;

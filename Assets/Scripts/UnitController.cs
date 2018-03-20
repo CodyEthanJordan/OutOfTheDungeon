@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.Events;
 using Assets.Scripts.GameLogic;
 using Assets.Scripts.UI;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,7 +83,7 @@ namespace Assets.Scripts
             CurrentMovement = MaxMovement;
         }
 
-        internal void TakeDamage(int dmg)
+        internal void TakeDamage(int dmg, Effect.DamageTypes damageType)
         {
             Debug.Log(Name + " takes " + dmg + " damage");
             HP -= dmg;
