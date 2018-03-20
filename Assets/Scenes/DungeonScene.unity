@@ -673,7 +673,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 300, y: 200}
+  m_SizeDelta: {x: 300, y: 103.4}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &766241919
 MonoBehaviour:
@@ -1003,7 +1003,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a4f58d97d284bc48932d998084582ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Ability1Button: {fileID: 327311808}
+  Ability1Button: {fileID: 1301907153}
   UnitMovementText: {fileID: 773312649}
   HPText: {fileID: 605658294}
   TurnCounterText: {fileID: 1555359537}
@@ -1767,7 +1767,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 273.7, y: 110.2}
+  m_SizeDelta: {x: 291.3, y: 59.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1808968813
 MonoBehaviour:
@@ -1914,7 +1914,7 @@ GameObject:
   - component: {fileID: 1929408073}
   - component: {fileID: 1929408072}
   m_Layer: 5
-  m_Name: Panel
+  m_Name: UnitDetails
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1939,7 +1939,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 300, y: 300}
+  m_SizeDelta: {x: 286.7, y: 143.4}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1929408072
 MonoBehaviour:

@@ -106,8 +106,18 @@ namespace Assets.Scripts
                     guyHit.TakeDamage(effect.Damage);
                     if (effect.Knockback)
                     {
-                        var knockbackDirection = guyHit.transform.position - unit.transform.position;
-                        KnockBack(guyHit, Vector3Int.FloorToInt(knockbackDirection.normalized));
+                        Vector3Int knockbackDirection;
+                        if (effect.TileAffected == Vector3Int.zero)
+                        {
+                            knockbackDirection = Vector3Int.FloorToInt(Vector3.Normalize(guyHit.transform.position - unit.transform.position));
+                        }
+                        else
+                        {
+                            //knock back away from origin point
+                            knockbackDirection = Vector3Int.FloorToInt(Vector3.Normalize(effect.TileAffected));
+                        }
+
+                        KnockBack(guyHit, knockbackDirection);
                     }
                 }
             }

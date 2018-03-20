@@ -13,6 +13,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LoadoutName: Hireling
   Image: {fileID: 21300004, guid: b9f8abd8120f1fe4cb9bbf23b502a948, type: 3}
-  MaxHP: 3
-  BaseMovement: 1
+  MaxHP: 1
+  BaseMovement: 4
   Abilities: []

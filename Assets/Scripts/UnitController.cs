@@ -30,7 +30,23 @@ namespace Assets.Scripts
 
         public int CurrentMovement = 5;
         public int MaxMovement = 5;
-        public bool HasActed = false;
+        private bool _hasActed;
+        public bool HasActed
+        {
+            get { return _hasActed; }
+            set
+            {
+                _hasActed = value;
+                if(_hasActed)
+                {
+                    sr.color = Color.Lerp(baseColor, Color.black, 0.2f);
+                }
+                else
+                {
+                    sr.color = baseColor;
+                }
+            }
+        }
         public int MaxHP = 5;
         private int _hp;
         public int HP
@@ -49,6 +65,7 @@ namespace Assets.Scripts
 
         private MouseoverUIManager MouseoverUI;
         private SpriteRenderer sr;
+        private Color baseColor;
 
         private void Awake()
         {
@@ -140,14 +157,17 @@ namespace Assets.Scripts
             switch (side)
             {
                 case SideEnum.Player:
+                    baseColor = Color.white;
                     break;
 
                 case SideEnum.BadGuy:
                     sr.color = Color.red;
+                    baseColor = Color.red;
                     break;
 
                 case SideEnum.Hireling:
                     sr.color = Color.green;
+                    baseColor = Color.green;
                     break;
 
                 default:
