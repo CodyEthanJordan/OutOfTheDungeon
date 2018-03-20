@@ -199,6 +199,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DangerzoneUI: {fileID: 1587006342558576, guid: 354a04f010f74ae4e9c282ec97b6f703,
     type: 2}
+  RangedAttackIndicatorUI: {fileID: 1049787227905902, guid: 1b04344bdc15f3c4ab1a685c798b30c9,
+    type: 2}
   AllLoadouts:
   - {fileID: 11400000, guid: 75334401fe3791842920992706c20152, type: 2}
   - {fileID: 11400000, guid: 8acc193a933d7c8468d48c0383ed6069, type: 2}
@@ -211,6 +213,7 @@ MonoBehaviour:
   MaxHP: 5
   Side: 0
   TargetedTiles: []
+  TargetedDirection: {x: 0, y: 0, z: 0}
   DeathEvent:
     m_PersistentCalls:
       m_Calls: []

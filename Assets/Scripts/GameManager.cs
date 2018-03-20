@@ -674,7 +674,7 @@ namespace Assets.Scripts
                     {
                         yield return MoveUnit(bg, path, true);
                         var target = FindAdjacentTarget(path.Last(), (UnitController u) => u.Side == UnitController.SideEnum.Hireling || u.Side == UnitController.SideEnum.Player);
-                        bg.TargetDirection(Vector3Int.left);
+                        bg.TargetDirection(this, Vector3Int.left);
                     }
                     else
                     {

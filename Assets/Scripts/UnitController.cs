@@ -270,6 +270,7 @@ namespace Assets.Scripts
             {
                 var indicator = Instantiate(RangedAttackIndicatorUI, pos, Quaternion.identity);
                 RangedAttackIndicatorOverlays.Add(indicator);
+                pos = pos + TargetedDirection;
             }
             TargetTile(pos);
         }
