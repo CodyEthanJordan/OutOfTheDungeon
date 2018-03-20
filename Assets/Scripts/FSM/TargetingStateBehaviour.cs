@@ -12,7 +12,7 @@ namespace Assets.Scripts.FSM
         {
             base.OnStateEnter(animator, animatorStateInfo, layerIndex);
             gm.UIHighlightClickedEvent.AddListener(UseAbility);
-            gm.RenderAbility(gm.UnitClicked.Abilities[0]);
+            gm.RenderAbility(gm.UnitClicked.MyLoadout.Abilities[0]);
         }
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)

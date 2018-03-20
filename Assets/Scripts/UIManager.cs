@@ -23,11 +23,14 @@ namespace Assets.Scripts
 
         public void DisplayUnitInfo(UnitController unit)
         {
-            Ability1Button.SetActive(true);
+            if (unit.Side == UnitController.SideEnum.Player)
+            {
+                Ability1Button.SetActive(true);
+                Ability1Button.GetComponentInChildren<Text>().text = unit.MyLoadout.Abilities[0].Name;
+            }
             UnitMovementText.gameObject.SetActive(true);
             HPText.gameObject.SetActive(true);
 
-            Ability1Button.GetComponentInChildren<Text>().text = unit.Abilities[0].Name;
             //TODO make event listener in Unit to automatically update this info
             UnitMovementText.text = "Move: " + unit.CurrentMovement + " / " + unit.MaxMovement;
             HPText.text = "HP: " + unit.HP + " / " + unit.MaxHP;

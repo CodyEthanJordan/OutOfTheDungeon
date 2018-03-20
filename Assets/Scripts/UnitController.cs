@@ -25,10 +25,12 @@ namespace Assets.Scripts
             }
         }
 
+        public Loadout[] AllLoadouts;
+        public Loadout MyLoadout;
+
         public int CurrentMovement = 5;
         public int MaxMovement = 5;
         public bool HasActed = false;
-        public List<Ability> Abilities;
         public int MaxHP = 5;
         private int _hp;
         public int HP
@@ -41,8 +43,6 @@ namespace Assets.Scripts
             }
         }
         public SideEnum Side;
-        public int Damage = 1;
-        public Sprite[] Graphics;
 
         public List<Vector3Int> TargetedTiles;
         public UnitEvent DeathEvent = new UnitEvent();
@@ -53,12 +53,6 @@ namespace Assets.Scripts
         private void Awake()
         {
             MouseoverUI = transform.GetChild(0).GetComponent<MouseoverUIManager>();
-            Abilities = new List<Ability>();
-            var a = new Ability
-            {
-                Name = "Slash"
-            };
-            Abilities.Add(a);
             HP = MaxHP;
             TargetedTiles = new List<Vector3Int>();
             sr = this.GetComponent<SpriteRenderer>();
@@ -126,15 +120,21 @@ namespace Assets.Scripts
             TargetedTiles.Clear();
         }
 
-        public void SetupUnit(string name, SideEnum side, Vector3Int position, int hp, int move)
+        public void SetupUnit(string name, SideEnum side, Vector3Int position, string LoadoutName)
         {
-            MaxHP = hp;
-            MaxMovement = move;
+            MyLoadout = AllLoadouts.FirstOrDefault(l => l.LoadoutName == LoadoutName);
+            if(MyLoadout == null)
+            {
+                Debug.LogError("Can't find loadout called " + LoadoutName);
+            }
+
+            MaxHP = MyLoadout.MaxHP;
+            MaxMovement = MyLoadout.BaseMovement;
             HP = MaxHP;
             CurrentMovement = MaxMovement;
-            //TODO: pass in data about unit class, probably scriptable object
             Name = name;
             this.transform.position = position;
+            sr.sprite = MyLoadout.Image;
 
             Side = side;
             switch (side)
@@ -143,12 +143,10 @@ namespace Assets.Scripts
                     break;
 
                 case SideEnum.BadGuy:
-                    sr.sprite = Graphics[1];
                     sr.color = Color.red;
                     break;
 
                 case SideEnum.Hireling:
-                    sr.sprite = Graphics[2];
                     sr.color = Color.green;
                     break;
 
