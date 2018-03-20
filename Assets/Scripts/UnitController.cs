@@ -262,13 +262,13 @@ namespace Assets.Scripts
 
         public void UpdateRangedAttack(GameManager gm)
         {
-            ClearRangedAttackIndicators();
             if(TargetedDirection == Vector3Int.zero)
             {
                 //not currently targeting
                 return;
             }
 
+            ClearRangedAttackIndicators();
             Vector3Int pos = Vector3Int.FloorToInt(this.transform.position) + TargetedDirection;
             while(gm.Passable(pos, true))
             {

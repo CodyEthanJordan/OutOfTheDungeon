@@ -112,6 +112,10 @@ namespace Assets.Scripts
 
         public void KnockBack(UnitController guyHit, Vector3Int direction)
         {
+            if(guyHit.HP <= 0)
+            {
+                return; //TODO: find better way to deal with this, knocking a dead unit onto oil infinite loops
+            }
             //push units who are hit in direction
             var destination = Vector3Int.FloorToInt(guyHit.transform.position) + direction;
             if (Passable(destination, true))
