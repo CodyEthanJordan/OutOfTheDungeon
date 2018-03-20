@@ -3,14 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using UnityEngine;
+
 namespace Assets.Scripts.GameLogic
 {
-    public class Ability
+    [CreateAssetMenu(menuName = "Dungeon/Ability")]
+    public class Ability : ScriptableObject
     {
         public string Name;
-        public AbilityType Type = AbilityType.Melee; //TODO: don't hardcode
+        public string Description;
+        public RangeType Range;
+        public Effect[] Effects;
 
-        public enum AbilityType
+        public enum RangeType
         {
             Melee,
             Ray,

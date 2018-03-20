@@ -103,7 +103,7 @@ namespace Assets.Scripts
             }
         }
 
-        private void KnockBack(UnitController guyHit, Vector3Int direction)
+        public void KnockBack(UnitController guyHit, Vector3Int direction)
         {
             //push units who are hit in direction
             var destination = Vector3Int.FloorToInt(guyHit.transform.position) + direction;
@@ -203,6 +203,7 @@ namespace Assets.Scripts
             }
             //TODO: horrible hack
             SpawnUnit(new Vector3Int(-4, 0, 0), "Knight", UnitController.SideEnum.Player, 3, 4);
+            SpawnUnit(new Vector3Int(-3, 0, 0), "Knight", UnitController.SideEnum.Player, 3, 4);
             SpawnUnit(new Vector3Int(-4, -1, 0), "Knight", UnitController.SideEnum.Player,3,4);
             SpawnUnit(new Vector3Int(0, 0, 0), "Ooze", UnitController.SideEnum.BadGuy,2,3);
             SpawnUnit(new Vector3Int(0, -2, 0), "Ooze", UnitController.SideEnum.BadGuy,2,3);
@@ -562,6 +563,8 @@ namespace Assets.Scripts
 
             //spawn more oozes
 
+
+
         }
 
         public static readonly ReadOnlyCollection<Vector3Int> CardinalDirections = new ReadOnlyCollection<Vector3Int>(new[] { Vector3Int.up, Vector3Int.right, Vector3Int.left, Vector3Int.down });
@@ -623,9 +626,9 @@ namespace Assets.Scripts
         internal void RenderAbility(Ability ability)
         {
             //TODO: generalize, melee only
-            switch (ability.Type)
+            switch (ability.Range)
             {
-                case Ability.AbilityType.Melee:
+                case Ability.RangeType.Melee:
                     foreach (var dir in GameManager.CardinalDirections)
                     {
                         UIHighlights.SetTile(Vector3Int.FloorToInt(UnitClicked.transform.position) + dir, TargetingTile);
