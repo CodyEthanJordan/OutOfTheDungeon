@@ -12,7 +12,8 @@ namespace Assets.Scripts.UI
 {
     public class UIManager : MonoBehaviour
     {
-        public Button Ability1Button;
+        public GameObject UnitDetailsPanel;
+        public GameObject AbilityButtonPrefab;
         public Text UnitMovementText;
         public Text HPText;
         public Text TurnCounterText;
@@ -22,26 +23,28 @@ namespace Assets.Scripts.UI
         public Text HirelingsRemainingText;
         public Text VictoryText;
 
+        private List<GameObject> abilityButtons = new List<GameObject>();
+
         public void InitializeUI()
         {
             VictoryText.gameObject.SetActive(false);
             HideUnitInfo();
         }
 
-        public void DisplayUnitInfo(UnitController unit)
+        public void DisplayUnitInfo(GameManager gm, UnitController unit)
         {
+            int i = 0;
             if (unit.Side == UnitController.SideEnum.Player)
             {
-                Ability1Button.gameObject.SetActive(true);
-                Ability1Button.GetComponentInChildren<Text>().text = unit.MyLoadout.Abilities[0].Name;
-
-                if (unit.HasActed)
+                foreach (var ability in unit.MyLoadout.Abilities)
                 {
-                    Ability1Button.interactable = false;
-                }
-                else
-                {
-                    Ability1Button.interactable = true;
+                    int abilityIndex = i;
+                    var button = Instantiate(AbilityButtonPrefab, UnitDetailsPanel.transform);
+                    abilityButtons.Add(button);
+                    button.transform.GetChild(0).GetComponent<Text>().text = ability.Name;
+                    button.GetComponent<Button>().onClick.AddListener(() => gm.AbilityButtonClick(abilityIndex));
+                    button.GetComponent<MouseoverPopup>().Details = ability.Description;
+                    i++;
                 }
             }
             UnitMovementText.gameObject.SetActive(true);
@@ -54,9 +57,13 @@ namespace Assets.Scripts.UI
 
         public void HideUnitInfo()
         {
-            Ability1Button.gameObject.SetActive(false);
             UnitMovementText.gameObject.SetActive(false);
             HPText.gameObject.SetActive(false);
+            foreach (var button in abilityButtons)
+            {
+                Destroy(button);
+            }
+            abilityButtons.Clear();
         }
 
         internal void UpdateTurn(int turnCounter)

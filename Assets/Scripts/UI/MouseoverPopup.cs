@@ -11,7 +11,7 @@ namespace Assets.Scripts.UI
 {
     class MouseoverPopup : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        public GameObject DetailsBox;
+        [SerializeField] private GameObject DetailsBox;
         public String Details = "";
 
         public void OnPointerEnter(PointerEventData eventData)

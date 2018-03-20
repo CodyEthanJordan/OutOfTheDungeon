@@ -83,7 +83,7 @@ namespace Assets.Scripts
         public PositionEvent UIHighlightClickedEvent = new PositionEvent();
 
         private bool blockInputs = false;
-        private float MOVEMENT_SPEED = 0.1f;
+        public int SelectedAbilityIndex { get; private set; }
 
         internal void ActivateAbility(UnitController unit, Ability ability, Vector3Int target)
         {
@@ -340,6 +340,25 @@ namespace Assets.Scripts
 
             if (!blockInputs)
             {
+                //hot keyboard shortcuts
+                if(Input.GetKeyDown(KeyCode.Escape))
+                {
+                    TurnFSM.SetTrigger(GameStateTransitions.Deselect);
+                }
+                else if(Input.GetKeyDown(KeyCode.Alpha1))
+                {
+                    if(UnitClicked != null && UnitClicked.MyLoadout.Abilities.Length > 0)
+                    {
+                        AbilityButtonClick(0);
+                    }
+                }
+                else if (Input.GetKeyDown(KeyCode.Alpha2))
+                {
+                    if (UnitClicked != null && UnitClicked.MyLoadout.Abilities.Length > 1)
+                    {
+                        AbilityButtonClick(1);
+                    }
+                }
 
                 if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
                 {
@@ -747,7 +766,13 @@ namespace Assets.Scripts
 
         public void DisplaySelectedUnitData()
         {
-            UI.DisplayUnitInfo(UnitClicked);
+            UI.DisplayUnitInfo(this, UnitClicked);
+        }
+        
+        public void AbilityButtonClick(int abilityIndex)
+        {
+            SelectedAbilityIndex = abilityIndex;
+            TurnFSM.SetTrigger(GameStateTransitions.TargetAbility);
         }
 
         internal void RenderAbility(Ability ability)
