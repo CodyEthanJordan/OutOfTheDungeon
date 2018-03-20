@@ -16,6 +16,7 @@ namespace Assets.Scripts.GameLogic
             Magic,
             KnockbackImpact,
             SummoningBlocked,
+            Healing
         }
 
         public Vector3Int TileAffected;
@@ -46,7 +47,6 @@ namespace Assets.Scripts.GameLogic
         internal void ApplyTileEffect(GameManager gm, UnitController user, DungeonTile tile, Vector3Int target)
         {
             //TODO: melting and shit, tile effects
-            throw new NotImplementedException();
         }
     }
 }

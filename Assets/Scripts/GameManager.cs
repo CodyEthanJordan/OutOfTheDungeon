@@ -103,7 +103,7 @@ namespace Assets.Scripts
 
             ability.ApplyEffects(this, unit, target);
 
-           
+
             //TODO: damage to tiles
 
 
@@ -113,7 +113,7 @@ namespace Assets.Scripts
         {
             //push units who are hit in direction
             var destination = Vector3Int.FloorToInt(guyHit.transform.position) + direction;
-            if (Passable(destination))
+            if (Passable(destination, true))
             {
                 guyHit.moveTo(destination);
                 var standingOnTile = (DungeonTile)Dungeon.GetTile(destination);
@@ -379,22 +379,22 @@ namespace Assets.Scripts
             UI.HideUnitInfo();
         }
 
-        private int DistanceTo(Vector3Int position, Vector3Int destination)
-        {
-            //TODO horrible hack
-            var moves = FindAllValidMoves(position, 20, destination);
-            var validPath = moves.FirstOrDefault(m => m.Last() == destination);
-            if (validPath != null)
-            {
-                return validPath.Count() - 1;
-            }
-            else
-            {
-                return -1;
-            }
-        }
+        //private int DistanceTo(Vector3Int position, Vector3Int destination)
+        //{
+        //    //TODO horrible hack
+        //    var moves = FindAllValidMoves(position, 20, destination);
+        //    var validPath = moves.FirstOrDefault(m => m.Last() == destination);
+        //    if (validPath != null)
+        //    {
+        //        return validPath.Count() - 1;
+        //    }
+        //    else
+        //    {
+        //        return -1;
+        //    }
+        //}
 
-        public bool Passable(Vector3Int pos)
+        public bool Passable(Vector3Int pos, bool blockedByUnits, Func<UnitController, bool> unitBlockingPredicate = null)
         {
             var wall = (DungeonTile)Dungeon.GetTile(pos);
             if (!wall.Passable)
@@ -402,21 +402,35 @@ namespace Assets.Scripts
                 return false;
             }
 
-            //TODO: pass through allies?
-            if (AllUnits.Where(u => u.transform.position == pos).Count() > 0)
+            if (blockedByUnits)
             {
-                return false;
+                if (unitBlockingPredicate == null)
+                {
+                    //default predicate, blocked by all
+                    if (AllUnits.Where(u => u.transform.position == pos).Count() > 0)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (AllUnits.Where(u => u.transform.position == pos && unitBlockingPredicate(u)).Count() > 0)
+                    {
+                        return false;
+                    }
+                }
             }
+
 
             return true;
         }
 
-        private List<List<Vector3Int>> FindAllValidMoves(Vector3Int position, int moves)
+        private List<List<Vector3Int>> FindAllValidMoves(Vector3Int position, int moves, bool blockedByUnits, Func<UnitController, bool> unitBlockingPredicate = null)
         {
-            return FindAllValidMoves(position, moves, new Vector3Int(10000, 10000, 1000));
+            return FindAllValidMoves(position, moves, blockedByUnits, unitBlockingPredicate, new Vector3Int(10000, 10000, 1000));
         }
 
-        private List<List<Vector3Int>> FindAllValidMoves(Vector3Int position, int moves, Vector3Int shortCircuitGoalDesination)
+        private List<List<Vector3Int>> FindAllValidMoves(Vector3Int position, int moves, bool blockByUnits, Func<UnitController, bool> unitBlockingPredicate, Vector3Int shortCircuitGoalDesination)
         {
             var validMoves = new List<List<Vector3Int>>();
             Queue<List<Vector3Int>> PathsToCheck = new Queue<List<Vector3Int>>();
@@ -442,7 +456,7 @@ namespace Assets.Scripts
                 foreach (var dir in GameManager.CardinalDirections)
                 {
                     var nextPlace = node + dir;
-                    if (Passable(nextPlace))
+                    if (Passable(nextPlace, blockByUnits, unitBlockingPredicate))
                     {
                         if (!validMoves.Select(m => m.Last()).Contains(nextPlace))
                         {
@@ -454,6 +468,8 @@ namespace Assets.Scripts
                 }
             }
 
+            //remove tiles which can't be landed on even if they can be passed through
+            validMoves.RemoveAll(p => !Passable(p.Last(), true));
             return validMoves;
         }
 
@@ -470,7 +486,7 @@ namespace Assets.Scripts
         private void RenderMovement(UnitController unit)
         {
             ClearOverlays();
-            var moves = FindAllValidMoves(unit).Select(m => m.Last());
+            var moves = FindAllValidSteps(unit).Select(m => m.Last());
 
             foreach (var move in moves)
             {
@@ -478,9 +494,9 @@ namespace Assets.Scripts
             }
         }
 
-        private List<List<Vector3Int>> FindAllValidMoves(UnitController unit)
+        private List<List<Vector3Int>> FindAllValidSteps(UnitController unit)
         {
-            return FindAllValidMoves(Vector3Int.FloorToInt(unit.transform.position), unit.CurrentMovement);
+            return FindAllValidMoves(Vector3Int.FloorToInt(unit.transform.position), unit.CurrentMovement, true, (UnitController u) => u.Side != unit.Side);
         }
 
         public void EndTurn()
@@ -517,7 +533,9 @@ namespace Assets.Scripts
 
         public void MoveUnit(UnitController unit, Vector3Int destination)
         {
-            var allPaths = FindAllValidMoves(Vector3Int.FloorToInt(unit.transform.position), 20, destination);
+            var allPaths = FindAllValidMoves(Vector3Int.FloorToInt(unit.transform.position), 20, true, 
+                (UnitController u) => u.Side != unit.Side,
+                destination);
             var path = allPaths.Find(p => p.Last() == destination);
             StartCoroutine(MoveUnit(unit, path));
         }
@@ -570,7 +588,7 @@ namespace Assets.Scripts
                             //TODO: register as having made it
                         }
 
-                        if (Passable(nextPosition))
+                        if (Passable(nextPosition, true))
                         {
                             List<Vector3Int> path = new List<Vector3Int>()
                             {
@@ -600,7 +618,7 @@ namespace Assets.Scripts
                 foreach (var dir in GameManager.CardinalDirections)
                 {
                     spawnLocation = entrance + dir;
-                    if (Passable(spawnLocation))
+                    if (Passable(spawnLocation, true))
                     {
                         validSpawnFound = true;
                         break;
@@ -618,7 +636,7 @@ namespace Assets.Scripts
             //TODO: different kinds of bad guy AI
             foreach (var bg in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.BadGuy))
             {
-                var destinations = FindAllValidMoves(bg);
+                var destinations = FindAllValidSteps(bg);
                 List<Vector3Int> path = FindPathAdjacentToTarget(destinations, (UnitController u) => u.Side == UnitController.SideEnum.Hireling || u.Side == UnitController.SideEnum.Player);
                 if (path != null)
                 {
@@ -742,7 +760,7 @@ namespace Assets.Scripts
 
         internal void RenderAbility(Ability ability)
         {
-            //TODO: generalize, melee only
+            Vector3Int basePosition;
             switch (ability.Range)
             {
                 case Ability.RangeType.Melee:
@@ -752,11 +770,21 @@ namespace Assets.Scripts
                     }
                     break;
                 case Ability.RangeType.Ray:
-                    var basePosition = Vector3Int.FloorToInt(UnitClicked.transform.position);
+                    basePosition = Vector3Int.FloorToInt(UnitClicked.transform.position);
                     foreach (var dir in GameManager.CardinalDirections)
                     {
-                        RecursiveTargetUntilBlocked(basePosition, dir);
+                        RecursiveTargetUntilBlocked(basePosition, dir, blockedByUnits: true);
                     }
+                    break;
+                case Ability.RangeType.Mortar:
+                    basePosition = Vector3Int.FloorToInt(UnitClicked.transform.position);
+                    foreach (var dir in GameManager.CardinalDirections)
+                    {
+                        RecursiveTargetUntilBlocked(basePosition, dir, blockedByUnits: false);
+                    }
+                    break;
+                case Ability.RangeType.Personal:
+                    UIHighlights.SetTile(Vector3Int.FloorToInt(UnitClicked.transform.position), TargetingTile);
                     break;
 
                 default:
@@ -766,11 +794,11 @@ namespace Assets.Scripts
 
         }
 
-        private void RecursiveTargetUntilBlocked(Vector3Int basePosition, Vector3Int dir)
+        private void RecursiveTargetUntilBlocked(Vector3Int basePosition, Vector3Int dir, bool blockedByUnits, Func<UnitController, bool> unitBlockingPredicate = null)
         {
             //TODO: add minimum range
             Vector3Int pos = basePosition + dir;
-            while (Passable(pos))
+            while (Passable(pos, blockedByUnits, unitBlockingPredicate))
             {
                 UIHighlights.SetTile(pos, TargetingTile);
                 pos = pos + dir;

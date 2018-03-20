@@ -17,3 +17,4 @@ MonoBehaviour:
   BaseMovement: 4
   Abilities:
   - {fileID: 11400000, guid: 052d1dea570d6064fa3cf44557f2e46d, type: 2}
+  - {fileID: 11400000, guid: d21dd358f70455542861b399d32298b1, type: 2}

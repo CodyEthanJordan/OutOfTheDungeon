@@ -85,12 +85,26 @@ namespace Assets.Scripts
 
         internal void TakeDamage(int dmg, Effect.DamageTypes damageType)
         {
-            Debug.Log(Name + " takes " + dmg + " damage");
-            HP -= dmg;
-            if (HP <= 0)
+            switch(damageType)
             {
-                Die();
+                case Effect.DamageTypes.Healing:
+                    Debug.Log(Name + " is healed for " + dmg);
+                    HP += dmg;
+                    if(HP > MaxHP)
+                    {
+                        HP = MaxHP;
+                    }
+                    break;
+                default:
+                    Debug.Log(Name + " takes " + dmg + " of " + damageType);
+                    HP -= dmg;
+                    if (HP <= 0)
+                    {
+                        Die();
+                    }
+                    break;
             }
+           
         }
 
         public void EnableUI()

@@ -43,7 +43,8 @@ namespace Assets.Scripts.GameLogic
         {
             Melee,
             Ray,
-            Mortar
+            Mortar,
+            Personal
         }
     }
 }
