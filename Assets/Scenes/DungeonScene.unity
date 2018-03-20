@@ -1567,6 +1567,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e408649e069bcdf469af0222c737854b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MovementAnimationSpeed: 0.03
   Dungeon: {fileID: 2077115550}
   UIHighlights: {fileID: 1399422956}
   MoveTile: {fileID: 11400000, guid: eb9c603373d492a40a3378d31864e1c7, type: 2}

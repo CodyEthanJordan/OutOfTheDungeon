@@ -16,6 +16,7 @@ namespace Assets.Scripts
 {
     public class GameManager : MonoBehaviour
     {
+        public float MovementAnimationSpeed;
         public Tilemap Dungeon;
         private GridInformation dungeonInfo;
         public Tilemap UIHighlights;
@@ -204,7 +205,7 @@ namespace Assets.Scripts
             SpawnUnit(new Vector3Int(0, -2, 0), "Ooze", UnitController.SideEnum.BadGuy, "Ooze");
             turnCounter = 0;
             blockInputs = false;
-            NewTurn();
+            StartCoroutine(NewTurn());
         }
 
         private void Start()
@@ -393,7 +394,7 @@ namespace Assets.Scripts
         private int DistanceTo(Vector3Int position, Vector3Int destination)
         {
             //TODO horrible hack
-            var moves = FindAllValidMoves(position, 20);
+            var moves = FindAllValidMoves(position, 20, destination);
             var validPath = moves.FirstOrDefault(m => m.Last() == destination);
             if (validPath != null)
             {
@@ -422,69 +423,45 @@ namespace Assets.Scripts
             return true;
         }
 
-        private List<List<Vector3Int>> FindAllValidMoves(Vector3Int Position, int moves)
+        private List<List<Vector3Int>> FindAllValidMoves(Vector3Int position, int moves)
+        {
+            return FindAllValidMoves(position, moves, new Vector3Int(10000, 10000, 1000));
+        }
+
+        private List<List<Vector3Int>> FindAllValidMoves(Vector3Int position, int moves, Vector3Int shortCircuitGoalDesination)
         {
             var validMoves = new List<List<Vector3Int>>();
-            Queue<List<Vector3Int>> PlacesToVisit = new Queue<List<Vector3Int>>();
-            PlacesToVisit.Enqueue(new List<Vector3Int>() { Position });
+            Queue<List<Vector3Int>> PathsToCheck = new Queue<List<Vector3Int>>();
+            PathsToCheck.Enqueue(new List<Vector3Int>() { position });
 
-            while (PlacesToVisit.Count > 0)
+            while (PathsToCheck.Count > 0)
             {
-                var path = PlacesToVisit.Dequeue();
+                var path = PathsToCheck.Dequeue();
                 var node = path.Last();
                 validMoves.Add(path);
 
-                if (path.Count >= moves)
+                if(node == shortCircuitGoalDesination)
+                {
+                    //found shortest target path, need no others
+                    return new List<List<Vector3Int>>() { path };
+                }
+
+                if (path.Count > moves)
                 {
                     continue; //don't go more if out of movement
                 }
 
-                //TODO: refactor to use cardinal directions
-                var north = node + Vector3Int.up;
-                if (Passable(north))
+                foreach (var dir in GameManager.CardinalDirections)
                 {
-                    //make sure we haven't already been here
-                    if (!validMoves.Select(m => m.Last()).Contains(north))
+                    var nextPlace = node + dir;
+                    if(Passable(nextPlace))
                     {
-                        var nextPlace = path.Select(m => new Vector3Int(m.x, m.y, m.z)).ToList();
-                        nextPlace.Add(north);
-                        PlacesToVisit.Enqueue(nextPlace);
-                    }
-                }
-
-                var east = node + Vector3Int.right;
-                if (Passable(east))
-                {
-                    //make sure we haven't already been here
-                    if (!validMoves.Select(m => m.Last()).Contains(east))
-                    {
-                        var nextPlace = path.Select(m => new Vector3Int(m.x, m.y, m.z)).ToList();
-                        nextPlace.Add(east);
-                        PlacesToVisit.Enqueue(nextPlace);
-                    }
-                }
-
-                var west = node + Vector3Int.left;
-                if (Passable(west))
-                {
-                    //make sure we haven't already been here
-                    if (!validMoves.Select(m => m.Last()).Contains(west))
-                    {
-                        var nextPlace = path.Select(m => new Vector3Int(m.x, m.y, m.z)).ToList();
-                        nextPlace.Add(west);
-                        PlacesToVisit.Enqueue(nextPlace);
-                    }
-                }
-
-                var south = node + Vector3Int.down;
-                if (Passable(south))
-                {
-                    //make sure we haven't already been here
-                    if (!validMoves.Select(m => m.Last()).Contains(south))
-                    {
-                        var nextPlace = path.Select(m => new Vector3Int(m.x, m.y, m.z)).ToList();
-                        nextPlace.Add(south);
-                        PlacesToVisit.Enqueue(nextPlace);
+                        if(! validMoves.Select(m => m.Last()).Contains(nextPlace))
+                        {
+                            var copyPath = path.Select(m => new Vector3Int(m.x, m.y, m.z)).ToList();
+                            copyPath.Add(nextPlace);
+                            PathsToCheck.Enqueue(copyPath);
+                        }
                     }
                 }
             }
@@ -535,30 +512,27 @@ namespace Assets.Scripts
                 }
                 badGuy.ClearTargetOverlays();
             }
-            //Dangerzones.ClearAllTiles();
 
-            //new turn
-            NewTurn();
+            StartCoroutine(NewTurn());
         }
 
-        public void MoveUnit(UnitController unit, Vector3Int destination)
-        {
-            Debug.Log(unit.Name + " moves from " + unit.transform.position + " to " + destination);
-            //TODO: animate?, also unify with other one
-            unit.CurrentMovement -= DistanceTo(Vector3Int.FloorToInt(unit.transform.position), destination);
-            unit.moveTo(destination);
-            ApplyTileEffects(unit, destination);
-        }
-
-        private void MoveUnit(UnitController unit, List<Vector3Int> path, float animationSpeed)
+        public IEnumerator MoveUnit(UnitController unit, List<Vector3Int> path)
         {
             blockInputs = true;
-            unit.Move(path, animationSpeed, () => blockInputs = false);
-            // apply tile effects
+            yield return unit.Move(path, MovementAnimationSpeed);
+            unit.CurrentMovement -= path.Count() - 1;
             var destination = path.Last();
             ApplyTileEffects(unit, destination);
             blockInputs = false;
         }
+
+        public void MoveUnit(UnitController unit, Vector3Int destination)
+        {
+            var allPaths = FindAllValidMoves(Vector3Int.FloorToInt(unit.transform.position), 20, destination);
+            var path = allPaths.Find(p => p.Last() == destination);
+            StartCoroutine(MoveUnit(unit, path));
+        }
+
 
         private void ApplyTileEffects(UnitController unit, Vector3Int positon)
         {
@@ -576,8 +550,9 @@ namespace Assets.Scripts
             unit.Die();
         }
 
-        private void NewTurn()
+        private IEnumerator NewTurn()
         {
+            blockInputs = true;
             turnCounter = turnCounter + 1;
             Debug.Log("Turn: " + turnCounter + "\n---------");
 
@@ -608,7 +583,12 @@ namespace Assets.Scripts
 
                         if (Passable(nextPosition))
                         {
-                            MoveUnit(hireling, nextPosition);
+                            List<Vector3Int> path = new List<Vector3Int>()
+                            {
+                                Vector3Int.FloorToInt(hireling.transform.position),
+                                nextPosition
+                            };
+                            yield return MoveUnit(hireling, path);
                         }
                         else
                         {
@@ -653,8 +633,7 @@ namespace Assets.Scripts
                 List<Vector3Int> path = FindPathAdjacentToTarget(destinations, (UnitController u) => u.Side == UnitController.SideEnum.Hireling || u.Side == UnitController.SideEnum.Player);
                 if (path != null)
                 {
-                    //MoveUnit(bg, path, MOVEMENT_SPEED);
-                    MoveUnit(bg, path.Last());
+                    yield return MoveUnit(bg, path);
                     var target = FindAdjacentTarget(path.Last(), (UnitController u) => u.Side == UnitController.SideEnum.Hireling || u.Side == UnitController.SideEnum.Player);
                     bg.TargetTile(target);
                 }
@@ -662,10 +641,7 @@ namespace Assets.Scripts
                 {
                     // move to random location I guess
                     int i = UnityEngine.Random.Range(0, destinations.Count);
-                    var move = destinations[i].Last();
-                    //MoveUnit(bg, destinations[i], MOVEMENT_SPEED);
-                    //bg.moveTo(move);
-                    MoveUnit(bg, move);
+                    yield return MoveUnit(bg, destinations[i]);
                 }
             }
 
@@ -710,7 +686,7 @@ namespace Assets.Scripts
                 summoningCircles.Add(newCircle);
             }
 
-
+            blockInputs = false;
         }
 
         public static readonly ReadOnlyCollection<Vector3Int> CardinalDirections = new ReadOnlyCollection<Vector3Int>(new[] { Vector3Int.up, Vector3Int.right, Vector3Int.left, Vector3Int.down });

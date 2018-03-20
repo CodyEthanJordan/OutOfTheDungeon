@@ -193,12 +193,12 @@ namespace Assets.Scripts
             Destroy(this.gameObject);
         }
 
-        internal void Move(List<Vector3Int> path, float animationSpeed, Func<bool> completionCallback)
+        internal System.Collections.IEnumerator Move(List<Vector3Int> path, float animationSpeed)
         {
-            StartCoroutine(LerpMove(path, animationSpeed, completionCallback));
+            yield return StartCoroutine(LerpMove(path, animationSpeed));
         }
 
-        private System.Collections.IEnumerator LerpMove(List<Vector3Int> path, float animationSpeed, Func<bool> completionCallback)
+        private System.Collections.IEnumerator LerpMove(List<Vector3Int> path, float animationSpeed)
         {
             float l = 0;
             Vector3 previousPosition = this.transform.position;
@@ -215,7 +215,6 @@ namespace Assets.Scripts
             }
             //TODO: unify with moveTo logic
             this.transform.position = path.Last();
-            completionCallback();
         }
 
         private void OnDestroy()
