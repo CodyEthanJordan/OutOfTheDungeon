@@ -136,7 +136,7 @@ namespace Assets.Scripts
             }
         }
 
-        internal void moveTo(Vector3Int destination)
+        internal void moveTo(GameManager gm, Vector3Int destination)
         {
             var offset = destination - Vector3Int.FloorToInt(this.transform.position);
             for (int i = 0; i < TargetedTiles.Count; i++)
@@ -144,7 +144,10 @@ namespace Assets.Scripts
                 TargetedTiles[i] = TargetedTiles[i] + offset;
                 TargetedTileOverlays[i].transform.position = TargetedTileOverlays[i].transform.position + offset;
             }
-            
+            if(TargetedDirection != Vector3Int.zero)
+            {
+                UpdateRangedAttack(gm);
+            }
             this.transform.position = destination;
         }
 
@@ -220,9 +223,10 @@ namespace Assets.Scripts
             Destroy(this.gameObject);
         }
 
-        internal System.Collections.IEnumerator Move(List<Vector3Int> path, float animationSpeed)
+        internal System.Collections.IEnumerator Move(GameManager gm, List<Vector3Int> path, float animationSpeed)
         {
             yield return StartCoroutine(LerpMove(path, animationSpeed));
+            gm.UpdateAllRangedIndicators();
         }
 
         private System.Collections.IEnumerator LerpMove(List<Vector3Int> path, float animationSpeed)
@@ -246,8 +250,8 @@ namespace Assets.Scripts
 
         private void OnDestroy()
         {
-            
-            
+            ClearRangedAttackIndicators();
+            ClearTargetOverlays();
         }
 
         internal void TargetDirection(GameManager gm, Vector3Int dir)

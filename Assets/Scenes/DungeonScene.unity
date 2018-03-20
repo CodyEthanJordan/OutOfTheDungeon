@@ -1648,7 +1648,9 @@ MonoBehaviour:
   MoveTile: {fileID: 11400000, guid: eb9c603373d492a40a3378d31864e1c7, type: 2}
   TargetingTile: {fileID: 11400000, guid: d28b9cd5da97b3c4a8e8f36d63a4a4a7, type: 2}
   ThreatenedTile: {fileID: 0}
-  BadGuyLoadouts: []
+  BadGuyLoadouts:
+  - {fileID: 11400000, guid: b04ff0dfc60bded46b693a1ff2b6640d, type: 2}
+  - {fileID: 11400000, guid: ed50325b9d96586438f3902d4e95737d, type: 2}
   UnitClicked: {fileID: 0}
   UnitPrefab: {fileID: 1577556145990536, guid: 91266f979d2ed8641bbef3575b84da3d, type: 2}
   SummoningPortalPrefab: {fileID: 1532431115635846, guid: 0b85d5e11660d5240ba5c0932163c6d4,

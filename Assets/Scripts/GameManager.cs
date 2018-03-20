@@ -116,7 +116,7 @@ namespace Assets.Scripts
             var destination = Vector3Int.FloorToInt(guyHit.transform.position) + direction;
             if (Passable(destination, true))
             {
-                guyHit.moveTo(destination);
+                MoveUnit(guyHit, destination, costsMovement: false);
                 var standingOnTile = (DungeonTile)Dungeon.GetTile(destination);
                 if (standingOnTile.Slippery)
                 {
@@ -529,10 +529,24 @@ namespace Assets.Scripts
             StartCoroutine(NewTurn());
         }
 
+        public void UpdateAllRangedIndicators()
+        {
+            //can be made more effecient by checking if any indicator is overlapped
+            foreach (var unit in AllUnits)
+            {
+                unit.UpdateRangedAttack(this);
+            }
+        }
+
         public IEnumerator MoveUnit(UnitController unit, List<Vector3Int> path, bool costsMovement)
         {
+            //TODO: hack, dead units don't play well with coroutine
+            if (unit.HP <= 0)
+            {
+                yield break;
+            }
             blockInputs = true;
-            yield return unit.Move(path, MovementAnimationSpeed);
+            yield return unit.Move(this, path, MovementAnimationSpeed);
             if (costsMovement)
             {
                 unit.CurrentMovement -= path.Count() - 1;
@@ -673,8 +687,11 @@ namespace Assets.Scripts
                     if (path != null)
                     {
                         yield return MoveUnit(bg, path, true);
-                        var target = FindAdjacentTarget(path.Last(), (UnitController u) => u.Side == UnitController.SideEnum.Hireling || u.Side == UnitController.SideEnum.Player);
-                        bg.TargetDirection(this, Vector3Int.left);
+                        var target = FindDistantTarget(path.Last(), (UnitController u) => u.Side == UnitController.SideEnum.Hireling || u.Side == UnitController.SideEnum.Player);
+                        if (target != null)
+                        {
+                            bg.TargetDirection(this, Vector3Int.FloorToInt(Vector3.Normalize(target.transform.position - bg.transform.position)));
+                        }
                     }
                     else
                     {
@@ -732,6 +749,29 @@ namespace Assets.Scripts
             }
 
             blockInputs = false;
+        }
+
+        private UnitController FindDistantTarget(Vector3Int pos, Func<UnitController, bool> unitPredicate)
+        {
+            List<UnitController> possibleTargets = new List<UnitController>();
+            foreach (var dir in GameManager.CardinalDirections)
+            {
+                var unitFound = RecursiveSearchFor(pos + dir, dir, unitPredicate); 
+                if(unitFound != null)
+                {
+                    possibleTargets.Add(unitFound);
+                }
+            }
+
+            if(possibleTargets.Count == 0)
+            {
+                return null;
+            }
+            else
+            {
+                int r = UnityEngine.Random.Range(0, possibleTargets.Count);
+                return possibleTargets[r];
+            }
         }
 
         private List<Vector3Int> FindPathToCriteria(List<List<Vector3Int>> options, Func<Vector3Int, bool> criteria)
