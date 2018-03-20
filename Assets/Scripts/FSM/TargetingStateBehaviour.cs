@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.GameLogic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,7 +24,8 @@ namespace Assets.Scripts.FSM
 
         private void UseAbility(Vector3Int target)
         {
-            gm.ActivateAbility(gm.UnitClicked, target);
+            //TODO: remove hardcoding
+            gm.ActivateAbility(gm.UnitClicked, gm.UnitClicked.MyLoadout.Abilities[0], target);
             gm.TriggerTransition(GameStateTransitions.Deselect);
         }
     }

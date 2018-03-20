@@ -94,7 +94,7 @@ BoxCollider2D:
   m_Offset: {x: 0.5, y: 0.5}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
+    pivot: {x: 0, y: 0}
     oldSize: {x: 1, y: 1}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
@@ -199,17 +199,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DangerzoneUI: {fileID: 1587006342558576, guid: 354a04f010f74ae4e9c282ec97b6f703,
     type: 2}
+  AllLoadouts:
+  - {fileID: 11400000, guid: 75334401fe3791842920992706c20152, type: 2}
+  - {fileID: 11400000, guid: 8acc193a933d7c8468d48c0383ed6069, type: 2}
+  - {fileID: 11400000, guid: b04ff0dfc60bded46b693a1ff2b6640d, type: 2}
+  - {fileID: 11400000, guid: 2f43cb3a93e83d348b247f5e49204225, type: 2}
+  MyLoadout: {fileID: 0}
   CurrentMovement: 5
   MaxMovement: 5
   HasActed: 0
   MaxHP: 5
   Side: 0
-  Damage: 1
-  Graphics:
-  - {fileID: 21300000, guid: b9f8abd8120f1fe4cb9bbf23b502a948, type: 3}
-  - {fileID: 21300002, guid: b9f8abd8120f1fe4cb9bbf23b502a948, type: 3}
-  - {fileID: 21300004, guid: b9f8abd8120f1fe4cb9bbf23b502a948, type: 3}
   TargetedTiles: []
+  DeathEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Assets.Scripts.Events.UnitEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!212 &212433586944758088
 SpriteRenderer:
   m_ObjectHideFlags: 1

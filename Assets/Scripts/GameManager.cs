@@ -74,15 +74,15 @@ namespace Assets.Scripts
 
         private Animator TurnFSM;
 
-        public UnitEvent UnitClickedEvent;
-        public PositionEvent UIHighlightClickedEvent;
+        public UnitEvent UnitClickedEvent = new UnitEvent();
+        public PositionEvent UIHighlightClickedEvent = new PositionEvent();
 
         private bool blockInputs = false;
         private float MOVEMENT_SPEED = 0.1f;
 
-        internal void ActivateAbility(UnitController unit, Vector3Int target)
+        internal void ActivateAbility(UnitController unit, Ability ability, Vector3Int target)
         {
-            if(unit.HasActed)
+            if (unit.HasActed)
             {
                 //already acted, ignore this
                 Debug.LogWarning(unit.Name + "has already acted");
@@ -93,14 +93,23 @@ namespace Assets.Scripts
                 unit.HasActed = true;
                 unit.CurrentMovement = 0;
             }
-            //is the target a unit?
-            var guyHit = AllUnits.Find(u => u.transform.position == target);
-            if (guyHit != null)
+
+            //find everyone affected
+            //TODO: be able to rotate to different facing directions
+            foreach (var effect in ability.Effects)
             {
-                guyHit.TakeDamage(1);
-                var knockbackDirection = guyHit.transform.position - unit.transform.position;
-                KnockBack(guyHit, Vector3Int.FloorToInt(knockbackDirection.normalized));
+                var affectedPosition = target + effect.TileAffected;
+                var guyHit = AllUnits.Find(u => u.transform.position == target);
+                if (guyHit != null)
+                {
+                    guyHit.TakeDamage(1);
+                    var knockbackDirection = guyHit.transform.position - unit.transform.position;
+                    KnockBack(guyHit, Vector3Int.FloorToInt(knockbackDirection.normalized));
+                }
             }
+
+            //is the target a unit?
+           
         }
 
         public void KnockBack(UnitController guyHit, Vector3Int direction)
@@ -142,9 +151,6 @@ namespace Assets.Scripts
             TurnFSM = this.GetComponent<Animator>();
             dungeonInfo = Dungeon.gameObject.GetComponent<GridInformation>();
             AllUnits = new List<UnitController>();
-            UnitClickedEvent = new UnitEvent();
-            UIHighlightClickedEvent = new PositionEvent();
-
         }
 
         private void Start()
@@ -271,6 +277,7 @@ namespace Assets.Scripts
                         else if (hit.collider.CompareTag("UIHighlights"))
                         {
                             var destination = Dungeon.WorldToCell(hit.point);
+                            //TODO: don't hardcode to first ability
                             UIHighlightClickedEvent.Invoke(destination);
                         }
                     }
@@ -636,6 +643,11 @@ namespace Assets.Scripts
                     }
                     break;
                 case Ability.RangeType.Ray:
+                    var basePosition = Vector3Int.FloorToInt(UnitClicked.transform.position);
+                    foreach (var dir in GameManager.CardinalDirections)
+                    {
+                        RecursiveTargetUntilBlocked(basePosition, dir);
+                    }
                     break;
 
                 default:
@@ -643,6 +655,18 @@ namespace Assets.Scripts
                     break;
             }
 
+        }
+
+        private void RecursiveTargetUntilBlocked(Vector3Int basePosition, Vector3Int dir)
+        {
+            //TODO: add minimum range
+            Vector3Int pos = basePosition + dir;
+            while (Passable(pos))
+            {
+                UIHighlights.SetTile(pos, TargetingTile);
+                pos = pos + dir;
+            }
+            UIHighlights.SetTile(pos, TargetingTile);
         }
 
         public void Ability1()
