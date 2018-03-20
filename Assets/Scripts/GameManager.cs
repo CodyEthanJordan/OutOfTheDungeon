@@ -175,6 +175,29 @@ namespace Assets.Scripts
             AllUnits = new List<UnitController>();
         }
 
+        private void SetupMap(int hirelings)
+        {
+            UI.InitializeUI();
+            savedHirelings = 0;
+            remainingHirelings = hirelings;
+
+            foreach (var unit in AllUnits)
+            {
+                Destroy(unit);
+            }
+            AllUnits.Clear();
+
+            ClearOverlays();
+
+            SpawnUnit(new Vector3Int(-4, 0, 0), "Knight", UnitController.SideEnum.Player, "Knight");
+            SpawnUnit(new Vector3Int(-3, 0, 0), "Knight", UnitController.SideEnum.Player, "Wizard");
+            SpawnUnit(new Vector3Int(-4, -1, 0), "Knight", UnitController.SideEnum.Player, "Knight");
+            SpawnUnit(new Vector3Int(0, 0, 0), "Ooze", UnitController.SideEnum.BadGuy, "Ooze");
+            SpawnUnit(new Vector3Int(0, -2, 0), "Ooze", UnitController.SideEnum.BadGuy, "Ooze");
+            turnCounter = 0;
+            NewTurn();
+        }
+
         private void Start()
         {
             savedHirelings = 0;
@@ -234,14 +257,7 @@ namespace Assets.Scripts
                 }
             }
             //TODO: horrible hack
-            SpawnUnit(new Vector3Int(-4, 0, 0), "Knight", UnitController.SideEnum.Player, "Knight");
-            SpawnUnit(new Vector3Int(-3, 0, 0), "Knight", UnitController.SideEnum.Player, "Wizard");
-            SpawnUnit(new Vector3Int(-4, -1, 0), "Knight", UnitController.SideEnum.Player, "Knight");
-            SpawnUnit(new Vector3Int(0, 0, 0), "Ooze", UnitController.SideEnum.BadGuy, "Ooze");
-            SpawnUnit(new Vector3Int(0, -2, 0), "Ooze", UnitController.SideEnum.BadGuy, "Ooze");
-            turnCounter = -1;
-            NewTurn();
-            remainingHirelings = 6;
+            SetupMap(6);
         }
 
         private void SpawnUnit(Vector3Int position, string name, UnitController.SideEnum side, string loadoutName)
@@ -255,9 +271,38 @@ namespace Assets.Scripts
             AllUnits.Add(spawnedUnit);
         }
 
+        private void CheckVictoryConditions()
+        {
+            if(AllUnits.Where(u => u.Side == UnitController.SideEnum.Player).Count() == 0)
+            {
+                //everyone dead
+                EndGame(victory: false);
+            }
+            else if(AllUnits.Where(u => u.Side == UnitController.SideEnum.Hireling).Count() == 0 && remainingHirelings == 0)
+            {
+                //all hirelings made it
+                EndGame(victory: true);
+            }
+        }
+
+        private void EndGame(bool victory)
+        {
+            blockInputs = true;
+            UI.GameOver(victory, savedHirelings);
+            StartCoroutine(RestartGame(1));
+        }
+
+
+        IEnumerator RestartGame(int secondsTillRestart)
+        {
+            yield return new WaitForSeconds(secondsTillRestart);
+            SetupMap(6);
+        }
+
         private void OnUnitDie(UnitController unit)
         {
             AllUnits.Remove(unit);
+            CheckVictoryConditions();
         }
 
         public void TriggerTransition(string trigger)
@@ -502,13 +547,12 @@ namespace Assets.Scripts
         private void Kill(UnitController unit)
         {
             unit.Die();
-            //TODO: victory/loss conditions if no Players exist, mostly subsumed by death event
         }
 
         private void NewTurn()
         {
             turnCounter = turnCounter + 1;
-            Debug.Log("Turn: " + turnCounter);
+            Debug.Log("Turn: " + turnCounter + "\n---------");
 
             foreach (var unit in AllUnits)
             {
@@ -530,6 +574,7 @@ namespace Assets.Scripts
                         {
                             Kill(hireling);
                             savedHirelings++;
+                            CheckVictoryConditions();
                             break;
                             //TODO: register as having made it
                         }

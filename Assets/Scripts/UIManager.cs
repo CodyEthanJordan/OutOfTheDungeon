@@ -20,6 +20,13 @@ namespace Assets.Scripts
         public Text TileDescription;
         public Text HirelingsSavedText;
         public Text HirelingsRemainingText;
+        public Text VictoryText;
+
+        public void InitializeUI()
+        {
+            VictoryText.gameObject.SetActive(false);
+            HideUnitInfo();
+        }
 
         public void DisplayUnitInfo(UnitController unit)
         {
@@ -28,7 +35,7 @@ namespace Assets.Scripts
                 Ability1Button.gameObject.SetActive(true);
                 Ability1Button.GetComponentInChildren<Text>().text = unit.MyLoadout.Abilities[0].Name;
 
-                if(unit.HasActed)
+                if (unit.HasActed)
                 {
                     Ability1Button.interactable = false;
                 }
@@ -84,6 +91,21 @@ namespace Assets.Scripts
         public void UpdateHirelingsReamining(int h)
         {
             HirelingsRemainingText.text = "Hirelings Remaining: " + h;
+        }
+
+        public void GameOver(bool win, int hirelingsSaved)
+        {
+            VictoryText.gameObject.SetActive(true);
+            if (win)
+            {
+                VictoryText.text = "You win!\nHirelings saved: " + hirelingsSaved;
+                VictoryText.color = Color.green;
+            }
+            else
+            {
+                VictoryText.text = "Defeated!\nHirelings saved: " + hirelingsSaved;
+                VictoryText.color = Color.red;
+            }
         }
     }
 }
