@@ -902,7 +902,7 @@ namespace Assets.Scripts
             }
         }
 
-        public static readonly ReadOnlyCollection<Vector3Int> CardinalDirections = new ReadOnlyCollection<Vector3Int>(new[] { Vector3Int.up, Vector3Int.right, Vector3Int.left, Vector3Int.down });
+        public static readonly ReadOnlyCollection<Vector3Int> CardinalDirections = new ReadOnlyCollection<Vector3Int>(new[] { Vector3Int.up, Vector3Int.down, Vector3Int.right, Vector3Int.left });
 
         Vector3Int FindAdjacentTarget(Vector3Int position, Predicate<UnitController> targetPredicate)
         {

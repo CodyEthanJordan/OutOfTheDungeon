@@ -18,13 +18,35 @@ namespace Assets.Scripts.GameLogic
         public Effect[] Effects;
         public Effect[] SelfEffects;
 
+        public static Vector3Int RotateEffectTarget(Vector3Int target, Vector3Int newDirection)
+        {
+            int directionIndex = GameManager.CardinalDirections.IndexOf(newDirection);
+            switch(directionIndex)
+            {
+                case 0: //north
+                    return new Vector3Int(target.y,target.x,0);
+                case 1: //south
+                    return new Vector3Int(-target.y,-target.x,0);
+                case 2: //east
+                    return target;
+                case 3: //west
+                    return new Vector3Int(-target.x, target.y, target.z);
+
+                default:
+                    Debug.LogError("newDirection not cardinal direction!");
+                    throw new NotImplementedException();
+            }
+
+        }
+
         public void ApplyEffects(GameManager gm, UnitController user, Vector3Int target)
         {
             //find everyone affected
-            //TODO: be able to rotate to different facing directions
             foreach (var effect in Effects)
             {
-                var affectedPosition = target + effect.TileAffected;
+                var cardinalDirectionToTarget = GameManager.CardinalDirectionTo(Vector3Int.FloorToInt(user.transform.position), target);
+                Vector3Int affectedPosition = target + RotateEffectTarget(effect.TileAffected, cardinalDirectionToTarget);
+
                 var guyHit = gm.AllUnits.Find(u => u.transform.position == affectedPosition);
                 if (guyHit != null)
                 {
