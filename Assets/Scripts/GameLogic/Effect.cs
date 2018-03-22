@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.GameLogic.SpecialEffects;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,8 +8,8 @@ using UnityEngine;
 
 namespace Assets.Scripts.GameLogic
 {
-    [CreateAssetMenu(menuName = "Dungeon/Effect")]
-    public class Effect : ScriptableObject
+    [System.Serializable]
+    public class Effect
     {
         public enum DamageTypes
         {
@@ -16,31 +17,21 @@ namespace Assets.Scripts.GameLogic
             Magic,
             KnockbackImpact,
             SummoningBlocked,
-            Healing
+            Healing,
+            Fire
         }
 
         public Vector3Int TileAffected;
         public int Damage;
         public DamageTypes DamageType;
-        public bool Knockback;
+        public SpecialEffect[] SpecialEffects;
 
-        public virtual void ApplyEffect(GameManager gm, UnitController user, UnitController guyHit, Vector3Int targetLocation)
+        public void ApplyEffect(GameManager gm, UnitController user, UnitController guyHit, Vector3Int targetLocation)
         {
             guyHit.TakeDamage(Damage, DamageType);
-            if (Knockback)
+            foreach (var se in SpecialEffects)
             {
-                Vector3Int knockbackDirection;
-                if (TileAffected == Vector3Int.zero)
-                {
-                    knockbackDirection = Vector3Int.FloorToInt(Vector3.Normalize(guyHit.transform.position - user.transform.position));
-                }
-                else
-                {
-                    //knock back away from origin point
-                    knockbackDirection = Vector3Int.FloorToInt(Vector3.Normalize(TileAffected));
-                }
-
-                gm.KnockBack(guyHit, knockbackDirection);
+                se.ApplyEffect(gm, user, guyHit, targetLocation);
             }
         }
 

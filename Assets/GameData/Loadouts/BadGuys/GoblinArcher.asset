@@ -16,4 +16,4 @@ MonoBehaviour:
   MaxHP: 2
   BaseMovement: 4
   Abilities:
-  - {fileID: 11400000, guid: b198ea8a5eee4ea4bb145de0e5e2616c, type: 2}
+  - {fileID: 11400000, guid: 308a4ee5d0497654d912fd442c6010fa, type: 2}

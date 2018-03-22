@@ -15,6 +15,4 @@ MonoBehaviour:
   Image: {fileID: 21300010, guid: b9f8abd8120f1fe4cb9bbf23b502a948, type: 3}
   MaxHP: 2
   BaseMovement: 5
-  Abilities:
-  - {fileID: 11400000, guid: 22f13e60bd977614281fb53879c1997a, type: 2}
-  - {fileID: 11400000, guid: 024901367e361794492dd9ecb3233b15, type: 2}
+  Abilities: []

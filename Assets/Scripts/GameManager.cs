@@ -102,16 +102,44 @@ namespace Assets.Scripts
             }
             else
             {
-                unit.HasActed = true;
-                unit.CurrentMovement = 0;
+                if (!ability.FreeAction)
+                {
+                    unit.HasActed = true;
+                    unit.CurrentMovement = 0;
+                }
             }
 
             ability.ApplyEffects(this, unit, target);
 
 
             //TODO: damage to tiles
+        }
 
-
+        public static Vector3Int CardinalDirectionTo(Vector3Int a, Vector3Int b)
+        {
+            var dir = b - a;
+            if(Math.Abs(dir.x) > Math.Abs(dir.y))
+            {
+                if(dir.x > 0)
+                {
+                    return Vector3Int.right;
+                }
+                else
+                {
+                    return Vector3Int.left;
+                }
+            }
+            else
+            {
+                if(dir.y > 0)
+                {
+                    return Vector3Int.up;
+                }
+                else
+                {
+                    return Vector3Int.down;
+                }
+            }
         }
 
         public void KnockBack(UnitController guyHit, Vector3Int direction)

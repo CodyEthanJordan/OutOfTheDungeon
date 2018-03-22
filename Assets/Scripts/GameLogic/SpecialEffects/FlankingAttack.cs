@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Assets.Scripts.GameLogic.SpecialEffects
 {
     [CreateAssetMenu(menuName = "Dungeon/SpecialEffects/FlankingAttack")]
-    public class FlankingAttack : Effect
+    public class FlankingAttack : SpecialEffect
     {
         public Effect[] NormalEffects;
         public Effect[] FlankingEffects;

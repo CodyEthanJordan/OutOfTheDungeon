@@ -14,6 +14,7 @@ namespace Assets.Scripts.GameLogic
         public string Description;
         public RangeType Range;
         public bool OnlyTargetUnits;
+        public bool FreeAction;
         public Effect[] Effects;
         public Effect[] SelfEffects;
 

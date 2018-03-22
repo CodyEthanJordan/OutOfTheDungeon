@@ -9,15 +9,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22d19b894cb04374eabd8fbfbb4a6db9, type: 3}
-  m_Name: Slam
+  m_Name: FireBreath
   m_EditorClassIdentifier: 
-  Name: Slam
-  Description: Deal 1 damage to target
+  Name: Fire Breath
+  Description: Deal 2 damage to everything in cone
   Range: 0
   OnlyTargetUnits: 0
   Effects:
   - TileAffected: {x: 0, y: 0, z: 0}
-    Damage: 1
-    DamageType: 0
+    Damage: 2
+    DamageType: 5
+    SpecialEffects: []
+  - TileAffected: {x: 1, y: 0, z: 0}
+    Damage: 2
+    DamageType: 5
+    SpecialEffects: []
+  - TileAffected: {x: 1, y: 1, z: 0}
+    Damage: 2
+    DamageType: 5
+    SpecialEffects: []
+  - TileAffected: {x: 1, y: -1, z: 0}
+    Damage: 2
+    DamageType: 5
     SpecialEffects: []
   SelfEffects: []
