@@ -54,3 +54,6 @@ TagManager:
   - name: Highlight
     uniqueID: 326892891
     locked: 0
+  - name: UIOverlay
+    uniqueID: 4117663363
+    locked: 0

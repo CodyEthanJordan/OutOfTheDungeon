@@ -596,18 +596,9 @@ namespace Assets.Scripts
         {
             TriggerTransition(GameStateTransitions.Deselect);
             //bad guys do stuff
-            //TODO: different kinds of bad guy UI
             foreach (var badGuy in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.BadGuy))
             {
-                foreach (var target in badGuy.TargetedTiles)
-                {
-                    var targetedUnit = AllUnits.Find(u => u.transform.position == target);
-                    if (targetedUnit != null)
-                    {
-                        //TODO: horrible hack, make delegate pattern
-                        targetedUnit.TakeDamage(badGuy.MyLoadout.Abilities[0].Effects[0].Damage, Effect.DamageTypes.Iron);
-                    }
-                }
+                ActivateAbility(badGuy, badGuy.MyLoadout.Abilities[0], badGuy.TargetedTile);
                 badGuy.ClearTargetOverlays();
             }
 
@@ -639,6 +630,13 @@ namespace Assets.Scripts
             var destination = path.Last();
             ApplyTileEffects(unit, destination);
             blockInputs = false;
+        }
+
+        public void TeleportUnit(UnitController unit, Vector3Int destination)
+        {
+            unit.moveTo(this, destination);
+            ApplyTileEffects(unit, destination);
+            UpdateAllRangedIndicators();
         }
 
         public void MoveUnit(UnitController unit, Vector3Int destination, bool costsMovement)

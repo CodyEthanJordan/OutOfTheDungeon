@@ -18,19 +18,19 @@ namespace Assets.Scripts.GameLogic
         public Effect[] Effects;
         public Effect[] SelfEffects;
 
-        public static Vector3Int RotateEffectTarget(Vector3Int target, Vector3Int newDirection)
+        public static Vector3Int RotateEffectTarget(Vector3Int offset, Vector3Int facingDirection)
         {
-            int directionIndex = GameManager.CardinalDirections.IndexOf(newDirection);
+            int directionIndex = GameManager.CardinalDirections.IndexOf(facingDirection);
             switch(directionIndex)
             {
                 case 0: //north
-                    return new Vector3Int(target.y,target.x,0);
+                    return new Vector3Int(offset.y,offset.x,0);
                 case 1: //south
-                    return new Vector3Int(-target.y,-target.x,0);
+                    return new Vector3Int(-offset.y,-offset.x,0);
                 case 2: //east
-                    return target;
+                    return offset;
                 case 3: //west
-                    return new Vector3Int(-target.x, target.y, target.z);
+                    return new Vector3Int(-offset.x, offset.y, offset.z);
 
                 default:
                     Debug.LogError("newDirection not cardinal direction!");

@@ -19,8 +19,8 @@ namespace Assets.Scripts.GameLogic.SpecialEffects
 
             Vector3Int userLoctaion = Vector3Int.FloorToInt(user.transform.position);
             Vector3Int targetLoctaion = Vector3Int.FloorToInt(guyHit.transform.position);
-            gm.MoveUnit(user, targetLocation, costsMovement: false);
-            gm.MoveUnit(guyHit, userLoctaion, costsMovement: false);
+            gm.TeleportUnit(user, targetLoctaion);
+            gm.TeleportUnit(guyHit, userLoctaion);
         }
     }
 }

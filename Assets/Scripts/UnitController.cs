@@ -29,7 +29,6 @@ namespace Assets.Scripts
             }
         }
 
-        public Loadout[] AllLoadouts;
         public Loadout MyLoadout;
 
         public int CurrentMovement = 5;
@@ -62,9 +61,11 @@ namespace Assets.Scripts
                 MouseoverUI.UpdateHPText(_hp, MaxHP);
             }
         }
+
+        public Vector3Int TargetedTile { get; private set; }
+
         public SideEnum Side;
 
-        public List<Vector3Int> TargetedTiles;
         public Vector3Int TargetedDirection = Vector3Int.zero; //used for ranged badguys
         public UnitEvent DeathEvent = new UnitEvent();
 
@@ -76,7 +77,6 @@ namespace Assets.Scripts
         {
             MouseoverUI = transform.GetChild(0).GetComponent<MouseoverUIManager>();
             HP = MaxHP;
-            TargetedTiles = new List<Vector3Int>();
             sr = this.GetComponent<SpriteRenderer>();
         }
 
@@ -118,9 +118,9 @@ namespace Assets.Scripts
         public void EnableUI()
         {
             MouseoverUI.EnableUI();
-            foreach (var dangerzone in TargetedTileOverlays)
+            foreach (var t in TargetedTileOverlays)
             {
-                dangerzone.GetComponent<SpriteRenderer>().color = Color.yellow;
+                t.GetComponent<OverlayTooltipUI>().ShowTooltip();
             }
             foreach (var indicator in RangedAttackIndicatorOverlays)
             {
@@ -131,9 +131,9 @@ namespace Assets.Scripts
         public void DisableUI()
         {
             MouseoverUI.DisableUI();
-            foreach (var dangerzone in TargetedTileOverlays)
+            foreach (var t in TargetedTileOverlays)
             {
-                dangerzone.GetComponent<SpriteRenderer>().color = Color.red;
+                t.GetComponent<OverlayTooltipUI>().HideTooltip();
             }
             foreach (var indicator in RangedAttackIndicatorOverlays)
             {
@@ -144,24 +144,30 @@ namespace Assets.Scripts
         internal void moveTo(GameManager gm, Vector3Int destination)
         {
             var offset = destination - Vector3Int.FloorToInt(this.transform.position);
-            for (int i = 0; i < TargetedTiles.Count; i++)
-            {
-                TargetedTiles[i] = TargetedTiles[i] + offset;
-                TargetedTileOverlays[i].transform.position = TargetedTileOverlays[i].transform.position + offset;
-            }
+            this.transform.position = destination;
+            ClearTargetOverlays();
+            TargetTile(TargetedTile + offset);
+            
             if(TargetedDirection != Vector3Int.zero)
             {
                 UpdateRangedAttack(gm);
             }
-            this.transform.position = destination;
         }
 
         internal void TargetTile(Vector3Int target)
         {
-            TargetedTiles.Add(target);
-            var overlay = Instantiate(DangerzoneUI, target, Quaternion.identity);
-            overlay.GetComponent<SpriteRenderer>().color = Color.red;
-            TargetedTileOverlays.Add(overlay);
+            TargetedTile = target;
+            var facingDirection = GameManager.CardinalDirectionTo(Vector3Int.FloorToInt(this.transform.position), target);
+            foreach (var effect in MyLoadout.Abilities[0].Effects)
+            {
+                var offset = effect.TileAffected;
+                var targetedTile = target + Ability.RotateEffectTarget(offset, facingDirection);
+
+                var overlay = Instantiate(DangerzoneUI, targetedTile, Quaternion.identity);
+                overlay.GetComponent<SpriteRenderer>().color = Color.red;
+                overlay.GetComponent<OverlayTooltipUI>().Setup(effect);
+                TargetedTileOverlays.Add(overlay);
+            }
         }
 
         public void ClearTargetOverlays()
@@ -171,7 +177,6 @@ namespace Assets.Scripts
                 Destroy(overlay);
             }
             TargetedTileOverlays.Clear();
-            TargetedTiles.Clear();
         }
 
         public void SetupUnit(string name, SideEnum side, Vector3Int position, Loadout loadout)
@@ -209,8 +214,6 @@ namespace Assets.Scripts
 
             DisableUI();
         }
-
-       
 
         internal void Die()
         {
@@ -293,7 +296,6 @@ namespace Assets.Scripts
                 Destroy(tile);
             }
             TargetedTileOverlays.Clear();
-            TargetedTiles.Clear();
         }
 
         public enum SideEnum

@@ -1535,7 +1535,7 @@ Prefab:
     - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
         type: 2}
       propertyPath: InitialEnemies.Array.size
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
         type: 2}
@@ -1583,13 +1583,13 @@ Prefab:
         type: 2}
       propertyPath: InitialEnemies.Array.data[0]
       value: 
-      objectReference: {fileID: 11400000, guid: b04ff0dfc60bded46b693a1ff2b6640d,
+      objectReference: {fileID: 11400000, guid: 33bcea45bbea0bb44ba64028207e4974,
         type: 2}
     - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
         type: 2}
       propertyPath: InitialEnemies.Array.data[1]
       value: 
-      objectReference: {fileID: 11400000, guid: b04ff0dfc60bded46b693a1ff2b6640d,
+      objectReference: {fileID: 11400000, guid: 33bcea45bbea0bb44ba64028207e4974,
         type: 2}
     - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
         type: 2}
@@ -1628,6 +1628,18 @@ Prefab:
       propertyPath: HeroStartLocations.Array.data[2].y
       value: -2
       objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: InitialEnemies.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: b04ff0dfc60bded46b693a1ff2b6640d,
+        type: 2}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: InitialEnemies.Array.data[3]
+      value: 
+      objectReference: {fileID: 11400000, guid: ed50325b9d96586438f3902d4e95737d,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2feab527a2c6b96468f2b69816dfb12d, type: 2}
   m_IsPrefabParent: 0

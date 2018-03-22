@@ -18,13 +18,13 @@ namespace Assets.Scripts.GameLogic.SpecialEffects
             if(IgnoreCollision)
             {
                 //DANGEROUS, use with care, can put you inside stuff
-                gm.MoveUnit(guyHit, targetLocation, false);
+                gm.TeleportUnit(guyHit, targetLocation);
             }
             else
             {
                 if (gm.Passable(targetLocation, blockedByUnits: true))
                 {
-                    gm.MoveUnit(guyHit, targetLocation, false);
+                    gm.TeleportUnit(guyHit, targetLocation);
                 }
             }
         }
