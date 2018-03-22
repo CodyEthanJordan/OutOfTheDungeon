@@ -196,6 +196,20 @@ namespace Assets.Scripts
 
             ClearOverlays();
 
+            //spawn heros
+            foreach (var hero in encounterData.Heros)
+            {
+
+            }
+
+            foreach (var startingBadGuy in roomInfo.InitialEnemies)
+            {
+                var location = FindEmptySpawnableLocation();
+                SpawnUnit(location, startingBadGuy.LoadoutName, UnitController.SideEnum.BadGuy, startingBadGuy.LoadoutName);
+            }
+
+
+
             SpawnUnit(new Vector3Int(-4, 0, 0), "Knight", UnitController.SideEnum.Player, "Knight");
             SpawnUnit(new Vector3Int(-3, 0, 0), "Gandalf", UnitController.SideEnum.Player, "Wizard");
             SpawnUnit(new Vector3Int(-4, -1, 0), "Knight", UnitController.SideEnum.Player, "Knight");
@@ -206,10 +220,27 @@ namespace Assets.Scripts
             StartCoroutine(NewTurn());
         }
 
+        private Vector3Int FindEmptySpawnableLocation()
+        {
+            //TODO: game will crash if there are no valid locations
+            if (validSpawnLocations == null)
+            {
+                return Vector3Int.zero;
+            }
+            int r = UnityEngine.Random.Range(0, validSpawnLocations.Count);
+            var proposedLocation = validSpawnLocations[r];
+            while (!Passable(proposedLocation, true))
+            {
+                r = UnityEngine.Random.Range(0, validSpawnLocations.Count);
+                proposedLocation = validSpawnLocations[r];
+            }
+            return proposedLocation;
+        }
+
         private void Start()
         {
             var dataObject = GameObject.Find("DontDestroyEncounterOutcomeData");
-            if(dataObject == null)
+            if (dataObject == null)
             {
                 Debug.LogWarning("Started game without encounter data!, DEBUG: making fake data");
                 dataObject = Instantiate(encounterDataDebugPrefab);
@@ -228,9 +259,9 @@ namespace Assets.Scripts
             savedHirelings = 0;
             remainingHirelings = encounterData.HirelingsSaved; //number you have coming in
 
-            for (int i = Dungeon.cellBounds.xMin; i < Dungeon.cellBounds.xMax; i++)
+            for (int i = roomInfo.xMin; i < roomInfo.xMax; i++)
             {
-                for (int j = Dungeon.cellBounds.yMin; j < Dungeon.cellBounds.yMax; j++)
+                for (int j = roomInfo.yMin; j < roomInfo.yMax; j++)
                 {
                     Vector3Int pos = new Vector3Int(i, j, (int)Dungeon.transform.position.z);
                     if (Dungeon.HasTile(pos))
@@ -281,8 +312,8 @@ namespace Assets.Scripts
 
                 }
             }
-            //TODO: horrible hack
-            SetupMap(6);
+
+            SetupMap(remainingHirelings);
         }
 
         private void SpawnUnit(Vector3Int position, string name, UnitController.SideEnum side, string loadoutName)

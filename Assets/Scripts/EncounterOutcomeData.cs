@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.GameLogic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ namespace Assets.Scripts
     {
         public string NextRoom;
         public int HirelingsSaved;
+        public Loadout[] Heros;
 
         private void Awake()
         {

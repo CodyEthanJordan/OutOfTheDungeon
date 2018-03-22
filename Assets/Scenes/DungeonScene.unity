@@ -1520,6 +1520,11 @@ Prefab:
       propertyPath: SpawnableBadGuys.Array.size
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: HeroStartLocations.Array.size
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 4880737742142408, guid: 2feab527a2c6b96468f2b69816dfb12d, type: 2}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1576,6 +1581,31 @@ Prefab:
       value: 
       objectReference: {fileID: 11400000, guid: ed50325b9d96586438f3902d4e95737d,
         type: 2}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: HeroStartLocations.Array.data[0].x
+      value: -3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: HeroStartLocations.Array.data[1].x
+      value: -4
+      objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: HeroStartLocations.Array.data[1].y
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: HeroStartLocations.Array.data[2].x
+      value: -3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: HeroStartLocations.Array.data[2].y
+      value: -2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2feab527a2c6b96468f2b69816dfb12d, type: 2}
   m_IsPrefabParent: 0
@@ -1727,7 +1757,7 @@ MonoBehaviour:
   BadGuyLoadouts:
   - {fileID: 11400000, guid: b04ff0dfc60bded46b693a1ff2b6640d, type: 2}
   - {fileID: 11400000, guid: ed50325b9d96586438f3902d4e95737d, type: 2}
-  asdf: []
+  encounterDataDebugPrefab: {fileID: 0}
   UnitClicked: {fileID: 0}
   UnitPrefab: {fileID: 1577556145990536, guid: 91266f979d2ed8641bbef3575b84da3d, type: 2}
   SummoningPortalPrefab: {fileID: 1532431115635846, guid: 0b85d5e11660d5240ba5c0932163c6d4,
