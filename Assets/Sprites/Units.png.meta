@@ -9,6 +9,8 @@ TextureImporter:
     21300004: Units_2
     21300006: Units_3
     21300008: Units_4
+    21300010: Units_5
+    21300012: Units_6
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -145,6 +147,34 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 64
+        y: 112
+        width: 16
+        height: 16
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Units_5
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 112
+        width: 16
+        height: 16
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: Units_6
+      rect:
+        serializedVersion: 2
+        x: 96
         y: 112
         width: 16
         height: 16

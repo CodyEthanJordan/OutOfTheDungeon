@@ -216,6 +216,7 @@ namespace Assets.Scripts
             StartCoroutine(NewTurn());
         }
 
+
         private Vector3Int FindEmptySpawnableLocation()
         {
             //TODO: game will crash if there are no valid locations
@@ -621,8 +622,6 @@ namespace Assets.Scripts
             StartCoroutine(MoveUnit(unit, path, costsMovement));
         }
 
-
-
         private void ApplyTileEffects(UnitController unit, Vector3Int positon)
         {
             var tileLandedOn = (DungeonTile)Dungeon.GetTile(positon);
@@ -937,6 +936,17 @@ namespace Assets.Scripts
             TurnFSM.SetTrigger(GameStateTransitions.TargetAbility);
         }
 
+        private void SetTargetOnTile(Vector3Int pos, bool unitsOnly)
+        {
+            if (unitsOnly && AllUnits.Where(u => u.transform.position == pos).Count() == 0)
+            {
+                //nothing here, move on
+                return;
+            }
+
+            UIHighlights.SetTile(pos, TargetingTile);
+        }
+
         internal void RenderAbility(Ability ability)
         {
             Vector3Int basePosition;
@@ -945,7 +955,7 @@ namespace Assets.Scripts
                 case Ability.RangeType.Melee:
                     foreach (var dir in GameManager.CardinalDirections)
                     {
-                        UIHighlights.SetTile(Vector3Int.FloorToInt(UnitClicked.transform.position) + dir, TargetingTile);
+                        SetTargetOnTile(Vector3Int.FloorToInt(UnitClicked.transform.position) + dir, ability.OnlyTargetUnits);
                     }
                     break;
                 case Ability.RangeType.DirectLOS:

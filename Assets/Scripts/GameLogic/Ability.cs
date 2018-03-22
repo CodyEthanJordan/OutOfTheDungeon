@@ -13,6 +13,7 @@ namespace Assets.Scripts.GameLogic
         public string Name;
         public string Description;
         public RangeType Range;
+        public bool OnlyTargetUnits;
         public Effect[] Effects;
         public Effect[] SelfEffects;
 

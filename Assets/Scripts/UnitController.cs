@@ -205,12 +205,7 @@ namespace Assets.Scripts
             DisableUI();
         }
 
-        public enum SideEnum
-        {
-            Player,
-            BadGuy,
-            Hireling,
-        }
+       
 
         internal void Die()
         {
@@ -294,6 +289,30 @@ namespace Assets.Scripts
             }
             TargetedTileOverlays.Clear();
             TargetedTiles.Clear();
+        }
+
+        public enum SideEnum
+        {
+            Player,
+            BadGuy,
+            Hireling,
+        }
+
+        public static bool AlliedTo(SideEnum a, SideEnum b)
+        {
+            if(a == b)
+            {
+                return true;
+            }
+            else if (a == SideEnum.Player || a == SideEnum.Hireling)
+            {
+                if(b == SideEnum.Player || b == SideEnum.Hireling)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
