@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace Assets.Scripts.FSM
 {
@@ -14,12 +15,27 @@ namespace Assets.Scripts.FSM
             base.OnStateEnter(animator, animatorStateInfo, layerIndex);
             gm.UIHighlightClickedEvent.AddListener(UseAbility);
             gm.RenderAbility(gm.UnitClicked.MyLoadout.Abilities[gm.SelectedAbilityIndex]);
+            gm.MouseoverChangedEvent.AddListener(UpdateAbilityOverlay);
         }
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo animatorStateInfo, int layerIndex)
         {
             gm.UIHighlightClickedEvent.RemoveListener(UseAbility);
+            gm.MouseoverChangedEvent.RemoveListener(UpdateAbilityOverlay);
             gm.ClearOverlays();
+        }
+
+        private void UpdateAbilityOverlay(Vector3Int pos)
+        {
+            if (gm.TileBeingTargeted(pos))
+            {
+                var ability = gm.UnitClicked.MyLoadout.Abilities[gm.SelectedAbilityIndex];
+                gm.RenderAbilityInfoAt(ability, pos);
+            }
+            else
+            {
+                gm.ClearAbilityInfo();
+            }
         }
 
         private void UseAbility(Vector3Int target)

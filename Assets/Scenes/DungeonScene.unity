@@ -1798,6 +1798,8 @@ MonoBehaviour:
   UnitPrefab: {fileID: 1577556145990536, guid: 91266f979d2ed8641bbef3575b84da3d, type: 2}
   SummoningPortalPrefab: {fileID: 1532431115635846, guid: 0b85d5e11660d5240ba5c0932163c6d4,
     type: 2}
+  ThreatenedAreaPrefab: {fileID: 1587006342558576, guid: 354a04f010f74ae4e9c282ec97b6f703,
+    type: 2}
   HirelingSpawned:
     m_PersistentCalls:
       m_Calls:
@@ -1813,6 +1815,11 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
     m_TypeName: Assets.Scripts.Events.IntEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  MouseoverChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Assets.Scripts.Events.PositionEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   HirelingSaved:
     m_PersistentCalls:

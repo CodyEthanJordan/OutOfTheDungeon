@@ -33,8 +33,16 @@ namespace Assets.Scripts
         public UnitController UnitClicked;
         public GameObject UnitPrefab;
         public GameObject SummoningPortalPrefab;
+        private List<GameObject> ThreatTiles = new List<GameObject>();
+        public GameObject ThreatenedAreaPrefab;
 
         private int _remainingHirelings;
+
+        internal bool TileBeingTargeted(Vector3Int pos)
+        {
+            return UIHighlights.HasTile(pos);
+        }
+
         private int remainingHirelings
         {
             get { return _remainingHirelings; }
@@ -44,7 +52,35 @@ namespace Assets.Scripts
                 HirelingSpawned.Invoke(_remainingHirelings);
             }
         }
+
+
+        internal void RenderAbilityInfoAt(Ability ability, Vector3Int pos)
+        {
+            ClearAbilityInfo();
+            var facingDirection = CardinalDirectionTo(Vector3Int.FloorToInt(UnitClicked.transform.position), pos);
+            foreach (var effect in ability.Effects)
+            {
+                var target = pos + Ability.RotateEffectTarget(effect.TileAffected, facingDirection);
+                var threatenedArea = Instantiate(ThreatenedAreaPrefab, target, Quaternion.identity);
+                threatenedArea.transform.SetParent(this.transform);
+                var toolTip = threatenedArea.GetComponent<OverlayTooltipUI>();
+                toolTip.Setup(effect);
+                toolTip.ShowTooltip();
+                ThreatTiles.Add(threatenedArea);
+            }
+        }
+
+        internal void ClearAbilityInfo()
+        {
+            foreach (var threat in ThreatTiles)
+            {
+                Destroy(threat);
+            }
+            ThreatTiles.Clear();
+        }
+
         public IntEvent HirelingSpawned = new IntEvent();
+        public PositionEvent MouseoverChangedEvent = new PositionEvent();
         private int _savedHirelings = 0;
         private int savedHirelings
         {
@@ -396,6 +432,7 @@ namespace Assets.Scripts
             MouseoverPoint = Dungeon.WorldToCell(Camera.main.ScreenToWorldPoint(Input.mousePosition));
             if (MouseoverPoint != PreviousMouseoverPoint)
             {
+                MouseoverChangedEvent.Invoke(MouseoverPoint);
                 PreviousMouseoverPoint = MouseoverPoint;
                 foreach (var unit in AllUnits)
                 {
@@ -569,6 +606,7 @@ namespace Assets.Scripts
         public void ClearOverlays()
         {
             UIHighlights.ClearAllTiles();
+            ClearAbilityInfo();
         }
 
         public void RenderMovement()

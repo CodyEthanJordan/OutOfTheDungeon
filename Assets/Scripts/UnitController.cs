@@ -40,7 +40,7 @@ namespace Assets.Scripts
             set
             {
                 _hasActed = value;
-                if(_hasActed)
+                if (_hasActed)
                 {
                     sr.color = Color.Lerp(baseColor, Color.black, 0.2f);
                 }
@@ -88,17 +88,17 @@ namespace Assets.Scripts
 
         internal void TakeDamage(int dmg, Effect.DamageTypes damageType)
         {
-            if(damageType == Effect.DamageTypes.None)
+            if (damageType == Effect.DamageTypes.None)
             {
                 //do nothing, special damage type used for non-damaging effects
                 return;
             }
-            switch(damageType)
+            switch (damageType)
             {
                 case Effect.DamageTypes.Healing:
                     Debug.Log(Name + " is healed for " + dmg);
                     HP += dmg;
-                    if(HP > MaxHP)
+                    if (HP > MaxHP)
                     {
                         HP = MaxHP;
                     }
@@ -112,7 +112,7 @@ namespace Assets.Scripts
                     }
                     break;
             }
-           
+
         }
 
         public void EnableUI()
@@ -145,10 +145,14 @@ namespace Assets.Scripts
         {
             var offset = destination - Vector3Int.FloorToInt(this.transform.position);
             this.transform.position = destination;
-            ClearTargetOverlays();
-            TargetTile(TargetedTile + offset);
-            
-            if(TargetedDirection != Vector3Int.zero)
+            if (TargetedTileOverlays.Count > 0)
+            {
+                //currently targeting something, retarget
+                ClearTargetOverlays();
+                TargetTile(TargetedTile + offset);
+            }
+
+            if (TargetedDirection != Vector3Int.zero)
             {
                 UpdateRangedAttack(gm);
             }
@@ -261,7 +265,7 @@ namespace Assets.Scripts
 
         public void UpdateRangedAttack(GameManager gm)
         {
-            if(TargetedDirection == Vector3Int.zero)
+            if (TargetedDirection == Vector3Int.zero)
             {
                 //not currently targeting
                 return;
@@ -269,7 +273,7 @@ namespace Assets.Scripts
 
             ClearRangedAttackIndicators();
             Vector3Int pos = Vector3Int.FloorToInt(this.transform.position) + TargetedDirection;
-            while(gm.Passable(pos, true))
+            while (gm.Passable(pos, true))
             {
                 var indicator = Instantiate(RangedAttackIndicatorUI, pos, Quaternion.identity);
                 RangedAttackIndicatorOverlays.Add(indicator);
@@ -307,13 +311,13 @@ namespace Assets.Scripts
 
         public static bool AlliedTo(SideEnum a, SideEnum b)
         {
-            if(a == b)
+            if (a == b)
             {
                 return true;
             }
             else if (a == SideEnum.Player || a == SideEnum.Hireling)
             {
-                if(b == SideEnum.Player || b == SideEnum.Hireling)
+                if (b == SideEnum.Player || b == SideEnum.Hireling)
                 {
                     return true;
                 }
