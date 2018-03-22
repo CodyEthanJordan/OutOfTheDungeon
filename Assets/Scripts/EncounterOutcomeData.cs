@@ -13,10 +13,19 @@ namespace Assets.Scripts
         public string NextRoom;
         public int HirelingsSaved;
         public Loadout[] Heros;
+        public Loadout[] DebugSquad;
 
         private void Awake()
         {
             DontDestroyOnLoad(this.gameObject);
+        }
+
+        public void SetupDebugDefaults()
+        {
+            NextRoom = "Room1";
+            HirelingsSaved = 6;
+            Heros = DebugSquad;
+        
         }
     }
 }

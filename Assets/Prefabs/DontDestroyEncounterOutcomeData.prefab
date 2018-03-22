@@ -51,5 +51,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3905788a65e0e2541a1e54245b487f0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RoomToGoTo: 
+  NextRoom: 
   HirelingsSaved: 6
+  Heros: []
+  DebugSquad:
+  - {fileID: 11400000, guid: 8acc193a933d7c8468d48c0383ed6069, type: 2}
+  - {fileID: 11400000, guid: 8acc193a933d7c8468d48c0383ed6069, type: 2}
+  - {fileID: 11400000, guid: 2f43cb3a93e83d348b247f5e49204225, type: 2}

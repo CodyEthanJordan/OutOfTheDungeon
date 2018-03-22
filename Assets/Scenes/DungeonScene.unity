@@ -1757,7 +1757,8 @@ MonoBehaviour:
   BadGuyLoadouts:
   - {fileID: 11400000, guid: b04ff0dfc60bded46b693a1ff2b6640d, type: 2}
   - {fileID: 11400000, guid: ed50325b9d96586438f3902d4e95737d, type: 2}
-  encounterDataDebugPrefab: {fileID: 0}
+  encounterDataDebugPrefab: {fileID: 1370724980088400, guid: cbaa7771fb3b6c846bfbabb9437f93ef,
+    type: 2}
   HirelingLoadout: {fileID: 11400000, guid: 75334401fe3791842920992706c20152, type: 2}
   UnitClicked: {fileID: 0}
   UnitPrefab: {fileID: 1577556145990536, guid: 91266f979d2ed8641bbef3575b84da3d, type: 2}

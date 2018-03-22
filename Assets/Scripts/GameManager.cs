@@ -241,8 +241,7 @@ namespace Assets.Scripts
                 Debug.LogWarning("Started game without encounter data!, DEBUG: making fake data");
                 dataObject = Instantiate(encounterDataDebugPrefab);
                 var encounter = dataObject.GetComponent<EncounterOutcomeData>();
-                encounter.NextRoom = "Room1";
-                encounter.HirelingsSaved = 6;
+                encounter.SetupDebugDefaults();
             }
 
             encounterData = dataObject.GetComponent<EncounterOutcomeData>();
