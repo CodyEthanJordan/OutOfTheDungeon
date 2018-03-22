@@ -25,6 +25,7 @@ namespace Assets.Scripts
         public Tile TargetingTile;
         public Tile ThreatenedTile;
         public Loadout[] BadGuyLoadouts;
+        public GameObject[] asdf; 
 
         public UnitController UnitClicked;
         public GameObject UnitPrefab;
