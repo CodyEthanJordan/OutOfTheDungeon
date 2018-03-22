@@ -314,7 +314,7 @@ namespace Assets.Scripts
         private void SpawnUnit(Vector3Int position, string name, UnitController.SideEnum side, Loadout loadout)
         {
             position.z = 0;
-            Debug.Log(name + "the " + loadout.LoadoutName + " spawned at " + position + ", fighting for" + side);
+            Debug.Log(name + " the " + loadout.LoadoutName + " spawned at " + position + ", fighting for" + side);
             UnitController spawnedUnit;
             GameObject spawn = Instantiate(UnitPrefab, this.transform);
             spawnedUnit = spawn.GetComponent<UnitController>();
