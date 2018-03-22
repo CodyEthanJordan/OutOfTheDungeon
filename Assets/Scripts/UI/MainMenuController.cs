@@ -11,14 +11,22 @@ namespace Assets.Scripts.UI
 {
     public class MainMenuController : MonoBehaviour
     {
+        public EncounterOutcomeData encounterData;
+
         private PlayableDirector pd;
         private void Awake()
         {
             pd = GetComponent<PlayableDirector>();
         }
 
+        private void Start()
+        {
+            encounterData = GameObject.Find("DontDestroyEncounterOutcomeData").GetComponent<EncounterOutcomeData>();
+        }
+
         public void StartGame()
         {
+            encounterData.NextRoom = "Room1";
             pd.Play();
             StartCoroutine(SceneTransition());
         }

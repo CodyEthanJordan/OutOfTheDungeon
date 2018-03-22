@@ -7,9 +7,9 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    class EncounterOutcomeData : MonoBehaviour
+    public class EncounterOutcomeData : MonoBehaviour
     {
-        public string RoomToGoTo;
+        public string NextRoom;
         public int HirelingsSaved;
 
         private void Awake()

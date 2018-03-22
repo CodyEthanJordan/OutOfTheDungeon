@@ -25,7 +25,9 @@ namespace Assets.Scripts
         public Tile TargetingTile;
         public Tile ThreatenedTile;
         public Loadout[] BadGuyLoadouts;
-        private RoomInfo[] allRooms;
+        public GameObject encounterDataDebugPrefab;
+        private EncounterOutcomeData encounterData;
+        private RoomInfo roomInfo;
 
         public UnitController UnitClicked;
         public GameObject UnitPrefab;
@@ -206,11 +208,25 @@ namespace Assets.Scripts
 
         private void Start()
         {
-            allRooms = GameObject.FindGameObjectsWithTag("Room").Select(g => g.GetComponent<RoomInfo>()).ToArray();
-            var loadInfo = GameObject.Find("DontDestroyRoomData");
+            var dataObject = GameObject.Find("DontDestroyEncounterOutcomeData");
+            if(dataObject == null)
+            {
+                Debug.LogWarning("Started game without encounter data!, DEBUG: making fake data");
+                dataObject = Instantiate(encounterDataDebugPrefab);
+                var encounter = dataObject.GetComponent<EncounterOutcomeData>();
+                encounter.NextRoom = "Room1";
+                encounter.HirelingsSaved = 6;
+            }
+
+            encounterData = dataObject.GetComponent<EncounterOutcomeData>();
+            var roomObject = GameObject.Find(encounterData.NextRoom);
+            roomInfo = roomObject.GetComponent<RoomInfo>();
+
+            //move camera to right place
+            Camera.main.transform.position = new Vector3(roomInfo.transform.position.x, roomInfo.transform.position.y, Camera.main.transform.position.z);
 
             savedHirelings = 0;
-            remainingHirelings = 6;
+            remainingHirelings = encounterData.HirelingsSaved; //number you have coming in
 
             for (int i = Dungeon.cellBounds.xMin; i < Dungeon.cellBounds.xMax; i++)
             {
