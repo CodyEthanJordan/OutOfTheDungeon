@@ -24,12 +24,12 @@ namespace Assets.Scripts.UI
 
         internal void DisableUI()
         {
-            canvas.enabled = false;
+            HPText.enabled = false;
         }
 
         internal void EnableUI()
         {
-            canvas.enabled = true;
+            HPText.enabled = true;
         }
     }
 }

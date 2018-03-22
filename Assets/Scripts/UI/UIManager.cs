@@ -23,6 +23,8 @@ namespace Assets.Scripts.UI
         public Text HirelingsSavedText;
         public Text HirelingsRemainingText;
         public Text VictoryText;
+        public GameObject ResolutionPopup;
+        public GameObject ResolutionTextPrefab;
 
         private List<GameObject> abilityButtons = new List<GameObject>();
 
@@ -117,6 +119,28 @@ namespace Assets.Scripts.UI
                 VictoryText.text = "Defeated!\nHirelings saved: " + hirelingsSaved;
                 VictoryText.color = Color.red;
             }
+        }
+
+        internal void ShowTurnResolution(List<string> resolutionInfo)
+        {
+            ResolutionPopup.SetActive(true);
+            foreach (Transform oldTextBox in ResolutionPopup.transform)
+            {
+                Destroy(oldTextBox.gameObject);
+            }
+            int i = 1;
+            foreach (var text in resolutionInfo)
+            {
+                var newTextBox = Instantiate(ResolutionTextPrefab, ResolutionPopup.transform);
+                var textComponent = newTextBox.GetComponent<Text>();
+                textComponent.text = i + " " + text;
+                i++;
+            }
+        }
+
+        internal void HideTurnResolution()
+        {
+            ResolutionPopup.SetActive(false);
         }
     }
 }

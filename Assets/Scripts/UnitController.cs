@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace Assets.Scripts
 {
@@ -17,6 +18,7 @@ namespace Assets.Scripts
         public GameObject RangedAttackIndicatorUI;
         private List<GameObject> TargetedTileOverlays = new List<GameObject>();
         private List<GameObject> RangedAttackIndicatorOverlays = new List<GameObject>();
+        [SerializeField] private Text UnitNumberText;
 
         private string _name;
         public string Name
@@ -325,5 +327,17 @@ namespace Assets.Scripts
 
             return false;
         }
+
+        public void ShowNumber(int i)
+        {
+            UnitNumberText.gameObject.SetActive(true);
+            UnitNumberText.text = i.ToString();
+        }
+
+        public void HideNumber()
+        {
+            UnitNumberText.gameObject.SetActive(false);
+        }
+
     }
 }

@@ -20,11 +20,10 @@ namespace Assets.Scripts
         public Tilemap Dungeon;
         private GridInformation dungeonInfo;
         public Tilemap UIHighlights;
-        //public Tilemap Dangerzones;
         public Tile MoveTile;
         public Tile TargetingTile;
         public Tile ThreatenedTile;
-        public Loadout[] BadGuyLoadouts;
+        private Loadout[] badGuyLoadouts;
         public GameObject encounterDataDebugPrefab;
         private EncounterOutcomeData encounterData;
         private RoomInfo roomInfo;
@@ -52,7 +51,6 @@ namespace Assets.Scripts
                 HirelingSpawned.Invoke(_remainingHirelings);
             }
         }
-
 
         internal void RenderAbilityInfoAt(Ability ability, Vector3Int pos)
         {
@@ -154,9 +152,9 @@ namespace Assets.Scripts
         public static Vector3Int CardinalDirectionTo(Vector3Int a, Vector3Int b)
         {
             var dir = b - a;
-            if(Math.Abs(dir.x) > Math.Abs(dir.y))
+            if (Math.Abs(dir.x) > Math.Abs(dir.y))
             {
-                if(dir.x > 0)
+                if (dir.x > 0)
                 {
                     return Vector3Int.right;
                 }
@@ -167,7 +165,7 @@ namespace Assets.Scripts
             }
             else
             {
-                if(dir.y > 0)
+                if (dir.y > 0)
                 {
                     return Vector3Int.up;
                 }
@@ -275,6 +273,7 @@ namespace Assets.Scripts
                 SpawnUnit(location, startingBadGuy.LoadoutName, UnitController.SideEnum.BadGuy, startingBadGuy);
             }
 
+            badGuyLoadouts = roomInfo.SpawnableBadGuys;
             turnCounter = 0;
             blockInputs = false;
             StartCoroutine(NewTurn());
@@ -777,6 +776,33 @@ namespace Assets.Scripts
                 }
             }
 
+            //spawn more bad guys
+            List<GameObject> circlesToDestroy = new List<GameObject>();
+            foreach (var summoningCircle in summoningCircles)
+            {
+                var unitOnCircle = AllUnits.Find(u => u.transform.position == summoningCircle.transform.position);
+                if (unitOnCircle == null)
+                {
+                    circlesToDestroy.Add(summoningCircle);
+                    int r = UnityEngine.Random.Range(0, badGuyLoadouts.Length);
+                    var guyToSpawn = badGuyLoadouts[r];
+                    SpawnUnit(Vector3Int.FloorToInt(summoningCircle.transform.position),
+                        guyToSpawn.LoadoutName,
+                        UnitController.SideEnum.BadGuy,
+                        guyToSpawn);
+                }
+                else
+                {
+                    Debug.Log("Summoning circle at " + summoningCircle.transform.position + " blocked by " + unitOnCircle.Name);
+                    unitOnCircle.TakeDamage(1, Effect.DamageTypes.SummoningBlocked);
+                }
+            }
+            for (int i = 0; i < circlesToDestroy.Count; i++)
+            {
+                summoningCircles.Remove(circlesToDestroy[i]);
+                Destroy(circlesToDestroy[i]);
+            }
+
             //set up bad guy moves
             //TODO: different kinds of bad guy AI
             foreach (var bg in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.BadGuy))
@@ -824,32 +850,7 @@ namespace Assets.Scripts
 
             }
 
-            //spawn more bad guys
-            List<GameObject> circlesToDestroy = new List<GameObject>();
-            foreach (var summoningCircle in summoningCircles)
-            {
-                var unitOnCircle = AllUnits.Find(u => u.transform.position == summoningCircle.transform.position);
-                if (unitOnCircle == null)
-                {
-                    circlesToDestroy.Add(summoningCircle);
-                    int r = UnityEngine.Random.Range(0, BadGuyLoadouts.Length);
-                    var guyToSpawn = BadGuyLoadouts[r];
-                    SpawnUnit(Vector3Int.FloorToInt(summoningCircle.transform.position),
-                        guyToSpawn.LoadoutName,
-                        UnitController.SideEnum.BadGuy,
-                        guyToSpawn);
-                }
-                else
-                {
-                    Debug.Log("Summoning circle at " + summoningCircle.transform.position + " blocked by " + unitOnCircle.Name);
-                    unitOnCircle.TakeDamage(1, Effect.DamageTypes.SummoningBlocked);
-                }
-            }
-            for (int i = 0; i < circlesToDestroy.Count; i++)
-            {
-                summoningCircles.Remove(circlesToDestroy[i]);
-                Destroy(circlesToDestroy[i]);
-            }
+
 
             //create new summoning circles
             int numberToSpawn = 2;
@@ -1057,6 +1058,35 @@ namespace Assets.Scripts
                 pos = pos + dir;
             }
             UIHighlights.SetTile(pos, TargetingTile);
+        }
+
+        public void RenderTurnResolution()
+        {
+            List<string> ResolutionInfo = new List<string>();
+            int i = 1;
+            foreach (var badGuy in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.BadGuy))
+            {
+                ResolutionInfo.Add(badGuy.Name + " attacks");
+                badGuy.ShowNumber(i);
+                i++;
+            }
+
+            ResolutionInfo.Add("Hirelings Move");
+            i++;
+
+            ResolutionInfo.Add("Summon Bad Guys");
+            i++;
+
+            UI.ShowTurnResolution(ResolutionInfo);
+        }
+
+        public void ClearTurnResolution()
+        {
+            UI.HideTurnResolution();
+            foreach (var badGuy in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.BadGuy))
+            {
+                badGuy.HideNumber();
+            }
         }
     }
 }
