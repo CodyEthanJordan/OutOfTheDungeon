@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Name: Damage3
   m_EditorClassIdentifier: 
   TileAffected: {x: 0, y: 0, z: 0}
-  Damage: 0
+  Damage: 3
   DamageType: 0
   Knockback: 0

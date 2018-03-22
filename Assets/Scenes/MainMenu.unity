@@ -747,7 +747,7 @@ Prefab:
         type: 2}
       propertyPath: Heros.Array.data[1]
       value: 
-      objectReference: {fileID: 11400000, guid: 2f43cb3a93e83d348b247f5e49204225,
+      objectReference: {fileID: 11400000, guid: c56fae4ba4dd954409036a35c4bdd3df,
         type: 2}
     - target: {fileID: 114104971208908788, guid: cbaa7771fb3b6c846bfbabb9437f93ef,
         type: 2}

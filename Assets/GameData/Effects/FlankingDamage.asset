@@ -15,5 +15,7 @@ MonoBehaviour:
   Damage: 0
   DamageType: 0
   Knockback: 0
-  NormalEffects: []
-  FlankingEffects: []
+  NormalEffects:
+  - {fileID: 11400000, guid: e47decf97c72aaa44ac6628c6aa07399, type: 2}
+  FlankingEffects:
+  - {fileID: 11400000, guid: 28999ce0733ded34b99f7d4e38062f34, type: 2}
