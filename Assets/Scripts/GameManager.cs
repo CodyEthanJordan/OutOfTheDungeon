@@ -202,7 +202,7 @@ namespace Assets.Scripts
             for (int i = 0; i < encounterData.Heros.Length; i++)
             {
                 var hero = encounterData.Heros[i];
-                SpawnUnit(roomInfo.HeroStartLocations[i], hero.LoadoutName, UnitController.SideEnum.Player, hero);
+                SpawnUnit(roomInfo.HeroStartLocations[i] + Vector3Int.FloorToInt(roomInfo.transform.position), hero.LoadoutName, UnitController.SideEnum.Player, hero);
             }
 
             foreach (var startingBadGuy in roomInfo.InitialEnemies)
@@ -313,6 +313,7 @@ namespace Assets.Scripts
 
         private void SpawnUnit(Vector3Int position, string name, UnitController.SideEnum side, Loadout loadout)
         {
+            position.z = 0;
             Debug.Log(name + "the " + loadout.LoadoutName + " spawned at " + position + ", fighting for" + side);
             UnitController spawnedUnit;
             GameObject spawn = Instantiate(UnitPrefab, this.transform);

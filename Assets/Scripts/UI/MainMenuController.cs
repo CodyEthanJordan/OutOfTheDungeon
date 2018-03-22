@@ -26,7 +26,7 @@ namespace Assets.Scripts.UI
 
         public void StartGame()
         {
-            encounterData.NextRoom = "Room1";
+            encounterData.NextRoom = "Room2";
             pd.Play();
             StartCoroutine(SceneTransition());
         }
