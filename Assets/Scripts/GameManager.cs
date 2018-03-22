@@ -28,6 +28,7 @@ namespace Assets.Scripts
         public GameObject encounterDataDebugPrefab;
         private EncounterOutcomeData encounterData;
         private RoomInfo roomInfo;
+        public Loadout HirelingLoadout;
 
         public UnitController UnitClicked;
         public GameObject UnitPrefab;
@@ -197,24 +198,19 @@ namespace Assets.Scripts
             ClearOverlays();
 
             //spawn heros
-            foreach (var hero in encounterData.Heros)
+            //TODO: sort of hard coded to be 3
+            for (int i = 0; i < encounterData.Heros.Length; i++)
             {
-
+                var hero = encounterData.Heros[i];
+                SpawnUnit(roomInfo.HeroStartLocations[i], hero.LoadoutName, UnitController.SideEnum.Player, hero);
             }
 
             foreach (var startingBadGuy in roomInfo.InitialEnemies)
             {
                 var location = FindEmptySpawnableLocation();
-                SpawnUnit(location, startingBadGuy.LoadoutName, UnitController.SideEnum.BadGuy, startingBadGuy.LoadoutName);
+                SpawnUnit(location, startingBadGuy.LoadoutName, UnitController.SideEnum.BadGuy, startingBadGuy);
             }
 
-
-
-            SpawnUnit(new Vector3Int(-4, 0, 0), "Knight", UnitController.SideEnum.Player, "Knight");
-            SpawnUnit(new Vector3Int(-3, 0, 0), "Gandalf", UnitController.SideEnum.Player, "Wizard");
-            SpawnUnit(new Vector3Int(-4, -1, 0), "Knight", UnitController.SideEnum.Player, "Knight");
-            SpawnUnit(new Vector3Int(0, 0, 0), "Goblin Archer", UnitController.SideEnum.BadGuy, "Goblin Archer");
-            SpawnUnit(new Vector3Int(0, -2, 0), "Ooze", UnitController.SideEnum.BadGuy, "Ooze");
             turnCounter = 0;
             blockInputs = false;
             StartCoroutine(NewTurn());
@@ -316,13 +312,13 @@ namespace Assets.Scripts
             SetupMap(remainingHirelings);
         }
 
-        private void SpawnUnit(Vector3Int position, string name, UnitController.SideEnum side, string loadoutName)
+        private void SpawnUnit(Vector3Int position, string name, UnitController.SideEnum side, Loadout loadout)
         {
-            Debug.Log(name + "the " + loadoutName + " spawned at " + position + ", fighting for" + side);
+            Debug.Log(name + "the " + loadout.LoadoutName + " spawned at " + position + ", fighting for" + side);
             UnitController spawnedUnit;
             GameObject spawn = Instantiate(UnitPrefab, this.transform);
             spawnedUnit = spawn.GetComponent<UnitController>();
-            spawnedUnit.SetupUnit(name, side, position, loadoutName);
+            spawnedUnit.SetupUnit(name, side, position, loadout);
             spawnedUnit.DeathEvent.AddListener(OnUnitDie);
             AllUnits.Add(spawnedUnit);
         }
@@ -713,7 +709,7 @@ namespace Assets.Scripts
 
                 if (validSpawnFound && remainingHirelings > 0)
                 {
-                    SpawnUnit(spawnLocation, "Hireling", UnitController.SideEnum.Hireling, "Hireling");
+                    SpawnUnit(spawnLocation, "Hireling", UnitController.SideEnum.Hireling, HirelingLoadout);
                     remainingHirelings = remainingHirelings - 1;
                 }
             }
@@ -778,7 +774,7 @@ namespace Assets.Scripts
                     SpawnUnit(Vector3Int.FloorToInt(summoningCircle.transform.position),
                         guyToSpawn.LoadoutName,
                         UnitController.SideEnum.BadGuy,
-                        guyToSpawn.LoadoutName);
+                        guyToSpawn);
                 }
                 else
                 {

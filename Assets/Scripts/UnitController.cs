@@ -169,13 +169,9 @@ namespace Assets.Scripts
             TargetedTiles.Clear();
         }
 
-        public void SetupUnit(string name, SideEnum side, Vector3Int position, string LoadoutName)
+        public void SetupUnit(string name, SideEnum side, Vector3Int position, Loadout loadout)
         {
-            MyLoadout = AllLoadouts.FirstOrDefault(l => l.LoadoutName == LoadoutName);
-            if(MyLoadout == null)
-            {
-                Debug.LogError("Can't find loadout called " + LoadoutName);
-            }
+            MyLoadout = loadout;
 
             MaxHP = MyLoadout.MaxHP;
             MaxMovement = MyLoadout.BaseMovement;

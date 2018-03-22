@@ -1758,6 +1758,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b04ff0dfc60bded46b693a1ff2b6640d, type: 2}
   - {fileID: 11400000, guid: ed50325b9d96586438f3902d4e95737d, type: 2}
   encounterDataDebugPrefab: {fileID: 0}
+  HirelingLoadout: {fileID: 11400000, guid: 75334401fe3791842920992706c20152, type: 2}
   UnitClicked: {fileID: 0}
   UnitPrefab: {fileID: 1577556145990536, guid: 91266f979d2ed8641bbef3575b84da3d, type: 2}
   SummoningPortalPrefab: {fileID: 1532431115635846, guid: 0b85d5e11660d5240ba5c0932163c6d4,
