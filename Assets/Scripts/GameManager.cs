@@ -25,7 +25,7 @@ namespace Assets.Scripts
         public Tile TargetingTile;
         public Tile ThreatenedTile;
         public Loadout[] BadGuyLoadouts;
-        public GameObject[] asdf; 
+        private RoomInfo[] allRooms;
 
         public UnitController UnitClicked;
         public GameObject UnitPrefab;
@@ -113,7 +113,7 @@ namespace Assets.Scripts
 
         public void KnockBack(UnitController guyHit, Vector3Int direction)
         {
-            if(guyHit.HP <= 0)
+            if (guyHit.HP <= 0)
             {
                 return; //TODO: find better way to deal with this, knocking a dead unit onto oil infinite loops
             }
@@ -206,6 +206,9 @@ namespace Assets.Scripts
 
         private void Start()
         {
+            allRooms = GameObject.FindGameObjectsWithTag("Room").Select(g => g.GetComponent<RoomInfo>()).ToArray();
+            var loadInfo = GameObject.Find("DontDestroyRoomData");
+
             savedHirelings = 0;
             remainingHirelings = 6;
 
@@ -766,14 +769,14 @@ namespace Assets.Scripts
             List<UnitController> possibleTargets = new List<UnitController>();
             foreach (var dir in GameManager.CardinalDirections)
             {
-                var unitFound = RecursiveSearchFor(pos + dir, dir, unitPredicate); 
-                if(unitFound != null)
+                var unitFound = RecursiveSearchFor(pos + dir, dir, unitPredicate);
+                if (unitFound != null)
                 {
                     possibleTargets.Add(unitFound);
                 }
             }
 
-            if(possibleTargets.Count == 0)
+            if (possibleTargets.Count == 0)
             {
                 return null;
             }
