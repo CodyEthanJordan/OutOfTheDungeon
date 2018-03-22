@@ -18,7 +18,8 @@ namespace Assets.Scripts.GameLogic
             KnockbackImpact,
             SummoningBlocked,
             Healing,
-            Fire
+            Fire,
+            None
         }
 
         public Vector3Int TileAffected;

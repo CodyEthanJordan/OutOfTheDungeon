@@ -986,7 +986,7 @@ namespace Assets.Scripts
                         SetTargetOnTile(Vector3Int.FloorToInt(UnitClicked.transform.position) + dir, ability.OnlyTargetUnits);
                     }
                     break;
-                case Ability.RangeType.DirectLOS:
+                case Ability.RangeType.Ray:
                     basePosition = Vector3Int.FloorToInt(UnitClicked.transform.position);
                     foreach (var dir in GameManager.CardinalDirections)
                     {

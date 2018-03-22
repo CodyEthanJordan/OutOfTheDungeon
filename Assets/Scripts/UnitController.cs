@@ -88,6 +88,11 @@ namespace Assets.Scripts
 
         internal void TakeDamage(int dmg, Effect.DamageTypes damageType)
         {
+            if(damageType == Effect.DamageTypes.None)
+            {
+                //do nothing, special damage type used for non-damaging effects
+                return;
+            }
             switch(damageType)
             {
                 case Effect.DamageTypes.Healing:

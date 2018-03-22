@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Name: Dragon
   m_EditorClassIdentifier: 
   LoadoutName: Dragon
-  Image: {fileID: 0}
+  Image: {fileID: 21300012, guid: b9f8abd8120f1fe4cb9bbf23b502a948, type: 3}
   MaxHP: 6
   BaseMovement: 4
-  Abilities: []
+  Abilities:
+  - {fileID: 11400000, guid: 5d9558d69a4b1d64dbfa4f16c2e88d44, type: 2}

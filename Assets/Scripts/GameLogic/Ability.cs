@@ -66,7 +66,6 @@ namespace Assets.Scripts.GameLogic
         public enum RangeType
         {
             Melee,
-            DirectLOS,
             Ray,
             Mortar,
             Personal

@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22d19b894cb04374eabd8fbfbb4a6db9, type: 3}
+  m_Name: MagicMissile
+  m_EditorClassIdentifier: 
+  Name: Magic Missile
+  Description: Deal 1 damage to target and knock back all adjacent tiles
+  Range: 2
+  OnlyTargetUnits: 0
+  FreeAction: 0
+  Effects:
+  - TileAffected: {x: 0, y: 0, z: 0}
+    Damage: 1
+    DamageType: 1
+    SpecialEffects: []
+  - TileAffected: {x: 0, y: -1, z: 0}
+    Damage: 0
+    DamageType: 0
+    SpecialEffects:
+    - {fileID: 11400000, guid: 4407b5b394ceff24c9d195a1e2b0ee0b, type: 2}
+  - TileAffected: {x: 1, y: 0, z: 0}
+    Damage: 0
+    DamageType: 0
+    SpecialEffects:
+    - {fileID: 11400000, guid: 4407b5b394ceff24c9d195a1e2b0ee0b, type: 2}
+  - TileAffected: {x: 0, y: 1, z: 0}
+    Damage: 0
+    DamageType: 0
+    SpecialEffects:
+    - {fileID: 11400000, guid: 4407b5b394ceff24c9d195a1e2b0ee0b, type: 2}
+  - TileAffected: {x: -1, y: 0, z: 0}
+    Damage: 0
+    DamageType: 0
+    SpecialEffects:
+    - {fileID: 11400000, guid: 4407b5b394ceff24c9d195a1e2b0ee0b, type: 2}
+  SelfEffects: []
