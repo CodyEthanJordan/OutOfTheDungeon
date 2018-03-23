@@ -557,6 +557,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   encounterData: {fileID: 0}
+  IntoSequence: {fileID: 2019857182}
+  StartContinue: {fileID: 1948777345}
 --- !u!95 &976299393
 Animator:
   serializedVersion: 3
@@ -755,6 +757,11 @@ Prefab:
       value: 
       objectReference: {fileID: 11400000, guid: 8acc193a933d7c8468d48c0383ed6069,
         type: 2}
+    - target: {fileID: 114104971208908788, guid: cbaa7771fb3b6c846bfbabb9437f93ef,
+        type: 2}
+      propertyPath: GameJustLaunched
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cbaa7771fb3b6c846bfbabb9437f93ef, type: 2}
   m_IsPrefabParent: 0
@@ -1053,10 +1060,10 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 27e070d362d2a5549915352ddb09b6b2, type: 3}
-    m_FontSize: 32
+    m_FontSize: 29
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 2
     m_MaxSize: 44
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -1114,7 +1121,7 @@ PlayableDirector:
   m_Enabled: 1
   serializedVersion: 3
   m_PlayableAsset: {fileID: 11400000, guid: ac8469af904a75f46990d1d297b00d6d, type: 2}
-  m_InitialState: 1
+  m_InitialState: 0
   m_WrapMode: 2
   m_DirectorUpdateMode: 1
   m_InitialTime: 0

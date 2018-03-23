@@ -11,6 +11,7 @@ using UnityEngine.Events;
 using Assets.Scripts.FSM;
 using System.Collections.ObjectModel;
 using Assets.Scripts.UI;
+using UnityEngine.SceneManagement;
 
 namespace Assets.Scripts
 {
@@ -405,7 +406,13 @@ namespace Assets.Scripts
         {
             blockInputs = true;
             UI.GameOver(victory, savedHirelings);
-            StartCoroutine(RestartGame(3));
+            encounterData.RoundWon = victory;
+            encounterData.HirelingsSaved = savedHirelings;
+        }
+
+        public void ReturnToMenu()
+        {
+            SceneManager.LoadScene("MainMenu");
         }
 
         IEnumerator RestartGame(int secondsTillRestart)

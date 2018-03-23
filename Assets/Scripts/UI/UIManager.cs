@@ -25,6 +25,7 @@ namespace Assets.Scripts.UI
         public Text VictoryText;
         public GameObject ResolutionPopup;
         public GameObject ResolutionTextPrefab;
+        public Button ReturnToMenu;
 
         private List<GameObject> abilityButtons = new List<GameObject>();
 
@@ -108,6 +109,7 @@ namespace Assets.Scripts.UI
 
         public void GameOver(bool win, int hirelingsSaved)
         {
+            ReturnToMenu.gameObject.SetActive(true);
             VictoryText.gameObject.SetActive(true);
             if (win)
             {

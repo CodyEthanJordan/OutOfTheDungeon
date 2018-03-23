@@ -14,6 +14,8 @@ namespace Assets.Scripts
         public int HirelingsSaved;
         public Loadout[] Heros;
         public Loadout[] DebugSquad;
+        public bool GameJustLaunched;
+        public bool RoundWon;
 
         private void Awake()
         {
