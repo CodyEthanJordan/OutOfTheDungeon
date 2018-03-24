@@ -24,7 +24,7 @@ namespace Assets.Scripts
 
         public void SetupDebugDefaults()
         {
-            NextRoom = "Room1";
+            NextRoom = "Room3";
             HirelingsSaved = 6;
             Heros = DebugSquad;
         }

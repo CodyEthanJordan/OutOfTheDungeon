@@ -42,16 +42,25 @@ namespace Assets.Scripts.UI
 
         public void StartGame()
         {
+                //TODO: generalize to more rooms and pickin rooms
             if (encounterData.GameJustLaunched)
             {
                 encounterData.NextRoom = "Room1";
                 encounterData.GameJustLaunched = false;
             }
-            else
+            else if(encounterData.NextRoom == "Room1")
             {
-                //TODO: generalize to more rooms and pickin rooms
                 encounterData.NextRoom = "Room2";
             }
+            else if (encounterData.NextRoom == "Room2")
+            {
+                encounterData.NextRoom = "Room3";
+            }
+            else if (encounterData.NextRoom == "Room3")
+            {
+                encounterData.NextRoom = "Room4";
+            }
+
             pd.Play();
             StartCoroutine(SceneTransition());
         }
