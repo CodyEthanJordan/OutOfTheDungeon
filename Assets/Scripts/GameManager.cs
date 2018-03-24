@@ -139,6 +139,7 @@ namespace Assets.Scripts
             //TODO: hack, dead units cant act
             if (unit.HP <= 0)
             {
+                Debug.LogWarning("Dead unit: " + unit.Name + " at " + unit.transform.position + " tried to act");
                 yield break;
             }
             Debug.Log(unit.Name + " uses " + ability.Name + " at " + target);
@@ -244,6 +245,8 @@ namespace Assets.Scripts
             }
         }
 
+        // ReSharper disable once UnusedMember.Local
+        // ReSharper disable once ArrangeTypeMemberModifiers
         void Awake()
         {
             TurnFSM = this.GetComponent<Animator>();
@@ -320,6 +323,8 @@ namespace Assets.Scripts
             blockInputs = false;
         }
 
+        // ReSharper disable once UnusedMember.Local
+        // ReSharper disable once ArrangeTypeMemberModifiers
         private void Start()
         {
             var dataObject = GameObject.Find("DontDestroyEncounterOutcomeData");
@@ -400,14 +405,13 @@ namespace Assets.Scripts
             blockInputs = true;
         }
 
-        public void SpawnUnit(Vector3Int position, string name, UnitController.SideEnum side, Loadout loadout)
+        public void SpawnUnit(Vector3Int position, string unitName, UnitController.SideEnum side, Loadout loadout)
         {
             position.z = 0;
-            Debug.Log(name + " the " + loadout.LoadoutName + " spawned at " + position + ", fighting for" + side);
-            UnitController spawnedUnit;
-            GameObject spawn = Instantiate(UnitPrefab, this.transform);
-            spawnedUnit = spawn.GetComponent<UnitController>();
-            spawnedUnit.SetupUnit(name, side, position, loadout);
+            Debug.Log(unitName + " the " + loadout.LoadoutName + " spawned at " + position + ", fighting for" + side);
+            var spawn = Instantiate(UnitPrefab, this.transform);
+            var spawnedUnit = spawn.GetComponent<UnitController>();
+            spawnedUnit.SetupUnit(unitName, side, position, loadout);
             spawnedUnit.DeathEvent.AddListener(OnUnitDie);
             AllUnits.Add(spawnedUnit);
         }
@@ -437,12 +441,6 @@ namespace Assets.Scripts
         public void ReturnToMenu()
         {
             SceneManager.LoadScene("MainMenu");
-        }
-
-        IEnumerator RestartGame(int secondsTillRestart)
-        {
-            yield return new WaitForSeconds(secondsTillRestart);
-            SetupMap(6);
         }
 
         private void OnUnitDie(UnitController unit)
