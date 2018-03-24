@@ -52,8 +52,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9140c3a6d0f279746956e233614727cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Title: 
+  Description: 
   EndOfTurnEffects: []
   PassingThroughEffects: []
+  SteppedOnEffects: []
+  TriggerOnceThenDestroy: 0
+  AnimationEffect: {fileID: 1818124417476584, guid: e639517b4012e9e4895a2bcb9294b5e4,
+    type: 2}
 --- !u!212 &212213920516785338
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -86,7 +92,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -358519481
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300010, guid: 5d0f20cf2b617a240b2bc7c17808a406, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

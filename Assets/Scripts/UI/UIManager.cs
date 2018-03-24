@@ -18,8 +18,8 @@ namespace Assets.Scripts.UI
         public Text UnitNameText;
         public Text HPText;
         public Text TurnCounterText;
-        public Text TileName;
-        public Text TileDescription;
+        public GameObject TileInfoPanel;
+        public GameObject InfoBoxPrefab;
         public Text HirelingsSavedText;
         public Text HirelingsRemainingText;
         public Text VictoryText;
@@ -78,23 +78,27 @@ namespace Assets.Scripts.UI
             TurnCounterText.text = "Turn: " + turnCounter.ToString();
         }
 
-        internal void ShowMouseOverInfo(DungeonTile dungeonTileUnderMouse, UnitController unitUnderMouse)
+        internal void ShowMouseOverInfo(DungeonTile dungeonTileUnderMouse, UnitController unitUnderMouse, List<DangerzoneController> dangerzonesUnderMouse)
         {
             if (unitUnderMouse != null)
             {
                 unitUnderMouse.EnableUI();
             }
 
-            if (dungeonTileUnderMouse != null)
+            foreach (Transform t in TileInfoPanel.transform)
             {
-                TileName.text = dungeonTileUnderMouse.Name;
-                TileDescription.text = dungeonTileUnderMouse.Description;
+                Destroy(t.gameObject);
             }
-            else
+
+            var tileInfo = Instantiate(InfoBoxPrefab, TileInfoPanel.transform).GetComponent<InfoBox>();
+            tileInfo.Setup(dungeonTileUnderMouse.Name, dungeonTileUnderMouse.Description);
+
+            foreach (var dz in dangerzonesUnderMouse)
             {
-                TileName.text = "";
-                TileDescription.text = "";
+                var dangerzoneInfo = Instantiate(InfoBoxPrefab, TileInfoPanel.transform).GetComponent<InfoBox>();
+                dangerzoneInfo.Setup(dz.Title, dz.Description);
             }
+
         }
 
         public void UpdateHirelingsSaved(int h)

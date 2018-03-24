@@ -22,7 +22,6 @@ GameObject:
   - component: {fileID: 212833939010548686}
   - component: {fileID: 95240863755874136}
   - component: {fileID: 320163026796726720}
-  - component: {fileID: 114161264777919524}
   m_Layer: 0
   m_Name: FallingRock
   m_TagString: Untagged
@@ -38,6 +37,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4535151190921520}
+  - component: {fileID: 114601703874422778}
   m_Layer: 0
   m_Name: FallingRockBase
   m_TagString: Untagged
@@ -89,12 +89,12 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
---- !u!114 &114161264777919524
+--- !u!114 &114601703874422778
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1006936908955020}
+  m_GameObject: {fileID: 1818124417476584}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a294e5eb525a4c44092ad98618b2284f, type: 3}

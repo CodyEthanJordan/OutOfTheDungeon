@@ -63,7 +63,7 @@ MonoBehaviour:
   PassingThroughEffects: []
   SteppedOnEffects: []
   TriggerOnceThenDestroy: 1
-  AnimationEffect: {fileID: 1267460182585844, guid: 45b065f6e716d1846adc57f5b6c156ab,
+  AnimationEffect: {fileID: 1818124417476584, guid: e639517b4012e9e4895a2bcb9294b5e4,
     type: 2}
 --- !u!212 &212255519182404498
 SpriteRenderer:

@@ -450,7 +450,10 @@ namespace Assets.Scripts
                 {
                     unitUnderMouse.EnableUI();
                 }
-                UI.ShowMouseOverInfo(dungeonTileUnderMouse, unitUnderMouse);
+
+                var dangerzoneUnderMouse = AllDangerzones.Where(d => d.transform.position == MouseoverPoint)
+                    .Select(d => d.GetComponent<DangerzoneController>()).ToList();
+                UI.ShowMouseOverInfo(dungeonTileUnderMouse, unitUnderMouse, dangerzoneUnderMouse);
             }
 
             if (!blockInputs)

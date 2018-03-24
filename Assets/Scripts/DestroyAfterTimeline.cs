@@ -14,7 +14,7 @@ namespace Assets.Scripts
 
         private void Awake()
         {
-            pd = GetComponent<PlayableDirector>();
+            pd = GetComponentInChildren<PlayableDirector>();
             Destroy(gameObject, (float)pd.duration);
         }
     }
