@@ -283,7 +283,6 @@ namespace Assets.Scripts
 
             badGuyLoadouts = roomInfo.SpawnableBadGuys;
             turnCounter = 0;
-            blockInputs = false;
             StartCoroutine(NewTurn());
         }
 
@@ -312,7 +311,6 @@ namespace Assets.Scripts
 
         private void Start()
         {
-            blockInputs = true;
             var dataObject = GameObject.Find("DontDestroyEncounterOutcomeData");
             if (dataObject == null)
             {
@@ -388,6 +386,7 @@ namespace Assets.Scripts
 
             UI.ShowIntroduction(roomInfo.Title, roomInfo.IntoDescription);
             SetupMap(remainingHirelings);
+            blockInputs = true;
         }
 
         public void SpawnUnit(Vector3Int position, string name, UnitController.SideEnum side, Loadout loadout)

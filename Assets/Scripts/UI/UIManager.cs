@@ -21,6 +21,8 @@ namespace Assets.Scripts.UI
         public GameObject ResolutionPopup;
         public GameObject ResolutionTextPrefab;
         public Button ReturnToMenu;
+        public GameObject IntroOverlay;
+        public Text IntroDescriptionText;
 
         private List<GameObject> abilityButtons = new List<GameObject>();
 
@@ -147,10 +149,10 @@ namespace Assets.Scripts.UI
             ResolutionPopup.SetActive(false);
         }
 
-        public Text IntroDescriptionText;
 
         public void ShowIntroduction(string roomInfoTitle, string roomInfoIntoDescription)
         {
+            IntroOverlay.SetActive(true);
             IntroDescriptionText.text = roomInfoIntoDescription;
         }
     }
