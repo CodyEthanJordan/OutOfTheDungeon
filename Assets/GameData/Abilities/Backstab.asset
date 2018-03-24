@@ -23,3 +23,5 @@ MonoBehaviour:
     SpecialEffects:
     - {fileID: 11400000, guid: e62ae13edaa508a4b942e8cf2806792e, type: 2}
   SelfEffects: []
+  AnimationEffectPrefab: {fileID: 1163330951101652, guid: b21fc84d67264b64bb747121a6e4a6e7,
+    type: 2}

@@ -23,8 +23,10 @@ namespace Assets.Scripts.GameLogic
             float waitTime = 0;
             if (AnimationEffect != null)
             {
-                var anim = Instantiate(AnimationEffect, this.transform.position, Quaternion.identity);
-                waitTime = anim.GetComponent<DestroyAfterTimeline>().Duration;
+                var animObject = Instantiate(AnimationEffect, this.transform.position, Quaternion.identity);
+                var anim = animObject.GetComponent<DestroyAfterTimeline>();
+                anim.Setup(this.transform.position, this.transform.position);
+                waitTime = anim.Duration;
             }
             Debug.LogWarning(waitTime);
             yield return new WaitForSeconds(waitTime);

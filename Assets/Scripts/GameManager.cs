@@ -129,12 +129,19 @@ namespace Assets.Scripts
 
         internal void ActivateAbility(UnitController unit, Ability ability, Vector3Int target)
         {
+            blockInputs = true;
+            StartCoroutine(AbilityCoroutine(unit, ability, target));
+            blockInputs = false;
+        }
+
+        IEnumerator AbilityCoroutine(UnitController unit, Ability ability, Vector3Int target)
+        {
             Debug.Log(unit.Name + " uses " + ability.Name + " at " + target);
             if (unit.HasActed)
             {
                 //already acted, ignore this
                 Debug.LogWarning(unit.Name + "has already acted");
-                return;
+                yield break;
             }
             else
             {
@@ -145,7 +152,8 @@ namespace Assets.Scripts
                 }
             }
 
-            ability.ApplyEffects(this, unit, target);
+            Debug.LogError("applying effects");
+            yield return ability.ApplyEffects(this, unit, target);
 
 
             //TODO: damage to tiles
@@ -657,15 +665,20 @@ namespace Assets.Scripts
 
         public void EndTurn()
         {
+            StartCoroutine(ResolveEndTurnAndStartNext());
+        }
+
+        public IEnumerator ResolveEndTurnAndStartNext()
+        {
             TriggerTransition(GameStateTransitions.Deselect);
             //bad guys do stuff
             foreach (var badGuy in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.BadGuy))
             {
-                ActivateAbility(badGuy, badGuy.MyLoadout.Abilities[0], badGuy.TargetedTile);
+                yield return AbilityCoroutine(badGuy, badGuy.MyLoadout.Abilities[0], badGuy.TargetedTile);
                 badGuy.ClearTargetOverlays();
             }
 
-            StartCoroutine(NewTurn());
+            yield return NewTurn();
         }
 
         public void UpdateAllRangedIndicators()
