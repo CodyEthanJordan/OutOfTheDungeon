@@ -305,8 +305,14 @@ namespace Assets.Scripts
             return proposedLocation;
         }
 
+        public void BeginGame()
+        {
+            blockInputs = false;
+        }
+
         private void Start()
         {
+            blockInputs = true;
             var dataObject = GameObject.Find("DontDestroyEncounterOutcomeData");
             if (dataObject == null)
             {
@@ -380,6 +386,7 @@ namespace Assets.Scripts
                 }
             }
 
+            UI.ShowIntroduction(roomInfo.Title, roomInfo.IntoDescription);
             SetupMap(remainingHirelings);
         }
 
@@ -460,6 +467,9 @@ namespace Assets.Scripts
 
                 var dangerzoneUnderMouse = AllDangerzones.Where(d => d.transform.position == MouseoverPoint)
                     .Select(d => d.GetComponent<DangerzoneController>()).ToList();
+                dangerzoneUnderMouse.AddRange(
+                    summoningCircles.Where(s => s.transform.position == MouseoverPoint).
+                        Select(s => s.GetComponent<DangerzoneController>()));
                 UI.ShowMouseOverInfo(dungeonTileUnderMouse, unitUnderMouse, dangerzoneUnderMouse);
             }
 
@@ -1119,6 +1129,9 @@ namespace Assets.Scripts
         {
             List<string> ResolutionInfo = new List<string>();
             int i = 1;
+            ResolutionInfo.Add("Environmental Effects");
+            i++;
+
             foreach (var badGuy in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.BadGuy))
             {
                 ResolutionInfo.Add(badGuy.Name + " attacks");

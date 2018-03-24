@@ -146,5 +146,12 @@ namespace Assets.Scripts.UI
         {
             ResolutionPopup.SetActive(false);
         }
+
+        public Text IntroDescriptionText;
+
+        public void ShowIntroduction(string roomInfoTitle, string roomInfoIntoDescription)
+        {
+            IntroDescriptionText.text = roomInfoIntoDescription;
+        }
     }
 }

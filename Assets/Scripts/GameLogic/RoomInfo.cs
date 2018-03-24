@@ -9,6 +9,8 @@ namespace Assets.Scripts.GameLogic
 {
     public class RoomInfo : MonoBehaviour
     {
+        public string Title;
+        public string IntoDescription;
         public Loadout[] InitialEnemies;
         public Loadout[] SpawnableBadGuys;
         public GameObject[] DangerzoneTiles;

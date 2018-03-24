@@ -52,8 +52,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9140c3a6d0f279746956e233614727cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Title: Collapsing Dungeon
-  Description: Rocks fall at end of turn, killing any unit here
+  Title: Summoning Portal
+  Description: Summons a unit at end of turn
   EndOfTurnEffects:
   - TileAffected: {x: 0, y: 0, z: 0}
     Damage: 0
