@@ -136,6 +136,11 @@ namespace Assets.Scripts
 
         private IEnumerator AbilityCoroutine(UnitController unit, Ability ability, Vector3Int target)
         {
+            //TODO: hack, dead units cant act
+            if (unit.HP <= 0)
+            {
+                yield break;
+            }
             Debug.Log(unit.Name + " uses " + ability.Name + " at " + target);
             if (unit.HasActed)
             {

@@ -28,7 +28,6 @@ namespace Assets.Scripts.GameLogic
                 anim.Setup(this.transform.position, this.transform.position, Ability.RangeType.Personal);
                 waitTime = anim.Duration;
             }
-            Debug.LogWarning(waitTime);
             yield return new WaitForSeconds(waitTime);
 
             foreach (var endOfTurnEffect in EndOfTurnEffects)
