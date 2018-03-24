@@ -25,12 +25,9 @@ namespace Assets.Scripts.GameLogic
                 Instantiate(AnimationEffect, this.transform.position, Quaternion.identity);
             }
 
-            if (unitStepping != null)
+            foreach (var endOfTurnEffect in EndOfTurnEffects)
             {
-                foreach (var endOfTurnEffect in EndOfTurnEffects)
-                {
-                    endOfTurnEffect.ApplyEffect(gm, null, unitStepping, Vector3Int.FloorToInt(this.transform.position));
-                }
+                endOfTurnEffect.ApplyEffect(gm, null, unitStepping, Vector3Int.FloorToInt(this.transform.position));
             }
         }
 

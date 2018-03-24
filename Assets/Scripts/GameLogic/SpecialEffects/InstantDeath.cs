@@ -11,6 +11,10 @@ namespace Assets.Scripts.GameLogic.SpecialEffects
     {
         public override void ApplyEffect(GameManager gm, UnitController user, UnitController guyHit, Vector3Int targetLocation)
         {
+            if (guyHit == null)
+            {
+                return;
+            }
             guyHit.Die();
         }
     }

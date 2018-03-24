@@ -10,6 +10,7 @@ using Assets.Scripts.Events;
 using UnityEngine.Events;
 using Assets.Scripts.FSM;
 using System.Collections.ObjectModel;
+using Assets.Scripts.GameLogic.SpecialEffects;
 using Assets.Scripts.UI;
 using UnityEngine.SceneManagement;
 
@@ -258,6 +259,12 @@ namespace Assets.Scripts
             }
             summoningCircles.Clear();
 
+            foreach (var dangerzone in AllDangerzones)
+            {
+                Destroy(dangerzone);
+            }
+            AllDangerzones.Clear();
+
             ClearOverlays();
 
             //spawn heros
@@ -376,7 +383,7 @@ namespace Assets.Scripts
             SetupMap(remainingHirelings);
         }
 
-        private void SpawnUnit(Vector3Int position, string name, UnitController.SideEnum side, Loadout loadout)
+        public void SpawnUnit(Vector3Int position, string name, UnitController.SideEnum side, Loadout loadout)
         {
             position.z = 0;
             Debug.Log(name + " the " + loadout.LoadoutName + " spawned at " + position + ", fighting for" + side);
@@ -716,6 +723,11 @@ namespace Assets.Scripts
 
         private IEnumerator NewTurn()
         {
+            foreach (var unit in AllUnits)
+            {
+                unit.NewTurn();
+            }
+
             blockInputs = true;
             turnCounter = turnCounter + 1;
             Debug.Log("Turn: " + turnCounter + "\n---------");
@@ -740,9 +752,23 @@ namespace Assets.Scripts
             }
             dangerzoneToDestroy.Clear();
 
-            foreach (var unit in AllUnits)
+            //spawn more bad guys
+            List<GameObject> circlesToDestroy = new List<GameObject>();
+            foreach (var summoningCircle in summoningCircles)
             {
-                unit.NewTurn();
+                var unitOnCircle = AllUnits.Find(u => u.transform.position == summoningCircle.transform.position);
+                var dangerzone = summoningCircle.GetComponent<DangerzoneController>();
+                dangerzone.ApplyEndOfTurnEffects(this, unitOnCircle);
+
+                if (dangerzone.TriggerOnceThenDestroy)
+                {
+                    circlesToDestroy.Add(summoningCircle);
+                }
+            }
+            for (int i = 0; i < circlesToDestroy.Count; i++)
+            {
+                summoningCircles.Remove(circlesToDestroy[i]);
+                Destroy(circlesToDestroy[i]);
             }
 
             //move hirlings
@@ -809,32 +835,7 @@ namespace Assets.Scripts
                 }
             }
 
-            //spawn more bad guys
-            List<GameObject> circlesToDestroy = new List<GameObject>();
-            foreach (var summoningCircle in summoningCircles)
-            {
-                var unitOnCircle = AllUnits.Find(u => u.transform.position == summoningCircle.transform.position);
-                if (unitOnCircle == null)
-                {
-                    circlesToDestroy.Add(summoningCircle);
-                    int r = UnityEngine.Random.Range(0, badGuyLoadouts.Length);
-                    var guyToSpawn = badGuyLoadouts[r];
-                    SpawnUnit(Vector3Int.FloorToInt(summoningCircle.transform.position),
-                        guyToSpawn.LoadoutName,
-                        UnitController.SideEnum.BadGuy,
-                        guyToSpawn);
-                }
-                else
-                {
-                    Debug.Log("Summoning circle at " + summoningCircle.transform.position + " blocked by " + unitOnCircle.Name);
-                    unitOnCircle.TakeDamage(1, Effect.DamageTypes.SummoningBlocked);
-                }
-            }
-            for (int i = 0; i < circlesToDestroy.Count; i++)
-            {
-                summoningCircles.Remove(circlesToDestroy[i]);
-                Destroy(circlesToDestroy[i]);
-            }
+            
 
             //set up bad guy moves
             //TODO: different kinds of bad guy AI
@@ -878,7 +879,6 @@ namespace Assets.Scripts
                         yield return MoveUnit(bg, destinations[i], true);
                     }
                 }
-
                 //execute move
 
             }
@@ -896,6 +896,9 @@ namespace Assets.Scripts
                     spawnPosition = validSpawnLocations[r];
                 }
                 var newCircle = Instantiate(SummoningPortalPrefab, spawnPosition, Quaternion.identity, this.transform);
+                var summonEffect = (SummonUnit)newCircle.GetComponent<DangerzoneController>().EndOfTurnEffects[0].SpecialEffects[0];
+                int g = UnityEngine.Random.Range(0, roomInfo.SpawnableBadGuys.Length);
+                summonEffect.Setup(roomInfo.SpawnableBadGuys[g], UnitController.SideEnum.BadGuy);
                 summoningCircles.Add(newCircle);
             }
 

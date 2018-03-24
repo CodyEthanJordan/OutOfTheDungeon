@@ -29,7 +29,11 @@ namespace Assets.Scripts.GameLogic
 
         public void ApplyEffect(GameManager gm, UnitController user, UnitController guyHit, Vector3Int targetLocation)
         {
-            guyHit.TakeDamage(Damage, DamageType);
+            if (guyHit != null)
+            {
+                guyHit.TakeDamage(Damage, DamageType);
+            }
+
             foreach (var se in SpecialEffects)
             {
                 se.ApplyEffect(gm, user, guyHit, targetLocation);

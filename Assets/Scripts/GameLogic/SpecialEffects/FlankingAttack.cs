@@ -13,6 +13,11 @@ namespace Assets.Scripts.GameLogic.SpecialEffects
 
         public override void ApplyEffect(GameManager gm, UnitController user, UnitController guyHit, Vector3Int targetLocation)
         {
+            if (guyHit == null)
+            {
+                return;
+            }
+
             var directionToTarget = guyHit.transform.position - user.transform.position;
             var flankingPosition = guyHit.transform.position + directionToTarget.normalized;
 

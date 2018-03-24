@@ -1,11 +1,6 @@
 ﻿using Assets.Scripts.GameLogic;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using UnityEngine;
-using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.UI
@@ -90,8 +85,11 @@ namespace Assets.Scripts.UI
                 Destroy(t.gameObject);
             }
 
-            var tileInfo = Instantiate(InfoBoxPrefab, TileInfoPanel.transform).GetComponent<InfoBox>();
-            tileInfo.Setup(dungeonTileUnderMouse.Name, dungeonTileUnderMouse.Description);
+            if (dungeonTileUnderMouse != null)
+            {
+                var tileInfo = Instantiate(InfoBoxPrefab, TileInfoPanel.transform).GetComponent<InfoBox>();
+                tileInfo.Setup(dungeonTileUnderMouse.Name, dungeonTileUnderMouse.Description);
+            }
 
             foreach (var dz in dangerzonesUnderMouse)
             {

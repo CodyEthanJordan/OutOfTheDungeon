@@ -2194,7 +2194,7 @@ MonoBehaviour:
   HirelingLoadout: {fileID: 11400000, guid: 75334401fe3791842920992706c20152, type: 2}
   UnitClicked: {fileID: 0}
   UnitPrefab: {fileID: 1577556145990536, guid: 91266f979d2ed8641bbef3575b84da3d, type: 2}
-  SummoningPortalPrefab: {fileID: 1532431115635846, guid: 0b85d5e11660d5240ba5c0932163c6d4,
+  SummoningPortalPrefab: {fileID: 1960820036450820, guid: 88ccef0a492cd804cb9280a216946cc5,
     type: 2}
   ThreatenedAreaPrefab: {fileID: 1587006342558576, guid: 354a04f010f74ae4e9c282ec97b6f703,
     type: 2}
