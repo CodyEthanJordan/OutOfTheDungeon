@@ -12,9 +12,12 @@ namespace Assets.Scripts
     {
         private PlayableDirector pd;
 
+        public float Duration { get; private set; }
+
         private void Awake()
         {
             pd = GetComponentInChildren<PlayableDirector>();
+            Duration = (float)pd.duration;
             Destroy(gameObject, (float)pd.duration);
         }
     }

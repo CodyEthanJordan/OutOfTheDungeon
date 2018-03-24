@@ -15,6 +15,7 @@ MonoBehaviour:
   Description: Deal 1 damage and knock target back
   Range: 0
   OnlyTargetUnits: 0
+  FreeAction: 0
   Effects:
   - TileAffected: {x: 0, y: 0, z: 0}
     Damage: 1
@@ -22,3 +23,5 @@ MonoBehaviour:
     SpecialEffects:
     - {fileID: 11400000, guid: 7082370a56c664849b59d72f097ef6e7, type: 2}
   SelfEffects: []
+  AnimationEffectPrefab: {fileID: 1163330951101652, guid: b21fc84d67264b64bb747121a6e4a6e7,
+    type: 2}

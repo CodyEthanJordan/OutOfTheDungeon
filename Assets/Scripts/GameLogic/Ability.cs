@@ -17,6 +17,7 @@ namespace Assets.Scripts.GameLogic
         public bool FreeAction;
         public Effect[] Effects;
         public Effect[] SelfEffects;
+        public GameObject AnimationEffectPrefab;
 
         public static Vector3Int RotateEffectTarget(Vector3Int offset, Vector3Int facingDirection)
         {
@@ -43,6 +44,10 @@ namespace Assets.Scripts.GameLogic
 
         public void ApplyEffects(GameManager gm, UnitController user, Vector3Int target)
         {
+            if (AnimationEffectPrefab != null)
+            {
+                Instantiate(AnimationEffectPrefab, target, Quaternion.identity);
+            }
             //find everyone affected
             foreach (var effect in Effects)
             {

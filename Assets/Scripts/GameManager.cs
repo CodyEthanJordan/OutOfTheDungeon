@@ -746,7 +746,7 @@ namespace Assets.Scripts
             {
                 var unit = AllUnits.Find(u => u.transform.position == dangerzoneObject.transform.position);
                 var dangerzone = dangerzoneObject.GetComponent<DangerzoneController>();
-                dangerzone.ApplyEndOfTurnEffects(this, unit);
+                yield return dangerzone.ApplyEndOfTurnEffects(this, unit);
 
                 if (dangerzone.TriggerOnceThenDestroy)
                 {
@@ -767,7 +767,7 @@ namespace Assets.Scripts
             {
                 var unitOnCircle = AllUnits.Find(u => u.transform.position == summoningCircle.transform.position);
                 var dangerzone = summoningCircle.GetComponent<DangerzoneController>();
-                dangerzone.ApplyEndOfTurnEffects(this, unitOnCircle);
+                yield return dangerzone.ApplyEndOfTurnEffects(this, unitOnCircle);
 
                 if (dangerzone.TriggerOnceThenDestroy)
                 {

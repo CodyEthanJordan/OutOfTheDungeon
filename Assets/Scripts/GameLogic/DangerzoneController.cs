@@ -18,12 +18,16 @@ namespace Assets.Scripts.GameLogic
         public bool TriggerOnceThenDestroy;
         public GameObject AnimationEffect;
 
-        public void ApplyEndOfTurnEffects(GameManager gm, UnitController unitStepping)
+        public System.Collections.IEnumerator ApplyEndOfTurnEffects(GameManager gm, UnitController unitStepping)
         {
+            float waitTime = 0;
             if (AnimationEffect != null)
             {
-                Instantiate(AnimationEffect, this.transform.position, Quaternion.identity);
+                var anim = Instantiate(AnimationEffect, this.transform.position, Quaternion.identity);
+                waitTime = anim.GetComponent<DestroyAfterTimeline>().Duration;
             }
+            Debug.LogWarning(waitTime);
+            yield return new WaitForSeconds(waitTime);
 
             foreach (var endOfTurnEffect in EndOfTurnEffects)
             {
