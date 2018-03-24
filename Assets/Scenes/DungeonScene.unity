@@ -2480,6 +2480,137 @@ MonoBehaviour:
     m_TypeName: Assets.Scripts.Events.PositionEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
   AllDangerzones: []
+--- !u!1001 &1809084138
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: InitialEnemies.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: SpawnableBadGuys.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: HeroStartLocations.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4880737742142408, guid: 2feab527a2c6b96468f2b69816dfb12d, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -22
+      objectReference: {fileID: 0}
+    - target: {fileID: 4880737742142408, guid: 2feab527a2c6b96468f2b69816dfb12d, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 4880737742142408, guid: 2feab527a2c6b96468f2b69816dfb12d, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -1.91
+      objectReference: {fileID: 0}
+    - target: {fileID: 4880737742142408, guid: 2feab527a2c6b96468f2b69816dfb12d, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4880737742142408, guid: 2feab527a2c6b96468f2b69816dfb12d, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4880737742142408, guid: 2feab527a2c6b96468f2b69816dfb12d, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4880737742142408, guid: 2feab527a2c6b96468f2b69816dfb12d, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4880737742142408, guid: 2feab527a2c6b96468f2b69816dfb12d, type: 2}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: InitialEnemies.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: ed50325b9d96586438f3902d4e95737d,
+        type: 2}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: InitialEnemies.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: ed50325b9d96586438f3902d4e95737d,
+        type: 2}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: SpawnableBadGuys.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: ed50325b9d96586438f3902d4e95737d,
+        type: 2}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: SpawnableBadGuys.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: ed50325b9d96586438f3902d4e95737d,
+        type: 2}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: HeroStartLocations.Array.data[0].x
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: HeroStartLocations.Array.data[1].x
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: HeroStartLocations.Array.data[1].y
+      value: -3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: HeroStartLocations.Array.data[2].x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: HeroStartLocations.Array.data[2].y
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1371016082454340, guid: 2feab527a2c6b96468f2b69816dfb12d, type: 2}
+      propertyPath: m_Name
+      value: Room3
+      objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: HeroStartLocations.Array.data[0].y
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: Title
+      value: Corridor
+      objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: IntoDescription
+      value: Goblin ambush!
+      objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: InitialEnemies.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: ed50325b9d96586438f3902d4e95737d,
+        type: 2}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 2feab527a2c6b96468f2b69816dfb12d, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &1883492526
 GameObject:
   m_ObjectHideFlags: 0
@@ -2584,7 +2715,7 @@ Prefab:
     - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
         type: 2}
       propertyPath: InitialEnemies.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
         type: 2}
@@ -2632,13 +2763,13 @@ Prefab:
         type: 2}
       propertyPath: InitialEnemies.Array.data[0]
       value: 
-      objectReference: {fileID: 11400000, guid: 33bcea45bbea0bb44ba64028207e4974,
+      objectReference: {fileID: 11400000, guid: ed50325b9d96586438f3902d4e95737d,
         type: 2}
     - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
         type: 2}
       propertyPath: InitialEnemies.Array.data[1]
       value: 
-      objectReference: {fileID: 11400000, guid: 33bcea45bbea0bb44ba64028207e4974,
+      objectReference: {fileID: 11400000, guid: ed50325b9d96586438f3902d4e95737d,
         type: 2}
     - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
         type: 2}
@@ -2686,6 +2817,22 @@ Prefab:
       propertyPath: HeroStartLocations.Array.data[0].y
       value: -2
       objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: Title
+      value: Corridor
+      objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: IntoDescription
+      value: Goblin ambush!
+      objectReference: {fileID: 0}
+    - target: {fileID: 114936875721508144, guid: 2feab527a2c6b96468f2b69816dfb12d,
+        type: 2}
+      propertyPath: InitialEnemies.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: ed50325b9d96586438f3902d4e95737d,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2feab527a2c6b96468f2b69816dfb12d, type: 2}
   m_IsPrefabParent: 0

@@ -154,7 +154,6 @@ namespace Assets.Scripts
 
             yield return ability.ApplyEffects(this, unit, target);
 
-
             //TODO: damage to tiles
         }
 
@@ -669,13 +668,97 @@ namespace Assets.Scripts
 
         public IEnumerator ResolveEndTurnAndStartNext()
         {
+
             TriggerTransition(GameStateTransitions.Deselect);
+
+            //apply Dangerzones
+            foreach (var dangerzoneObject in AllDangerzones)
+            {
+                var unit = AllUnits.Find(u => u.transform.position == dangerzoneObject.transform.position);
+                var dangerzone = dangerzoneObject.GetComponent<DangerzoneController>();
+                yield return dangerzone.ApplyEndOfTurnEffects(this, unit);
+
+                if (dangerzone.TriggerOnceThenDestroy)
+                {
+                    dangerzoneToDestroy.Add(dangerzoneObject);
+                }
+            }
+
+            foreach (var dangerzoneObject in dangerzoneToDestroy)
+            {
+                AllDangerzones.Remove(dangerzoneObject);
+                Destroy(dangerzoneObject);
+            }
+            dangerzoneToDestroy.Clear();
+
             //bad guys do stuff
             foreach (var badGuy in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.BadGuy))
             {
                 yield return AbilityCoroutine(badGuy, badGuy.MyLoadout.Abilities[0], badGuy.TargetedTile);
                 badGuy.ClearTargetOverlays();
             }
+
+            //spawn more bad guys
+            List<GameObject> circlesToDestroy = new List<GameObject>();
+            foreach (var summoningCircle in summoningCircles)
+            {
+                var unitOnCircle = AllUnits.Find(u => u.transform.position == summoningCircle.transform.position);
+                var dangerzone = summoningCircle.GetComponent<DangerzoneController>();
+                yield return dangerzone.ApplyEndOfTurnEffects(this, unitOnCircle);
+
+                if (dangerzone.TriggerOnceThenDestroy)
+                {
+                    circlesToDestroy.Add(summoningCircle);
+                }
+            }
+            for (int i = 0; i < circlesToDestroy.Count; i++)
+            {
+                summoningCircles.Remove(circlesToDestroy[i]);
+                Destroy(circlesToDestroy[i]);
+            }
+
+            //move hirlings
+            foreach (var hireling in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.Hireling))
+            {
+                while (hireling.CurrentMovement > 0)
+                {
+                    Vector3Int startingPos = Vector3Int.FloorToInt(hireling.transform.position);
+                    var tile = Dungeon.GetTile<DungeonTile>(startingPos);
+                    if (tile.Name == "Road")
+                    {
+                        var nextPosition = startingPos + GameManager.CardinalDirections[dungeonInfo.GetPositionProperty(startingPos, "RoadDirection", -1)];
+                        var nextTile = Dungeon.GetTile<DungeonTile>(nextPosition);
+                        if (nextTile.Name == "Level Exit")
+                        {
+                            Kill(hireling);
+                            savedHirelings++;
+                            CheckVictoryConditions();
+                            break;
+                            //TODO: register as having made it
+                        }
+
+                        if (Passable(nextPosition, true))
+                        {
+                            List<Vector3Int> path = new List<Vector3Int>()
+                            {
+                                Vector3Int.FloorToInt(hireling.transform.position),
+                                nextPosition
+                            };
+                            yield return MoveUnit(hireling, path, true);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        //got knocke off path, stand still and panic
+                        break;
+                    }
+                }
+            }
+         
 
             yield return NewTurn();
         }
@@ -753,86 +836,7 @@ namespace Assets.Scripts
             turnCounter = turnCounter + 1;
             Debug.Log("Turn: " + turnCounter + "\n---------");
 
-            //apply Dangerzones
-            foreach (var dangerzoneObject in AllDangerzones)
-            {
-                var unit = AllUnits.Find(u => u.transform.position == dangerzoneObject.transform.position);
-                var dangerzone = dangerzoneObject.GetComponent<DangerzoneController>();
-                yield return dangerzone.ApplyEndOfTurnEffects(this, unit);
-
-                if (dangerzone.TriggerOnceThenDestroy)
-                {
-                    dangerzoneToDestroy.Add(dangerzoneObject);
-                }
-            }
-
-            foreach (var dangerzoneObject in dangerzoneToDestroy)
-            {
-                AllDangerzones.Remove(dangerzoneObject);
-                Destroy(dangerzoneObject);
-            }
-            dangerzoneToDestroy.Clear();
-
-            //spawn more bad guys
-            List<GameObject> circlesToDestroy = new List<GameObject>();
-            foreach (var summoningCircle in summoningCircles)
-            {
-                var unitOnCircle = AllUnits.Find(u => u.transform.position == summoningCircle.transform.position);
-                var dangerzone = summoningCircle.GetComponent<DangerzoneController>();
-                yield return dangerzone.ApplyEndOfTurnEffects(this, unitOnCircle);
-
-                if (dangerzone.TriggerOnceThenDestroy)
-                {
-                    circlesToDestroy.Add(summoningCircle);
-                }
-            }
-            for (int i = 0; i < circlesToDestroy.Count; i++)
-            {
-                summoningCircles.Remove(circlesToDestroy[i]);
-                Destroy(circlesToDestroy[i]);
-            }
-
-            //move hirlings
-            foreach (var hireling in AllUnits.FindAll(u => u.Side == UnitController.SideEnum.Hireling))
-            {
-                while (hireling.CurrentMovement > 0)
-                {
-                    Vector3Int startingPos = Vector3Int.FloorToInt(hireling.transform.position);
-                    var tile = Dungeon.GetTile<DungeonTile>(startingPos);
-                    if (tile.Name == "Road")
-                    {
-                        var nextPosition = startingPos + GameManager.CardinalDirections[dungeonInfo.GetPositionProperty(startingPos, "RoadDirection", -1)];
-                        var nextTile = Dungeon.GetTile<DungeonTile>(nextPosition);
-                        if (nextTile.Name == "Level Exit")
-                        {
-                            Kill(hireling);
-                            savedHirelings++;
-                            CheckVictoryConditions();
-                            break;
-                            //TODO: register as having made it
-                        }
-
-                        if (Passable(nextPosition, true))
-                        {
-                            List<Vector3Int> path = new List<Vector3Int>()
-                            {
-                                Vector3Int.FloorToInt(hireling.transform.position),
-                                nextPosition
-                            };
-                            yield return MoveUnit(hireling, path, true);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        //got knocke off path, stand still and panic
-                        break;
-                    }
-                }
-            }
+           
 
             //spawn more hirelings
             foreach (var entrance in entranceLocations)

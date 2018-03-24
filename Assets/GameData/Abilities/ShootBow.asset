@@ -22,3 +22,5 @@ MonoBehaviour:
     DamageType: 0
     SpecialEffects: []
   SelfEffects: []
+  AnimationEffectPrefab: {fileID: 1618772604738274, guid: 355f43f1fd458604f97715314965fb16,
+    type: 2}

@@ -11,11 +11,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22d19b894cb04374eabd8fbfbb4a6db9, type: 3}
   m_Name: Stab
   m_EditorClassIdentifier: 
-  Name: 
-  Description: 
+  Name: Stab
+  Description: Deal 1 damage and knock target back
   Range: 0
   OnlyTargetUnits: 0
   FreeAction: 0
-  Effects: []
+  Effects:
+  - TileAffected: {x: 0, y: 0, z: 0}
+    Damage: 1
+    DamageType: 0
+    SpecialEffects:
+    - {fileID: 11400000, guid: 7082370a56c664849b59d72f097ef6e7, type: 2}
   SelfEffects: []
-  AnimationEffectPrefab: {fileID: 0}
+  AnimationEffectPrefab: {fileID: 1163330951101652, guid: b21fc84d67264b64bb747121a6e4a6e7,
+    type: 2}
