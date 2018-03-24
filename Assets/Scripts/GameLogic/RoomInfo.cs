@@ -11,6 +11,7 @@ namespace Assets.Scripts.GameLogic
     {
         public Loadout[] InitialEnemies;
         public Loadout[] SpawnableBadGuys;
+        public GameObject[] DangerzoneTiles;
         public Vector3Int[] HeroStartLocations;
         public float Width;
         public float Height;

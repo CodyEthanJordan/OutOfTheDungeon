@@ -48,6 +48,9 @@ TagManager:
   - name: Units
     uniqueID: 2195779437
     locked: 0
+  - name: EffectAnimation
+    uniqueID: 3693828283
+    locked: 0
   - name: InfoOverlay
     uniqueID: 3936447815
     locked: 0

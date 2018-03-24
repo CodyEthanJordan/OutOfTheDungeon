@@ -708,11 +708,34 @@ namespace Assets.Scripts
             unit.Die();
         }
 
+        public List<GameObject> AllDangerzones = new List<GameObject>();
+        private List<GameObject> dangerzoneToDestroy = new List<GameObject>();
+
         private IEnumerator NewTurn()
         {
             blockInputs = true;
             turnCounter = turnCounter + 1;
             Debug.Log("Turn: " + turnCounter + "\n---------");
+
+            //apply Dangerzones
+            foreach (var dangerzoneObject in AllDangerzones)
+            {
+                var unit = AllUnits.Find(u => u.transform.position == dangerzoneObject.transform.position);
+                var dangerzone = dangerzoneObject.GetComponent<DangerzoneController>();
+                dangerzone.ApplyEndOfTurnEffects(this, unit);
+
+                if (dangerzone.TriggerOnceThenDestroy)
+                {
+                    dangerzoneToDestroy.Add(dangerzoneObject);
+                }
+            }
+
+            foreach (var dangerzoneObject in dangerzoneToDestroy)
+            {
+                AllDangerzones.Remove(dangerzoneObject);
+                Destroy(dangerzoneObject);
+            }
+            dangerzoneToDestroy.Clear();
 
             foreach (var unit in AllUnits)
             {
@@ -857,15 +880,13 @@ namespace Assets.Scripts
 
             }
 
-
-
             //create new summoning circles
             int numberToSpawn = 2;
             for (int i = 0; i < numberToSpawn; i++)
             {
                 int r = UnityEngine.Random.Range(0, validSpawnLocations.Count);
                 var spawnPosition = validSpawnLocations[r];
-                while (summoningCircles.Where(s => s.transform.position == spawnPosition).Count() > 0)
+                while (summoningCircles.Any(s => s.transform.position == spawnPosition))
                 {
                     //don't put summoning circles on top of each other
                     r = UnityEngine.Random.Range(0, validSpawnLocations.Count);
@@ -874,6 +895,27 @@ namespace Assets.Scripts
                 var newCircle = Instantiate(SummoningPortalPrefab, spawnPosition, Quaternion.identity, this.transform);
                 summoningCircles.Add(newCircle);
             }
+
+            if (roomInfo.DangerzoneTiles.Length > 0)
+            {
+                int dangerzoneToAdd = 2;
+                for (int i = 0; i < dangerzoneToAdd; i++)
+                {
+                    int r = UnityEngine.Random.Range(0, validSpawnLocations.Count);
+                    var spawnPosition = validSpawnLocations[r];
+                    while (AllDangerzones.Any(s => s.transform.position == spawnPosition))
+                    {
+                        //don't put summoning circles on top of each other
+                        r = UnityEngine.Random.Range(0, validSpawnLocations.Count);
+                        spawnPosition = validSpawnLocations[r];
+                    }
+                    //TODO: pick random dangerzone
+                    int d = UnityEngine.Random.Range(0, roomInfo.DangerzoneTiles.Length);
+                    var newZone = Instantiate(roomInfo.DangerzoneTiles[d], spawnPosition, Quaternion.identity, this.transform);
+                    AllDangerzones.Add(newZone);
+                }
+            }
+           
 
             blockInputs = false;
         }
