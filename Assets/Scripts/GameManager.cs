@@ -543,14 +543,14 @@ namespace Assets.Scripts
                 if (unitBlockingPredicate == null)
                 {
                     //default predicate, blocked by all
-                    if (AllUnits.Where(u => u.transform.position == pos).Count() > 0)
+                    if (AllUnits.Any(u => u.transform.position == pos))
                     {
                         return false;
                     }
                 }
                 else
                 {
-                    if (AllUnits.Where(u => u.transform.position == pos && unitBlockingPredicate(u)).Count() > 0)
+                    if (AllUnits.Any(u => u.transform.position == pos && unitBlockingPredicate(u)))
                     {
                         return false;
                     }

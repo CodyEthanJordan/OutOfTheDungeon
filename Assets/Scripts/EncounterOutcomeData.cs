@@ -27,7 +27,6 @@ namespace Assets.Scripts
             NextRoom = "Room1";
             HirelingsSaved = 6;
             Heros = DebugSquad;
-        
         }
     }
 }
