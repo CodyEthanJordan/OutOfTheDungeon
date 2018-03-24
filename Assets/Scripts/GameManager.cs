@@ -134,7 +134,7 @@ namespace Assets.Scripts
             blockInputs = false;
         }
 
-        IEnumerator AbilityCoroutine(UnitController unit, Ability ability, Vector3Int target)
+        private IEnumerator AbilityCoroutine(UnitController unit, Ability ability, Vector3Int target)
         {
             Debug.Log(unit.Name + " uses " + ability.Name + " at " + target);
             if (unit.HasActed)
@@ -152,7 +152,6 @@ namespace Assets.Scripts
                 }
             }
 
-            Debug.LogError("applying effects");
             yield return ability.ApplyEffects(this, unit, target);
 
 

@@ -42,15 +42,14 @@ namespace Assets.Scripts.GameLogic
 
 
 
-        public System.Collections.IEnumerable ApplyEffects(GameManager gm, UnitController user, Vector3Int target)
+        public System.Collections.IEnumerator ApplyEffects(GameManager gm, UnitController user, Vector3Int target)
         {
-            Debug.LogError("activating ability");
             float waitTime = 0;
             if (AnimationEffectPrefab != null)
             {
                 var animObject = Instantiate(AnimationEffectPrefab, target, Quaternion.identity);
                 var anim = animObject.GetComponent<DestroyAfterTimeline>();
-                anim.Setup(user.transform.position, target);
+                anim.Setup(user.transform.position, target, Range);
                 waitTime = anim.Duration;
             }
 

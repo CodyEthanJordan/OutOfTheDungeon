@@ -25,7 +25,7 @@ namespace Assets.Scripts.GameLogic
             {
                 var animObject = Instantiate(AnimationEffect, this.transform.position, Quaternion.identity);
                 var anim = animObject.GetComponent<DestroyAfterTimeline>();
-                anim.Setup(this.transform.position, this.transform.position);
+                anim.Setup(this.transform.position, this.transform.position, Ability.RangeType.Personal);
                 waitTime = anim.Duration;
             }
             Debug.LogWarning(waitTime);
