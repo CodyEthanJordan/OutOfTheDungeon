@@ -18,7 +18,7 @@ MonoBehaviour:
   FreeAction: 0
   Effects:
   - TileAffected: {x: 0, y: 0, z: 0}
-    Damage: 1
+    Damage: 3
     DamageType: 0
     SpecialEffects:
     - {fileID: 11400000, guid: 7082370a56c664849b59d72f097ef6e7, type: 2}

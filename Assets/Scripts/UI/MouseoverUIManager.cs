@@ -11,6 +11,7 @@ namespace Assets.Scripts.UI
     {
         private Canvas canvas;
         public Text HPText;
+        [SerializeField] private HPBar hpBar;
 
         private void Awake()
         {

@@ -19,6 +19,7 @@ namespace Assets.Scripts
         private List<GameObject> TargetedTileOverlays = new List<GameObject>();
         private List<GameObject> RangedAttackIndicatorOverlays = new List<GameObject>();
         [SerializeField] private Text UnitNumberText;
+        public IntEvent HPChangedEvent = new IntEvent();
 
         private string _name;
         public string Name
@@ -61,6 +62,7 @@ namespace Assets.Scripts
             {
                 _hp = value;
                 MouseoverUI.UpdateHPText(_hp, MaxHP);
+                HPChangedEvent.Invoke(_hp);
             }
         }
 
