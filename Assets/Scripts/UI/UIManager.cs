@@ -117,7 +117,8 @@ namespace Assets.Scripts.UI
             VictoryText.gameObject.SetActive(true);
             if (win)
             {
-                VictoryText.text = "Onto the next room...\nHirelings saved: " + hirelingsSaved;
+                //VictoryText.text = "Onto the next room...\nHirelings saved: " + hirelingsSaved;
+                VictoryText.text = "You win!\nHirelings saved: " + hirelingsSaved;
                 VictoryText.color = Color.green;
             }
             else

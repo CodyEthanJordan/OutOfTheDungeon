@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Assets.Scripts.GameLogic;
 using UnityEngine;
-using UnityEngine.Collections;
 using UnityEngine.Playables;
 
 namespace Assets.Scripts
